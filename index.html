@@ -61,10 +61,35 @@
                 <div class="sort-controls">
                     <select id="sortSelect">
                         <option value="discount">🔥 Biggest Discount</option>
-                        <option value="price">💰 Lowest Price</option>
+                        <option value="popular">👥 Most Popular</option>
+                        <option value="rating">⭐ Highest Rated</option>
+                        <option value="metacritic">🏆 Metacritic Score</option>
+                        <option value="price">💰 Price: Low → High</option>
+                        <option value="price-high">💰 Price: High → Low</option>
                         <option value="name">🔤 A — Z</option>
                     </select>
                 </div>
+            </div>
+            <div class="advanced-filters">
+                <div class="range-filter">
+                    <label>Max Price: <strong id="priceValue">Any</strong></label>
+                    <input type="range" id="priceRange" min="0" max="60" value="60" step="5">
+                </div>
+                <div class="range-filter">
+                    <label>Min Discount: <strong id="discountValue">Any</strong></label>
+                    <input type="range" id="discountRange" min="0" max="90" value="0" step="10">
+                </div>
+                <div class="select-filter">
+                    <label>Min Rating:</label>
+                    <select id="ratingSelect">
+                        <option value="0">Any Rating</option>
+                        <option value="50">50%+ Positive</option>
+                        <option value="70">70%+ Positive</option>
+                        <option value="80">80%+ Positive</option>
+                        <option value="90">90%+ Overwhelmingly</option>
+                    </select>
+                </div>
+                <div class="result-count" id="resultCount"></div>
             </div>
         </div>
     </div>

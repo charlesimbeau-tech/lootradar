@@ -15,6 +15,9 @@ const STORE_IDS = Object.keys(STORE_MAP);
 let allDeals = [];
 let currentFilter = 'all';
 let currentSort = 'discount';
+let maxPrice = 50;
+let minDiscount = 0;
+let minRating = 0;
 
 async function fetchDeals() {
     const loading = document.getElementById('loading');
@@ -22,7 +25,7 @@ async function fetchDeals() {
 
     try {
         const promises = STORE_IDS.map(storeID =>
-            fetch(`${CHEAPSHARK_API}/deals?storeID=${storeID}&upperPrice=50&pageSize=30&sortBy=Deal+Rating`)
+            fetch(`${CHEAPSHARK_API}/deals?storeID=${storeID}&upperPrice=60&pageSize=40&sortBy=Deal+Rating`)
                 .then(r => r.json())
                 .catch(() => [])
         );
@@ -37,8 +40,9 @@ async function fetchDeals() {
             dealID: deal.dealID,
             thumb: deal.thumb,
             steamAppID: deal.steamAppID,
-            metacriticScore: deal.metacriticScore || '—',
-            steamRatingPercent: deal.steamRatingPercent,
+            metacriticScore: parseInt(deal.metacriticScore) || 0,
+            steamRatingPercent: parseInt(deal.steamRatingPercent) || 0,
+            steamRatingCount: parseInt(deal.steamRatingCount) || 0,
             dealRating: parseFloat(deal.dealRating) || 0,
         }));
 
@@ -51,14 +55,7 @@ async function fetchDeals() {
         });
         allDeals = Object.values(seen);
 
-        // Update header stats
-        const totalDeals = allDeals.filter(d => d.savings > 0).length;
-        const bestDiscount = Math.max(...allDeals.map(d => d.savings));
-        const freeGames = allDeals.filter(d => d.salePrice === 0).length;
-
-        document.getElementById('totalDeals').textContent = totalDeals.toLocaleString();
-        document.getElementById('bestDiscount').textContent = `-${bestDiscount}%`;
-        document.getElementById('freeGames').textContent = freeGames;
+        updateStats();
 
         const now = new Date();
         document.getElementById('lastUpdated').textContent =
@@ -73,11 +70,29 @@ async function fetchDeals() {
     renderDeals();
 }
 
+function updateStats() {
+    const active = allDeals.filter(d => d.savings > 0);
+    const totalDeals = active.length;
+    const bestDiscount = Math.max(...allDeals.map(d => d.savings), 0);
+    const freeGames = allDeals.filter(d => d.salePrice === 0).length;
+
+    document.getElementById('totalDeals').textContent = totalDeals.toLocaleString();
+    document.getElementById('bestDiscount').textContent = `-${bestDiscount}%`;
+    document.getElementById('freeGames').textContent = freeGames;
+}
+
 function getThumbURL(deal) {
     if (deal.steamAppID && deal.steamAppID !== '0' && deal.steamAppID !== null) {
         return `https://cdn.cloudflare.steamstatic.com/steam/apps/${deal.steamAppID}/header.jpg`;
     }
     return deal.thumb || '';
+}
+
+function getRatingStars(percent) {
+    if (!percent || percent === 0) return '';
+    if (percent >= 90) return '🟢';
+    if (percent >= 70) return '🟡';
+    return '🔴';
 }
 
 function buildCard(deal) {
@@ -93,9 +108,23 @@ function buildCard(deal) {
         : `<span class="original-price">$${deal.normalPrice.toFixed(2)}</span>
            <span class="sale-price">$${deal.salePrice.toFixed(2)}</span>`;
 
-    const ratingHTML = deal.metacriticScore !== '—' && deal.metacriticScore > 0
-        ? `<span class="rating">⭐ ${deal.metacriticScore}</span>`
-        : '';
+    // Rating display
+    let ratingHTML = '';
+    if (deal.steamRatingPercent > 0) {
+        const dot = getRatingStars(deal.steamRatingPercent);
+        ratingHTML = `<span class="rating">${dot} ${deal.steamRatingPercent}%</span>`;
+    } else if (deal.metacriticScore > 0) {
+        ratingHTML = `<span class="rating">⭐ ${deal.metacriticScore}</span>`;
+    }
+
+    // Review count
+    let reviewsHTML = '';
+    if (deal.steamRatingCount > 0) {
+        const count = deal.steamRatingCount >= 1000
+            ? `${(deal.steamRatingCount / 1000).toFixed(1)}k`
+            : deal.steamRatingCount;
+        reviewsHTML = `<span class="reviews">${count} reviews</span>`;
+    }
 
     return `
         <div class="deal-card">
@@ -106,7 +135,10 @@ function buildCard(deal) {
             <div class="card-body">
                 <div class="card-meta">
                     <span class="store-tag store-${store.class}">${store.name}</span>
-                    ${ratingHTML}
+                    <div class="card-meta-right">
+                        ${ratingHTML}
+                        ${reviewsHTML}
+                    </div>
                 </div>
                 <div class="title">${deal.title}</div>
                 <div class="pricing">
@@ -120,28 +152,69 @@ function buildCard(deal) {
     `;
 }
 
+function applyFilters(deals) {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+    return deals.filter(d => {
+        const storeInfo = STORE_MAP[d.storeID];
+        if (!storeInfo) return false;
+        if (currentFilter !== 'all' && storeInfo.key !== currentFilter) return false;
+        if (searchTerm && !d.title.toLowerCase().includes(searchTerm)) return false;
+        if (d.savings <= 0) return false;
+        if (d.salePrice > maxPrice && maxPrice < 60) return false;
+        if (d.savings < minDiscount) return false;
+        if (minRating > 0 && d.steamRatingPercent < minRating && d.metacriticScore < minRating) return false;
+        return true;
+    });
+}
+
+function applySorting(deals) {
+    const sorted = [...deals];
+    switch (currentSort) {
+        case 'discount':
+            sorted.sort((a, b) => b.savings - a.savings);
+            break;
+        case 'price':
+            sorted.sort((a, b) => a.salePrice - b.salePrice);
+            break;
+        case 'price-high':
+            sorted.sort((a, b) => b.salePrice - a.salePrice);
+            break;
+        case 'rating':
+            sorted.sort((a, b) => {
+                const rA = a.steamRatingPercent || a.metacriticScore || 0;
+                const rB = b.steamRatingPercent || b.metacriticScore || 0;
+                return rB - rA;
+            });
+            break;
+        case 'popular':
+            sorted.sort((a, b) => b.steamRatingCount - a.steamRatingCount);
+            break;
+        case 'metacritic':
+            sorted.sort((a, b) => b.metacriticScore - a.metacriticScore);
+            break;
+        case 'name':
+            sorted.sort((a, b) => a.title.localeCompare(b.title));
+            break;
+    }
+    return sorted;
+}
+
 function renderDeals() {
     const featuredSection = document.getElementById('featuredSection');
     const featuredGrid = document.getElementById('featuredDeals');
     const allSection = document.getElementById('allSection');
     const allGrid = document.getElementById('deals');
     const noResults = document.getElementById('noResults');
+    const resultCount = document.getElementById('resultCount');
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
-    let filtered = allDeals.filter(d => {
-        const storeInfo = STORE_MAP[d.storeID];
-        if (!storeInfo) return false;
-        if (currentFilter !== 'all' && storeInfo.key !== currentFilter) return false;
-        if (searchTerm && !d.title.toLowerCase().includes(searchTerm)) return false;
-        return d.savings > 0;
-    });
+    let filtered = applyFilters(allDeals);
+    filtered = applySorting(filtered);
 
-    if (currentSort === 'discount') {
-        filtered.sort((a, b) => b.savings - a.savings);
-    } else if (currentSort === 'price') {
-        filtered.sort((a, b) => a.salePrice - b.salePrice);
-    } else if (currentSort === 'name') {
-        filtered.sort((a, b) => a.title.localeCompare(b.title));
+    // Update result count
+    if (resultCount) {
+        resultCount.textContent = `${filtered.length} deal${filtered.length !== 1 ? 's' : ''} found`;
     }
 
     if (filtered.length === 0) {
@@ -153,8 +226,8 @@ function renderDeals() {
 
     noResults.style.display = 'none';
 
-    // Split: featured (free games + 90%+ off) vs rest
-    if (!searchTerm && currentSort === 'discount') {
+    // Split: featured (free games + 90%+ off) vs rest — only on default sort with no search
+    if (!searchTerm && currentSort === 'discount' && minDiscount === 0 && minRating === 0) {
         const featured = filtered.filter(d => d.salePrice === 0 || d.savings >= 90);
         const rest = filtered.filter(d => d.salePrice !== 0 && d.savings < 90);
 
@@ -174,6 +247,8 @@ function renderDeals() {
     }
 }
 
+// === Event Listeners ===
+
 // Debounced search
 let searchTimeout;
 document.getElementById('searchInput').addEventListener('input', () => {
@@ -181,6 +256,7 @@ document.getElementById('searchInput').addEventListener('input', () => {
     searchTimeout = setTimeout(renderDeals, 200);
 });
 
+// Store filters
 document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -190,8 +266,29 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     });
 });
 
+// Sort
 document.getElementById('sortSelect').addEventListener('change', (e) => {
     currentSort = e.target.value;
+    renderDeals();
+});
+
+// Price range
+document.getElementById('priceRange').addEventListener('input', (e) => {
+    maxPrice = parseInt(e.target.value);
+    document.getElementById('priceValue').textContent = maxPrice >= 60 ? 'Any' : `$${maxPrice}`;
+    renderDeals();
+});
+
+// Min discount
+document.getElementById('discountRange').addEventListener('input', (e) => {
+    minDiscount = parseInt(e.target.value);
+    document.getElementById('discountValue').textContent = minDiscount === 0 ? 'Any' : `${minDiscount}%+`;
+    renderDeals();
+});
+
+// Min rating
+document.getElementById('ratingSelect').addEventListener('change', (e) => {
+    minRating = parseInt(e.target.value);
     renderDeals();
 });
 
