@@ -44,8 +44,8 @@
         </div>
     </header>
 
-    <main>
-        <div class="controls">
+    <div class="controls-bar">
+        <div class="controls-bar-inner">
             <div class="search-wrapper">
                 <span class="search-icon">🔍</span>
                 <input type="text" id="searchInput" placeholder="Search thousands of deals..." autocomplete="off">
@@ -67,13 +67,23 @@
                 </div>
             </div>
         </div>
+    </div>
 
+    <main>
         <div id="loading" class="loading">
             <div class="spinner"></div>
             <p>Scanning stores for the best deals...</p>
         </div>
 
-        <div id="deals" class="deals-grid"></div>
+        <div id="featuredSection" class="featured-section" style="display:none">
+            <div class="section-title">🔥 Featured Deals</div>
+            <div id="featuredDeals" class="deals-grid"></div>
+        </div>
+
+        <div id="allSection" class="featured-section" style="display:none">
+            <div class="section-title">🎮 All Deals</div>
+            <div id="deals" class="deals-grid"></div>
+        </div>
 
         <div id="noResults" class="no-results" style="display:none">
             <p>😔 No deals matched your search. Try different keywords or filters.</p>
@@ -83,7 +93,7 @@
     </main>
 
     <footer>
-        <p>LootRadar &copy; 2025 — Deals refresh daily. Prices sourced via CheapShark. Affiliate links help keep the site free.</p>
+        <p>LootRadar &copy; 2025 — Deals refresh daily. Prices sourced via CheapShark.<br>Affiliate links help keep the site free.</p>
     </footer>
 
     <script src="app.js"></script>
