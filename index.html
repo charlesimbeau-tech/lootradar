@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LootRadar — Best Game Deals, Updated Daily</title>
+    <meta name="description" content="Find the best PC game deals across Steam, Epic, GOG, and Humble Bundle. Updated daily. Never overpay for games again.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="logo">🎯 LootRadar</div>
+            <p class="tagline">Best game deals. Updated daily. Never overpay.</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search games..." autocomplete="off">
+            </div>
+            <div class="filters">
+                <button class="filter-btn active" data-store="all">All Stores</button>
+                <button class="filter-btn" data-store="steam">Steam</button>
+                <button class="filter-btn" data-store="epic">Epic</button>
+                <button class="filter-btn" data-store="gog">GOG</button>
+                <button class="filter-btn" data-store="humble">Humble</button>
+            </div>
+            <div class="sort-controls">
+                <select id="sortSelect">
+                    <option value="discount">Biggest Discount</option>
+                    <option value="price">Lowest Price</option>
+                    <option value="name">A-Z</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Scanning for deals...</p>
+        </div>
+
+        <div id="deals" class="deals-grid"></div>
+
+        <div id="noResults" class="no-results" style="display:none">
+            <p>😔 No deals found. Try a different search or filter.</p>
+        </div>
+
+        <div id="lastUpdated" class="last-updated"></div>
+    </main>
+
+    <footer>
+        <p>LootRadar &copy; 2025 — Prices update daily. Affiliate links help keep the site running.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
