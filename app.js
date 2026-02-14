@@ -1,16 +1,15 @@
-// LootRadar - Game Deal Aggregator
+// LootRadar - Professional Game Deal Aggregator
 // Uses CheapShark API (free, no key needed)
 
 const CHEAPSHARK_API = 'https://www.cheapshark.com/api/1.0';
 
 const STORE_MAP = {
-    '1': { name: 'Steam', class: 'steam', key: 'steam' },
-    '25': { name: 'Epic', class: 'epic', key: 'epic' },
-    '7': { name: 'GOG', class: 'gog', key: 'gog' },
+    '1':  { name: 'Steam',  class: 'steam',  key: 'steam' },
+    '25': { name: 'Epic',   class: 'epic',   key: 'epic' },
+    '7':  { name: 'GOG',    class: 'gog',    key: 'gog' },
     '11': { name: 'Humble', class: 'humble', key: 'humble' },
 };
 
-// Store IDs we care about
 const STORE_IDS = Object.keys(STORE_MAP);
 
 let allDeals = [];
@@ -24,9 +23,8 @@ async function fetchDeals() {
     dealsGrid.innerHTML = '';
 
     try {
-        // Fetch deals from each store
         const promises = STORE_IDS.map(storeID =>
-            fetch(`${CHEAPSHARK_API}/deals?storeID=${storeID}&upperPrice=50&pageSize=20&sortBy=Deal+Rating`)
+            fetch(`${CHEAPSHARK_API}/deals?storeID=${storeID}&upperPrice=50&pageSize=30&sortBy=Deal+Rating`)
                 .then(r => r.json())
                 .catch(() => [])
         );
@@ -40,29 +38,46 @@ async function fetchDeals() {
             storeID: deal.storeID,
             dealID: deal.dealID,
             thumb: deal.thumb,
+            steamAppID: deal.steamAppID,
             metacriticScore: deal.metacriticScore,
             steamRatingPercent: deal.steamRatingPercent,
         }));
 
         // Dedupe by title (keep best deal)
         const seen = {};
-        allDeals = allDeals.filter(d => {
+        allDeals.forEach(d => {
             if (!seen[d.title] || d.savings > seen[d.title].savings) {
                 seen[d.title] = d;
-                return true;
             }
-            return false;
         });
         allDeals = Object.values(seen);
 
-        document.getElementById('lastUpdated').textContent = `Last updated: ${new Date().toLocaleString()}`;
+        // Update header stats
+        const totalDeals = allDeals.filter(d => d.savings > 0).length;
+        const bestDiscount = Math.max(...allDeals.map(d => d.savings));
+        const freeGames = allDeals.filter(d => d.salePrice === 0).length;
+
+        document.getElementById('totalDeals').textContent = totalDeals.toLocaleString();
+        document.getElementById('bestDiscount').textContent = `-${bestDiscount}%`;
+        document.getElementById('freeGames').textContent = freeGames;
+
+        const now = new Date();
+        document.getElementById('lastUpdated').textContent = `Last updated: ${now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at ${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
     } catch (err) {
         console.error('Failed to fetch deals:', err);
-        dealsGrid.innerHTML = '<p style="text-align:center;color:#666;padding:2rem;">Failed to load deals. Try refreshing.</p>';
+        dealsGrid.innerHTML = '<p class="no-results">Failed to load deals. Please try refreshing the page.</p>';
     }
 
     loading.style.display = 'none';
     renderDeals();
+}
+
+function getThumbURL(deal) {
+    // Try Steam header image first (higher quality)
+    if (deal.steamAppID && deal.steamAppID !== '0' && deal.steamAppID !== null) {
+        return `https://cdn.cloudflare.steamstatic.com/steam/apps/${deal.steamAppID}/header.jpg`;
+    }
+    return deal.thumb || '';
 }
 
 function renderDeals() {
@@ -78,7 +93,6 @@ function renderDeals() {
         return d.savings > 0;
     });
 
-    // Sort
     if (currentSort === 'discount') {
         filtered.sort((a, b) => b.savings - a.savings);
     } else if (currentSort === 'price') {
@@ -97,30 +111,40 @@ function renderDeals() {
 
     grid.innerHTML = filtered.map(deal => {
         const store = STORE_MAP[deal.storeID] || { name: 'Unknown', class: 'steam' };
+        const thumbURL = getThumbURL(deal);
+
         const priceHTML = deal.salePrice === 0
-            ? '<span class="free-tag">FREE</span>'
+            ? '<span class="free-tag">Free</span>'
             : `<span class="original-price">$${deal.normalPrice.toFixed(2)}</span>
                <span class="sale-price">$${deal.salePrice.toFixed(2)}</span>`;
 
         return `
             <div class="deal-card">
-                <img class="thumb" src="${deal.thumb}" alt="${deal.title}" loading="lazy" onerror="this.style.display='none'">
-                <span class="store-tag store-${store.class}">${store.name}</span>
-                <div class="title">${deal.title}</div>
-                <div class="pricing">
-                    ${priceHTML}
+                <div class="thumb-wrapper">
+                    <img class="thumb" src="${thumbURL}" alt="${deal.title}" loading="lazy" onerror="this.parentElement.style.display='none'">
                     <span class="discount-badge">-${deal.savings}%</span>
                 </div>
-                <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener">
-                    Get Deal →
-                </a>
+                <div class="card-body">
+                    <span class="store-tag store-${store.class}">${store.name}</span>
+                    <div class="title">${deal.title}</div>
+                    <div class="pricing">
+                        ${priceHTML}
+                    </div>
+                    <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer">
+                        View Deal →
+                    </a>
+                </div>
             </div>
         `;
     }).join('');
 }
 
-// Event listeners
-document.getElementById('searchInput').addEventListener('input', renderDeals);
+// Debounced search
+let searchTimeout;
+document.getElementById('searchInput').addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(renderDeals, 200);
+});
 
 document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -136,5 +160,5 @@ document.getElementById('sortSelect').addEventListener('change', (e) => {
     renderDeals();
 });
 
-// Go
+// Launch
 fetchDeals();

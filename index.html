@@ -3,57 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LootRadar — Best Game Deals, Updated Daily</title>
-    <meta name="description" content="Find the best PC game deals across Steam, Epic, GOG, and Humble Bundle. Updated daily. Never overpay for games again.">
+    <title>LootRadar — Best PC Game Deals, Updated Daily</title>
+    <meta name="description" content="Find the best PC game deals across Steam, Epic Games Store, GOG, and Humble Bundle. Updated daily. Price tracking and alerts. Never overpay for games again.">
+    <meta name="keywords" content="game deals, steam sales, epic free games, gog deals, humble bundle, pc game discounts, cheap games">
+    <meta property="og:title" content="LootRadar — Best PC Game Deals">
+    <meta property="og:description" content="Live game deal aggregator. Steam, Epic, GOG, Humble Bundle deals updated daily.">
+    <meta property="og:type" content="website">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
 </head>
 <body>
     <header>
         <div class="header-inner">
-            <div class="logo">🎯 LootRadar</div>
-            <p class="tagline">Best game deals. Updated daily. Never overpay.</p>
+            <div class="header-brand">
+                <div class="logo-icon">🎯</div>
+                <div class="logo-text">Loot<span>Radar</span></div>
+            </div>
+            <div class="header-stats">
+                <div class="stat">
+                    <div class="stat-value" id="totalDeals">—</div>
+                    <div class="stat-label">Live Deals</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="bestDiscount">—</div>
+                    <div class="stat-label">Best Discount</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="freeGames">—</div>
+                    <div class="stat-label">Free Games</div>
+                </div>
+            </div>
         </div>
     </header>
 
     <main>
         <div class="controls">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search games..." autocomplete="off">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search thousands of deals..." autocomplete="off">
             </div>
-            <div class="filters">
-                <button class="filter-btn active" data-store="all">All Stores</button>
-                <button class="filter-btn" data-store="steam">Steam</button>
-                <button class="filter-btn" data-store="epic">Epic</button>
-                <button class="filter-btn" data-store="gog">GOG</button>
-                <button class="filter-btn" data-store="humble">Humble</button>
-            </div>
-            <div class="sort-controls">
-                <select id="sortSelect">
-                    <option value="discount">Biggest Discount</option>
-                    <option value="price">Lowest Price</option>
-                    <option value="name">A-Z</option>
-                </select>
+            <div class="controls-row">
+                <div class="filters">
+                    <button class="filter-btn active" data-store="all">All Stores</button>
+                    <button class="filter-btn" data-store="steam">🎮 Steam</button>
+                    <button class="filter-btn" data-store="epic">⚡ Epic</button>
+                    <button class="filter-btn" data-store="gog">🟣 GOG</button>
+                    <button class="filter-btn" data-store="humble">🟥 Humble</button>
+                </div>
+                <div class="sort-controls">
+                    <select id="sortSelect">
+                        <option value="discount">🔥 Biggest Discount</option>
+                        <option value="price">💰 Lowest Price</option>
+                        <option value="name">🔤 A — Z</option>
+                    </select>
+                </div>
             </div>
         </div>
 
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            <p>Scanning for deals...</p>
+            <p>Scanning stores for the best deals...</p>
         </div>
 
         <div id="deals" class="deals-grid"></div>
 
         <div id="noResults" class="no-results" style="display:none">
-            <p>😔 No deals found. Try a different search or filter.</p>
+            <p>😔 No deals matched your search. Try different keywords or filters.</p>
         </div>
 
         <div id="lastUpdated" class="last-updated"></div>
     </main>
 
     <footer>
-        <p>LootRadar &copy; 2025 — Prices update daily. Affiliate links help keep the site running.</p>
+        <p>LootRadar &copy; 2025 — Deals refresh daily. Prices sourced via CheapShark. Affiliate links help keep the site free.</p>
     </footer>
 
     <script src="app.js"></script>
