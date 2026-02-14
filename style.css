@@ -417,21 +417,61 @@ footer a {
 }
 
 /* ===== RESPONSIVE ===== */
+
+/* Tablet */
 @media (max-width: 768px) {
     .header-inner {
         flex-direction: column;
         text-align: center;
-        padding: 2rem 1.2rem;
+        padding: 1.8rem 1rem;
+        gap: 1rem;
     }
-    .header-stats { justify-content: center; }
+    .header-brand { justify-content: center; }
+    .header-stats { justify-content: center; gap: 1.5rem; }
     .logo-text { font-size: 1.5rem; }
-    main { padding: 1.2rem; }
-    .deals-grid { grid-template-columns: 1fr; }
-    .controls-row { flex-direction: column; align-items: stretch; }
+    .logo-icon { width: 40px; height: 40px; font-size: 1.2rem; border-radius: 12px; }
+    main { padding: 1rem; }
+    .deals-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+    .controls-row { flex-direction: column; align-items: stretch; gap: 0.6rem; }
     .filters { justify-content: center; }
+    .sort-controls { text-align: center; }
+    .sort-controls select { width: 100%; }
+    .search-wrapper input { padding: 0.85rem 1rem 0.85rem 2.8rem; font-size: 1rem; }
 }
 
-@media (max-width: 400px) {
-    .deals-grid { grid-template-columns: 1fr; }
+/* Mobile */
+@media (max-width: 480px) {
+    .header-inner { padding: 1.5rem 0.8rem; }
+    .logo-text { font-size: 1.3rem; }
+    .stat-value { font-size: 1.1rem; }
+    .stat-label { font-size: 0.65rem; }
+    main { padding: 0.8rem; }
+    .deals-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+    .filter-btn { padding: 0.5rem 0.9rem; font-size: 0.75rem; }
+    .filters { gap: 0.3rem; }
+    .deal-card .card-body { padding: 1rem; }
+    .deal-card .title { font-size: 0.95rem; }
     .deal-card .sale-price { font-size: 1.2rem; }
+    .deal-card .free-tag { font-size: 1.2rem; }
+    .deal-card .deal-link { padding: 0.85rem; font-size: 0.9rem; border-radius: 12px; }
+    .deal-card .discount-badge { top: 0.6rem; right: 0.6rem; font-size: 0.75rem; padding: 0.25rem 0.6rem; }
+    footer { padding: 2rem 1rem; margin-top: 2rem; }
+}
+
+/* Small phones */
+@media (max-width: 360px) {
+    .header-stats { gap: 1rem; }
+    .logo-text { font-size: 1.15rem; }
+    .filters { flex-wrap: wrap; justify-content: center; }
+    .filter-btn { flex: 0 0 auto; }
+}
+
+/* Touch improvements */
+@media (hover: none) {
+    .deal-card:hover { transform: none; }
+    .deal-card:hover .thumb { transform: none; }
+    .deal-card:active { transform: scale(0.98); }
+    .deal-link:hover { transform: none; }
+    .deal-link:active { opacity: 0.85; }
+    .filter-btn { -webkit-tap-highlight-color: transparent; }
 }
