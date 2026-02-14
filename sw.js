@@ -1,10 +1,14 @@
-const CACHE_NAME = 'lootradar-v1';
+const CACHE_NAME = 'lootradar-v2';
 const STATIC_ASSETS = [
-    '/lootradar/',
-    '/lootradar/index.html',
-    '/lootradar/style.css',
-    '/lootradar/app.js',
-    '/lootradar/manifest.json'
+    '/',
+    '/index.html',
+    '/style.css',
+    '/app.js',
+    '/manifest.json',
+    '/games.html',
+    '/blog.html',
+    '/robots.txt',
+    '/sitemap.xml'
 ];
 
 // Install — cache static assets

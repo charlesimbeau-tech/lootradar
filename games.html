@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Deals & Price Comparison — LootRadar</title>
+    <meta name="description" content="Find the best price for any PC game. Compare deals across Steam, Epic Games Store, GOG, and Humble Bundle. Updated daily with the lowest prices.">
+    <meta name="keywords" content="game price comparison, best game deals, cheap PC games, steam deals, epic deals, gog deals">
+    <link rel="canonical" href="https://thelootradar.com/games.html">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Game Deals & Price Comparison — LootRadar">
+    <meta property="og:description" content="Compare PC game prices across all major stores. Find the lowest price for any game.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://thelootradar.com/games.html">
+    <meta property="og:site_name" content="LootRadar">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Game Deals & Price Comparison — LootRadar">
+    <meta name="twitter:description" content="Compare PC game prices across all major stores. Find the lowest price for any game.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#30a9de">
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="https://thelootradar.com/" class="header-brand" style="text-decoration:none;color:inherit">
+                <div class="logo-icon">🎯</div>
+                <div class="logo-text">Loot<span>Radar</span></div>
+            </a>
+            <nav class="header-nav">
+                <a href="https://thelootradar.com/">Home</a>
+                <a href="https://thelootradar.com/games.html" class="active">Games</a>
+                <a href="https://thelootradar.com/blog.html">Blog</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="controls-bar">
+        <div class="controls-bar-inner">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="gameSearch" placeholder="Search for a game to see the best price..." autocomplete="off">
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <div id="loading" class="loading" style="display:none">
+            <div class="spinner"></div>
+            <p>Finding the best deals...</p>
+        </div>
+
+        <div id="gameResults" class="featured-section" style="display:none">
+            <div class="section-title">🎮 Search Results</div>
+            <div id="gameList"></div>
+        </div>
+
+        <div id="topDeals" class="featured-section">
+            <div class="section-title">🔥 Top Game Deals Right Now</div>
+            <div id="topDealsList" class="deals-grid"></div>
+        </div>
+
+        <section id="gameDetail" class="game-detail-section" style="display:none"></section>
+    </main>
+
+    <footer>
+        <p>LootRadar &copy; 2025 — Deals refresh daily. Prices sourced via CheapShark.<br>
+        <a href="https://thelootradar.com/">Home</a> · <a href="https://thelootradar.com/games.html">Games</a> · <a href="https://thelootradar.com/blog.html">Blog</a></p>
+    </footer>
+
+    <script>
+    const API = 'https://www.cheapshark.com/api/1.0';
+    const STORES = {
+        '1': 'Steam', '25': 'Epic Games Store', '7': 'GOG', '11': 'Humble Bundle',
+        '2': 'GamersGate', '3': 'GreenManGaming', '8': 'Origin', '13': 'Uplay',
+        '15': 'Fanatical', '21': 'WinGameStore', '23': 'GameBillet', '24': 'Voidu',
+        '27': 'Games Planet', '28': 'Games Load', '29': 'DLGamer', '30': 'Noctre',
+        '31': 'AllYouPlay', '33': 'DreamGame', '34': 'Direct2Drive'
+    };
+
+    let searchTimeout;
+    const searchInput = document.getElementById('gameSearch');
+    const gameResults = document.getElementById('gameResults');
+    const gameList = document.getElementById('gameList');
+    const gameDetail = document.getElementById('gameDetail');
+
+    // Handle hash-based game navigation
+    function getGameIDFromHash() {
+        const hash = window.location.hash;
+        if (hash.startsWith('#game-')) return hash.replace('#game-', '');
+        return null;
+    }
+
+    // Search games
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(async () => {
+            const q = searchInput.value.trim();
+            if (q.length < 2) { gameResults.style.display = 'none'; return; }
+
+            const res = await fetch(`${API}/games?title=${encodeURIComponent(q)}&limit=20`);
+            const games = await res.json();
+
+            if (!games.length) {
+                gameResults.style.display = 'block';
+                gameList.innerHTML = '<p style="padding:1rem;color:#8a94a6">No games found. Try a different search term.</p>';
+                return;
+            }
+
+            gameResults.style.display = 'block';
+            gameList.innerHTML = '<div class="deals-grid">' + games.map(g => {
+                const cheapest = parseFloat(g.cheapest);
+                return `
+                    <div class="deal-card" style="cursor:pointer" onclick="showGameDetail('${g.gameID}')">
+                        <div class="thumb-wrapper">
+                            <img class="thumb" src="${g.thumb}" alt="${g.external} best price" loading="lazy"
+                                onerror="this.parentElement.style.background='linear-gradient(135deg,#111720,#0c1015)'">
+                        </div>
+                        <div class="card-body">
+                            <div class="title">${g.external}</div>
+                            <div class="pricing">
+                                <span class="sale-price">${cheapest === 0 ? '🎁 FREE' : '$' + cheapest.toFixed(2)}</span>
+                                <span class="rating" style="font-size:0.8rem">cheapest ever</span>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('') + '</div>';
+        }, 300);
+    });
+
+    // Show game detail with all deals
+    async function showGameDetail(gameID) {
+        window.location.hash = `game-${gameID}`;
+        gameDetail.style.display = 'block';
+        gameDetail.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading game details...</p></div>';
+        gameDetail.scrollIntoView({ behavior: 'smooth' });
+
+        try {
+            const res = await fetch(`${API}/games?id=${gameID}`);
+            const data = await res.json();
+            const info = data.info;
+            const deals = data.deals || [];
+
+            // Build structured data for this game
+            const jsonLd = {
+                "@context": "https://schema.org",
+                "@type": "Product",
+                "name": info.title,
+                "image": info.thumb,
+                "description": `Compare prices for ${info.title} across ${deals.length} stores. Find the best deal now.`,
+                "brand": { "@type": "Brand", "name": "PC Game" },
+                "offers": deals.map(d => ({
+                    "@type": "Offer",
+                    "price": d.price,
+                    "priceCurrency": "USD",
+                    "url": `https://www.cheapshark.com/redirect?dealID=${d.dealID}`,
+                    "seller": { "@type": "Organization", "name": STORES[d.storeID] || 'Unknown Store' },
+                    "availability": "https://schema.org/InStock"
+                }))
+            };
+
+            // Inject structured data
+            let scriptTag = document.getElementById('game-jsonld');
+            if (!scriptTag) {
+                scriptTag = document.createElement('script');
+                scriptTag.id = 'game-jsonld';
+                scriptTag.type = 'application/ld+json';
+                document.head.appendChild(scriptTag);
+            }
+            scriptTag.textContent = JSON.stringify(jsonLd);
+
+            // Update page title and meta for SEO
+            document.title = `${info.title} — Best Price & Deals | LootRadar`;
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if (metaDesc) metaDesc.content = `Find the best price for ${info.title}. Compare ${deals.length} deals across Steam, Epic, GOG and more. Current lowest price: $${deals.length ? Math.min(...deals.map(d => parseFloat(d.price))).toFixed(2) : 'N/A'}.`;
+
+            const cheapest = deals.length ? Math.min(...deals.map(d => parseFloat(d.price))) : null;
+
+            gameDetail.innerHTML = `
+                <div class="game-detail-header">
+                    <img src="${info.thumb}" alt="${info.title}" style="max-width:300px;border-radius:8px;margin-bottom:1rem">
+                    <h1 style="color:#e8ecf1;font-size:1.8rem;margin:0 0 0.5rem">${info.title}</h1>
+                    <p style="color:#8a94a6;font-size:1rem;margin:0 0 1rem">
+                        ${cheapest !== null ? `Best price right now: <strong style="color:#4cda64;font-size:1.3rem">$${cheapest.toFixed(2)}</strong>` : 'No active deals'}
+                        ${cheapest === 0 ? ' — <span style="color:#ffd700">FREE!</span>' : ''}
+                    </p>
+                    <p style="color:#6b7588;font-size:0.85rem">Compare ${deals.length} deal${deals.length !== 1 ? 's' : ''} across all major PC game stores</p>
+                </div>
+
+                <h2 style="color:#e8ecf1;font-size:1.2rem;margin:1.5rem 0 1rem">All Available Deals</h2>
+                <div class="deals-grid">
+                    ${deals.map(d => {
+                        const store = STORES[d.storeID] || 'Unknown';
+                        const price = parseFloat(d.price);
+                        const retail = parseFloat(d.retailPrice);
+                        const savings = retail > 0 ? Math.round((1 - price / retail) * 100) : 0;
+                        return `
+                            <div class="deal-card">
+                                <div class="card-body">
+                                    <div class="card-meta">
+                                        <span class="store-tag">${store}</span>
+                                        ${savings > 0 ? `<span class="discount-badge">-${savings}%</span>` : ''}
+                                    </div>
+                                    <div class="pricing" style="margin:0.5rem 0">
+                                        ${retail > price ? `<span class="original-price">$${retail.toFixed(2)}</span>` : ''}
+                                        <span class="sale-price">${price === 0 ? '🎁 FREE' : '$' + price.toFixed(2)}</span>
+                                    </div>
+                                    <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer">
+                                        Buy on ${store} →
+                                    </a>
+                                </div>
+                            </div>`;
+                    }).join('')}
+                </div>
+
+                <div style="margin-top:2rem;padding:1rem;background:#111720;border-radius:8px;color:#8a94a6;font-size:0.85rem">
+                    <h3 style="color:#e8ecf1;font-size:1rem;margin:0 0 0.5rem">About ${info.title}</h3>
+                    <p>Looking for the best price on <strong>${info.title}</strong>? LootRadar compares prices across ${deals.length} stores including Steam, Epic Games Store, GOG, Humble Bundle and more. We update prices daily so you always get the lowest price. Current cheapest price is <strong>${cheapest !== null ? '$' + cheapest.toFixed(2) : 'unavailable'}</strong>.</p>
+                </div>
+            `;
+        } catch (err) {
+            gameDetail.innerHTML = '<p style="padding:2rem;color:#ff6b6b;text-align:center">Failed to load game details. Please try again.</p>';
+        }
+    }
+
+    // Load top deals on page load
+    async function loadTopDeals() {
+        try {
+            const res = await fetch(`${API}/deals?sortBy=Deal+Rating&upperPrice=60&pageSize=24`);
+            const deals = await res.json();
+            document.getElementById('topDealsList').innerHTML = deals.map(d => {
+                const savings = Math.round(parseFloat(d.savings));
+                const sale = parseFloat(d.salePrice);
+                const normal = parseFloat(d.normalPrice);
+                const store = STORES[d.storeID] || 'Unknown';
+                const thumb = d.steamAppID ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${d.steamAppID}/header.jpg` : d.thumb;
+                return `
+                    <div class="deal-card">
+                        <div class="thumb-wrapper">
+                            <img class="thumb" src="${thumb}" alt="${d.title} best price deal" loading="lazy"
+                                onerror="this.parentElement.style.background='linear-gradient(135deg,#111720,#0c1015)'">
+                            <span class="discount-badge${sale === 0 ? ' free' : ''}">${sale === 0 ? 'FREE' : '-' + savings + '%'}</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-meta"><span class="store-tag">${store}</span></div>
+                            <div class="title">${d.title}</div>
+                            <div class="pricing">
+                                ${sale === 0 ? '<span class="free-tag">🎁 Free</span>' :
+                                    `<span class="original-price">$${normal.toFixed(2)}</span><span class="sale-price">$${sale.toFixed(2)}</span>`}
+                            </div>
+                            <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer">View Deal →</a>
+                        </div>
+                    </div>`;
+            }).join('');
+        } catch(e) { console.error(e); }
+    }
+
+    // Init
+    loadTopDeals();
+    const hashGameID = getGameIDFromHash();
+    if (hashGameID) showGameDetail(hashGameID);
+    window.addEventListener('hashchange', () => {
+        const id = getGameIDFromHash();
+        if (id) showGameDetail(id);
+    });
+    </script>
+</body>
+</html>
