@@ -1,0 +1,19 @@
+{
+    "name": "LootRadar — Best Game Deals",
+    "short_name": "LootRadar",
+    "description": "Find the best PC game deals across Steam, Epic, GOG, and Humble Bundle. Updated daily.",
+    "start_url": "/lootradar/",
+    "scope": "/lootradar/",
+    "display": "standalone",
+    "background_color": "#06080d",
+    "theme_color": "#30a9de",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "icons/icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
