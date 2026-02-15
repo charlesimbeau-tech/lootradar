@@ -15,7 +15,7 @@ const STORE_IDS = Object.keys(STORE_MAP);
 let allDeals = [];
 let currentFilter = 'all';
 let currentSort = 'discount';
-let maxPrice = 50;
+let maxPrice = 60;
 let minDiscount = 0;
 let minRating = 0;
 
