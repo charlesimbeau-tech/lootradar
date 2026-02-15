@@ -83,6 +83,9 @@ header::before {
     align-items: center;
     justify-content: center;
     font-size: 1.3rem;
+    line-height: 1;
+    text-align: center;
+    padding: 0;
     box-shadow: 0 4px 16px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.15);
 }
 
@@ -639,6 +642,14 @@ footer a {
 @media (max-width: 360px) {
     .header-stats { gap: 1rem; }
     .filters { flex-wrap: wrap; justify-content: center; }
+}
+
+.store-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 2px;
+    opacity: 0.9;
 }
 
 /* SEO Content Section */
