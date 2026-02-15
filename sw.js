@@ -1,17 +1,14 @@
-const CACHE_NAME = 'lootradar-v2';
+const CACHE_NAME = 'lootradar-v3';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
     '/style.css',
     '/app.js',
-    '/manifest.json',
-    '/games.html',
-    '/blog.html',
-    '/robots.txt',
-    '/sitemap.xml'
+    '/icons/logo.svg',
+    '/manifest.json'
 ];
 
-// Install — cache static assets
+// Install — cache static assets, skip waiting immediately
 self.addEventListener('install', e => {
     e.waitUntil(
         caches.open(CACHE_NAME)
@@ -20,7 +17,7 @@ self.addEventListener('install', e => {
     );
 });
 
-// Activate — clean old caches
+// Activate — delete ALL old caches
 self.addEventListener('activate', e => {
     e.waitUntil(
         caches.keys().then(keys =>
@@ -29,27 +26,18 @@ self.addEventListener('activate', e => {
     );
 });
 
-// Fetch — network first for API, cache first for static
+// Fetch — network first for everything, cache as fallback
 self.addEventListener('fetch', e => {
-    const url = new URL(e.request.url);
-
-    // API calls — always network
-    if (url.hostname === 'www.cheapshark.com' || url.hostname === 'cdn.cloudflare.steamstatic.com') {
-        e.respondWith(
-            fetch(e.request).catch(() => caches.match(e.request))
-        );
-        return;
-    }
-
-    // Static assets — cache first, fallback to network
     e.respondWith(
-        caches.match(e.request).then(cached => {
-            const fetched = fetch(e.request).then(response => {
-                const clone = response.clone();
-                caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+        fetch(e.request)
+            .then(response => {
+                // Cache successful GET responses
+                if (e.request.method === 'GET' && response.status === 200) {
+                    const clone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+                }
                 return response;
-            });
-            return cached || fetched;
-        })
+            })
+            .catch(() => caches.match(e.request))
     );
 });
