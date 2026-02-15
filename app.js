@@ -74,13 +74,13 @@ function updateStats() {
     const active = allDeals.filter(d => d.savings > 0);
     const totalDeals = active.length;
     const bestDiscount = Math.max(...allDeals.map(d => d.savings), 0);
-    const lowestPrice = allDeals.length > 0
-        ? Math.min(...allDeals.filter(d => d.salePrice > 0).map(d => d.salePrice))
-        : 0;
+    const hasFree = allDeals.some(d => d.salePrice === 0);
+    const paidDeals = allDeals.filter(d => d.salePrice > 0);
+    const lowestPrice = paidDeals.length > 0 ? Math.min(...paidDeals.map(d => d.salePrice)) : 0;
 
     document.getElementById('totalDeals').textContent = totalDeals.toLocaleString();
     document.getElementById('bestDiscount').textContent = `-${bestDiscount}%`;
-    document.getElementById('lowestPrice').textContent = lowestPrice > 0 ? `$${lowestPrice.toFixed(2)}` : 'Free';
+    document.getElementById('lowestPrice').textContent = hasFree ? 'Free!' : `$${lowestPrice.toFixed(2)}`;
 }
 
 function getThumbURL(deal) {
