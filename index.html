@@ -4,17 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LootRadar — Best PC Game Deals, Updated Daily</title>
-    <meta name="description" content="Find the best PC game deals across Steam, Epic Games Store, GOG, and Humble Bundle. Updated daily. Price tracking and alerts. Never overpay for games again.">
+    <meta name="description" content="Find the best PC game deals across Steam, Epic Games Store, GOG, and Humble Bundle. Updated daily with price tracking. Never overpay for games again.">
     <meta name="keywords" content="game deals, steam sales, epic free games, gog deals, humble bundle, pc game discounts, cheap games">
     <link rel="canonical" href="https://thelootradar.com/">
 
     <!-- Open Graph -->
     <meta property="og:title" content="LootRadar — Best PC Game Deals, Updated Daily">
-    <meta property="og:description" content="Live game deal aggregator. Compare prices across Steam, Epic, GOG, Humble Bundle and more. Updated daily.">
+    <meta property="og:description" content="Live game deal aggregator. Compare prices across Steam, Epic, GOG, Humble Bundle and more.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://thelootradar.com/">
     <meta property="og:site_name" content="LootRadar">
-    <meta property="og:locale" content="en_US">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
@@ -28,23 +27,12 @@
         "@type": "WebSite",
         "name": "LootRadar",
         "url": "https://thelootradar.com",
-        "description": "Find the best PC game deals across Steam, Epic Games Store, GOG, and Humble Bundle. Updated daily.",
+        "description": "Find the best PC game deals across Steam, Epic Games Store, GOG, and Humble Bundle.",
         "potentialAction": {
             "@type": "SearchAction",
-            "target": "https://thelootradar.com/games.html?q={search_term_string}",
+            "target": "https://thelootradar.com/?q={search_term_string}",
             "query-input": "required name=search_term_string"
         }
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        "name": "Best PC Game Deals",
-        "description": "Top PC game deals updated daily across all major stores",
-        "url": "https://thelootradar.com",
-        "numberOfItems": 100,
-        "itemListOrder": "https://schema.org/ItemListOrderDescending"
     }
     </script>
 
@@ -56,68 +44,81 @@
     <link rel="apple-touch-icon" href="icons/icon.svg">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#30a9de">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
-    <header>
+
+    <!-- Header -->
+    <header class="header">
         <div class="header-inner">
-            <div class="header-brand">
-                <div class="logo-icon">🎯</div>
-                <div class="logo-text">Loot<span>Radar</span></div>
+            <div class="brand">
+                <div class="logo">🎯</div>
+                <div class="brand-name">Loot<span>Radar</span></div>
             </div>
-            <div class="header-stats">
+            <div class="stats">
                 <div class="stat">
-                    <div class="stat-value" id="totalDeals">—</div>
-                    <div class="stat-label">Live Deals</div>
+                    <div class="stat-val" id="statDeals">—</div>
+                    <div class="stat-lbl">Live Deals</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value" id="bestDiscount">—</div>
-                    <div class="stat-label">Best Discount</div>
+                    <div class="stat-val" id="statDiscount">—</div>
+                    <div class="stat-lbl">Best Discount</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value" id="lowestPrice">—</div>
-                    <div class="stat-label">Lowest Price</div>
+                    <div class="stat-val" id="statLowest">—</div>
+                    <div class="stat-lbl">Lowest Price</div>
                 </div>
             </div>
         </div>
     </header>
 
-    <div class="controls-bar">
-        <div class="controls-bar-inner">
-            <div class="search-wrapper">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" placeholder="Search thousands of deals..." autocomplete="off">
+    <!-- Controls -->
+    <div class="controls">
+        <div class="controls-inner">
+            <!-- Search -->
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="searchInput" placeholder="Search thousands of deals...">
             </div>
-            <div class="controls-row">
-                <div class="filters">
-                    <button class="filter-btn active" data-store="all">All Stores</button>
-                    <button class="filter-btn store-icon-btn" data-store="steam" title="Steam"><img src="https://cdn.simpleicons.org/steam/white" alt="Steam" width="18" height="18"></button>
-                    <button class="filter-btn store-icon-btn" data-store="epic" title="Epic"><img src="https://cdn.simpleicons.org/epicgames/white" alt="Epic" width="18" height="18"></button>
-                    <button class="filter-btn store-icon-btn" data-store="gog" title="GOG"><img src="https://cdn.simpleicons.org/gogdotcom/white" alt="GOG" width="18" height="18"></button>
-                    <button class="filter-btn store-icon-btn" data-store="humble" title="Humble"><img src="https://cdn.simpleicons.org/humblebundle/white" alt="Humble" width="18" height="18"></button>
-                </div>
-                <div class="sort-controls">
+
+            <!-- Store Filters -->
+            <div class="filters">
+                <button class="filter-btn active" data-store="all">All</button>
+                <button class="filter-btn" data-store="steam" title="Steam">
+                    <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658a3.387 3.387 0 0 1 1.912-.59c.064 0 .128.003.19.008l2.861-4.142V8.91a4.528 4.528 0 0 1 4.524-4.524 4.528 4.528 0 0 1 4.524 4.524 4.528 4.528 0 0 1-4.524 4.524h-.105l-4.076 2.911c0 .052.004.105.004.159a3.392 3.392 0 0 1-3.39 3.39 3.406 3.406 0 0 1-3.323-2.727L.436 15.27A12.013 12.013 0 0 0 11.979 24c6.627 0 12-5.373 12-12s-5.373-12-12-12zm-6.14 16.705l-2.062-.852a2.546 2.546 0 0 0 4.691 1.07 2.543 2.543 0 0 0-1.063-3.455l2.131.882a1.873 1.873 0 0 1-2.3 0 1.873 1.873 0 0 1 .233-3.36l.031.013a1.873 1.873 0 0 1 1.561 3.404 2.544 2.544 0 0 0-3.222 2.298zm10.1-6.315a3.02 3.02 0 0 0 3.016-3.016 3.02 3.02 0 0 0-3.016-3.016 3.02 3.02 0 0 0-3.016 3.016 3.02 3.02 0 0 0 3.016 3.016zm0-4.522a1.507 1.507 0 1 1 0 3.014 1.507 1.507 0 0 1 0-3.014z"/></svg>
+                </button>
+                <button class="filter-btn" data-store="epic" title="Epic Games">
+                    <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M3.537 0C2.165 0 1.66.506 1.66 1.879V18.44a4.262 4.262 0 0 0 .04.621c.127.95.737 1.64 1.837 1.84a25.56 25.56 0 0 0 3.585.378c1.205.074 2.1-.193 2.726-.677.659-.508 1.143-1.39 1.143-2.976V5.106c0-.248-.158-.387-.378-.387h-1.62c-.22 0-.38.139-.38.387v12.334c0 .893-.156 1.407-.468 1.727-.312.319-.845.444-1.602.42-.637-.022-1.467-.077-2.39-.2-.123-.013-.2-.087-.2-.2V1.879c0-.22-.158-.379-.378-.379zm7.613 0c-.22 0-.378.159-.378.379v20.242c0 .22.159.379.378.379h1.62c.22 0 .38-.159.38-.379V.379c0-.22-.16-.379-.38-.379zM14.3 0c-.22 0-.38.159-.38.379v20.242c0 .22.16.379.38.379h1.618c.22 0 .38-.159.38-.379V13.42h3.838c.22 0 .379-.159.379-.378v-1.255c0-.22-.159-.379-.379-.379H16.3V2.012h4.757c.22 0 .379-.159.379-.378V.379c0-.22-.159-.379-.379-.379z"/></svg>
+                </button>
+                <button class="filter-btn" data-store="gog" title="GOG">
+                    <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M6.8 0C3.033 0 0 3.033 0 6.8s3.033 6.8 6.8 6.8c1.907 0 3.63-.788 4.867-2.053L9.867 9.6A3.388 3.388 0 0 1 6.8 10.2 3.403 3.403 0 0 1 3.4 6.8 3.403 3.403 0 0 1 6.8 3.4a3.388 3.388 0 0 1 3.067 1.96l1.866-1.08A6.77 6.77 0 0 0 6.8 0zm10.4 0c-3.767 0-6.8 3.033-6.8 6.8s3.033 6.8 6.8 6.8S24 10.567 24 6.8 20.967 0 17.2 0zm0 3.4A3.403 3.403 0 0 1 20.6 6.8a3.403 3.403 0 0 1-3.4 3.4 3.403 3.403 0 0 1-3.4-3.4 3.403 3.403 0 0 1 3.4-3.4zM6.8 17.2c-3.767 0-6.8 3.033-6.8 6.8h3.4a3.403 3.403 0 0 1 3.4-3.4 3.403 3.403 0 0 1 3.4 3.4h3.4c0-3.767-3.033-6.8-6.8-6.8z"/></svg>
+                </button>
+                <button class="filter-btn" data-store="humble" title="Humble Bundle">
+                    <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M19.635 6.404c-2.49 0-4.496 2.014-4.496 4.496v3.464c0 .459-.166.85-.498 1.176-.332.326-.74.489-1.224.489h-.844c-.484 0-.892-.163-1.224-.489a1.612 1.612 0 0 1-.498-1.176v-3.468c0-2.478-2.01-4.492-4.496-4.492C3.865 6.404 1.86 8.418 1.86 10.9v6.697h3.495V10.9c0-.56.448-1.001.996-1.001.552 0 1 .445 1 1.001v3.464c0 1.424.504 2.634 1.513 3.632 1.008.997 2.229 1.496 3.661 1.496h.95c1.432 0 2.653-.499 3.66-1.496 1.01-.998 1.514-2.208 1.514-3.632V10.9c0-.556.448-1.001 1-1.001.549 0 .997.445.997 1.001v6.697h3.494V10.9c0-2.482-2.006-4.496-4.496-4.496z"/></svg>
+                </button>
+
+                <div class="sort-wrap">
                     <select id="sortSelect">
                         <option value="discount">🔥 Biggest Discount</option>
                         <option value="popular">👥 Most Popular</option>
                         <option value="rating">⭐ Highest Rated</option>
-                        <option value="metacritic">🏆 Metacritic Score</option>
-                        <option value="price">💰 Price: Low → High</option>
+                        <option value="metacritic">🏆 Metacritic</option>
+                        <option value="price">💰 Lowest Price</option>
                         <option value="name">🔤 A — Z</option>
                     </select>
                 </div>
             </div>
-            <div class="advanced-filters">
-                <div class="range-filter">
-                    <label>Max Price: <strong id="priceValue">Any</strong></label>
+
+            <!-- Advanced Filters -->
+            <div class="adv-filters">
+                <div class="range-wrap">
+                    <label>Max Price: <strong id="priceVal">Any</strong></label>
                     <input type="range" id="priceRange" min="0" max="60" value="60" step="5">
                 </div>
-                <div class="range-filter">
-                    <label>Min Discount: <strong id="discountValue">Any</strong></label>
+                <div class="range-wrap">
+                    <label>Min Discount: <strong id="discountVal">Any</strong></label>
                     <input type="range" id="discountRange" min="0" max="90" value="0" step="10">
                 </div>
-                <div class="select-filter">
+                <div class="select-wrap">
                     <label>Min Rating:</label>
                     <select id="ratingSelect">
                         <option value="0">Any Rating</option>
@@ -132,20 +133,21 @@
         </div>
     </div>
 
+    <!-- Main Content -->
     <main>
         <div id="loading" class="loading">
             <div class="spinner"></div>
             <p>Scanning stores for the best deals...</p>
         </div>
 
-        <div id="featuredSection" class="featured-section" style="display:none">
+        <div id="featuredSection" class="section" style="display:none">
             <div class="section-title">🔥 Featured Deals</div>
-            <div id="featuredDeals" class="deals-grid"></div>
+            <div id="featuredDeals" class="grid"></div>
         </div>
 
-        <div id="allSection" class="featured-section" style="display:none">
+        <div id="allSection" class="section" style="display:none">
             <div class="section-title">🎮 All Deals</div>
-            <div id="deals" class="deals-grid"></div>
+            <div id="deals" class="grid"></div>
         </div>
 
         <div id="noResults" class="no-results" style="display:none">
@@ -155,63 +157,49 @@
         <div id="lastUpdated" class="last-updated"></div>
     </main>
 
-    <section class="seo-content">
+    <!-- SEO Content -->
+    <section class="seo">
         <div class="seo-inner">
             <h1>Find the Best PC Game Deals — Updated Daily</h1>
             <p>LootRadar scans thousands of deals across <strong>Steam</strong>, <strong>Epic Games Store</strong>, <strong>GOG</strong>, and <strong>Humble Bundle</strong> to bring you the lowest prices on PC games every single day. Whether you're hunting for free games, massive discounts, or hidden indie gems — we've got you covered.</p>
 
             <div class="seo-grid">
                 <div class="seo-card">
-                    <h2>🔥 How LootRadar Works</h2>
-                    <p>We aggregate deals from all major PC game stores in real-time. Filter by store, price range, discount percentage, and user ratings to find exactly what you're looking for. Every deal links directly to the store so you never miss a sale.</p>
+                    <h2>🔥 How It Works</h2>
+                    <p>We aggregate deals from all major PC game stores in real-time. Filter by store, price, discount, and ratings. Every deal links directly to the store.</p>
                 </div>
                 <div class="seo-card">
                     <h2>🎮 Stores We Track</h2>
-                    <p>We monitor prices across <strong>Steam</strong>, <strong>Epic Games Store</strong>, <strong>GOG.com</strong>, <strong>Humble Bundle</strong>, <strong>Green Man Gaming</strong>, <strong>Fanatical</strong>, and dozens more. One search, every store — so you always get the best price.</p>
+                    <p>Steam, Epic Games Store, GOG.com, Humble Bundle, Green Man Gaming, Fanatical, and dozens more. One search, every store.</p>
                 </div>
                 <div class="seo-card">
-                    <h2>💰 Never Overpay for Games</h2>
-                    <p>Stop checking multiple stores manually. LootRadar compares prices across 30+ retailers and shows you the cheapest option instantly. Sort by discount, rating, or popularity to find deals worth your money.</p>
+                    <h2>💰 Never Overpay</h2>
+                    <p>Compare prices across 30+ retailers instantly. Sort by discount, rating, or popularity to find deals worth your money.</p>
                 </div>
                 <div class="seo-card">
-                    <h2>⚡ Free Games & Giveaways</h2>
-                    <p>Epic Games, Steam, and other stores regularly give away free games. LootRadar highlights every free game available right now so you never miss a giveaway. Check back daily — new freebies drop every week.</p>
+                    <h2>⚡ Free Games</h2>
+                    <p>Epic, Steam, and others give away free games regularly. LootRadar highlights every freebie so you never miss one.</p>
                 </div>
             </div>
 
-            <div class="faq-section">
+            <div class="faq">
                 <h2>Frequently Asked Questions</h2>
-                <details>
-                    <summary>Is LootRadar free to use?</summary>
-                    <p>Yes! LootRadar is completely free. We earn a small commission through affiliate links when you purchase a game, which helps keep the site running.</p>
-                </details>
-                <details>
-                    <summary>How often are deals updated?</summary>
-                    <p>Deals are refreshed daily from all major stores. Prices are sourced via the CheapShark API, which tracks thousands of deals in real-time across 30+ retailers.</p>
-                </details>
-                <details>
-                    <summary>Which stores does LootRadar track?</summary>
-                    <p>We track Steam, Epic Games Store, GOG.com, Humble Bundle, Green Man Gaming, Fanatical, GamersGate, and many more PC game retailers.</p>
-                </details>
-                <details>
-                    <summary>Can I use LootRadar on my phone?</summary>
-                    <p>Yes! LootRadar is a Progressive Web App (PWA). You can install it on your Android or iOS device and use it like a native app — no app store needed.</p>
-                </details>
+                <details><summary>Is LootRadar free?</summary><p>Yes — completely free. We earn a small commission through affiliate links.</p></details>
+                <details><summary>How often are deals updated?</summary><p>Daily, via the CheapShark API which tracks thousands of deals across 30+ stores.</p></details>
+                <details><summary>Which stores are tracked?</summary><p>Steam, Epic, GOG, Humble Bundle, Green Man Gaming, Fanatical, GamersGate, and many more.</p></details>
+                <details><summary>Can I use this on my phone?</summary><p>Yes! LootRadar is a PWA — install it on Android or iOS like a native app.</p></details>
             </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
-        <p>LootRadar &copy; 2025 — Deals refresh daily. Prices sourced via CheapShark.<br>
+        <p>LootRadar &copy; 2025 — Prices sourced via CheapShark.<br>
         <a href="https://thelootradar.com/">Home</a> · <a href="https://thelootradar.com/games.html">Games</a> · <a href="https://thelootradar.com/blog.html">Blog</a><br>
-        Affiliate links help keep the site free.</p>
+        <small>Affiliate links help keep the site free.</small></p>
     </footer>
 
     <script src="app.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-    </script>
+    <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
 </body>
 </html>
