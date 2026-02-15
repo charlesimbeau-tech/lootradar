@@ -3,6 +3,10 @@
 
 const API = 'https://www.cheapshark.com/api/1.0';
 
+function corsUrl(url) {
+    return 'https://corsproxy.io/?' + encodeURIComponent(url);
+}
+
 const STORES = {
     '1':  { name: 'Steam',  css: 'steam',  key: 'steam' },
     '25': { name: 'Epic',   css: 'epic',   key: 'epic' },
@@ -26,7 +30,7 @@ async function fetchDeals() {
     try {
         const results = await Promise.all(
             STORE_IDS.map(id =>
-                fetch(`${API}/deals?storeID=${id}&upperPrice=60&pageSize=40&sortBy=Deal+Rating`)
+                fetch(corsUrl(`${API}/deals?storeID=${id}&upperPrice=60&pageSize=40&sortBy=Deal+Rating`))
                     .then(r => r.json()).catch(() => [])
             )
         );
