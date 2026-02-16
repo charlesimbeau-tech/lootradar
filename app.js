@@ -1,11 +1,10 @@
-// LootRadar — Game Deal Aggregator
+﻿// LootRadar â€” Game Deal Aggregator
 // CheapShark API (free, no key)
 
 const API = 'https://www.cheapshark.com/api/1.0';
 
-function corsUrl(url) {
-    return 'https://corsproxy.io/?' + encodeURIComponent(url);
-}
+// CheapShark supports CORS natively (Access-Control-Allow-Origin: *)
+// No proxy needed â€” direct fetch works from any origin
 
 const STORES = {
     '1':  { name: 'Steam',  css: 'steam',  key: 'steam' },
@@ -30,7 +29,7 @@ async function fetchDeals() {
     try {
         const results = await Promise.all(
             STORE_IDS.map(id =>
-                fetch(corsUrl(`${API}/deals?storeID=${id}&upperPrice=60&pageSize=40&sortBy=Deal+Rating`))
+                fetch(`${API}/deals?storeID=${id}&upperPrice=60&pageSize=40&sortBy=Deal+Rating`)
                     .then(r => r.json()).catch(() => [])
             )
         );
@@ -50,7 +49,7 @@ async function fetchDeals() {
             dealRating: parseFloat(d.dealRating) || 0,
         }));
 
-        // Dedupe — keep best deal per title
+        // Dedupe â€” keep best deal per title
         const map = {};
         allDeals.forEach(d => {
             if (!map[d.title] || d.savings > map[d.title].savings) map[d.title] = d;
@@ -94,9 +93,9 @@ function getThumb(d) {
 // --- Rating dot ---
 function ratingDot(pct) {
     if (!pct) return '';
-    if (pct >= 90) return '🟢';
-    if (pct >= 70) return '🟡';
-    return '🔴';
+    if (pct >= 90) return 'ðŸŸ¢';
+    if (pct >= 70) return 'ðŸŸ¡';
+    return 'ðŸ”´';
 }
 
 // --- Build Card ---
@@ -107,7 +106,7 @@ function buildCard(d) {
 
     let ratingHTML = '';
     if (d.steamRating > 0) ratingHTML = `<span class="rating">${ratingDot(d.steamRating)} ${d.steamRating}%</span>`;
-    else if (d.metacritic > 0) ratingHTML = `<span class="rating">⭐ ${d.metacritic}</span>`;
+    else if (d.metacritic > 0) ratingHTML = `<span class="rating">â­ ${d.metacritic}</span>`;
 
     let reviewsHTML = '';
     if (d.steamReviews > 0) {
@@ -129,11 +128,11 @@ function buildCard(d) {
             <div class="card-title">${d.title}</div>
             <div class="pricing">
                 ${free
-                    ? '<span class="price-free">🎁 Free to Keep</span>'
+                    ? '<span class="price-free">ðŸŽ Free to Keep</span>'
                     : `<span class="price-old">$${d.normal.toFixed(2)}</span><span class="price-new">$${d.sale.toFixed(2)}</span>`
                 }
             </div>
-            <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer">View Deal →</a>
+            <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer">View Deal â†’</a>
         </div>
     </div>`;
 }
