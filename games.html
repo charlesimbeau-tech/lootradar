@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Deals & Price Comparison — LootRadar</title>
+    <title>Game Deals & Price Comparison â€” LootRadar</title>
     <meta name="description" content="Find the best price for any PC game. Compare deals across Steam, Epic Games Store, GOG, and Humble Bundle. Updated daily with the lowest prices.">
     <meta name="keywords" content="game price comparison, best game deals, cheap PC games, steam deals, epic deals, gog deals">
     <link rel="canonical" href="https://thelootradar.com/games.html">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Game Deals & Price Comparison — LootRadar">
+    <meta property="og:title" content="Game Deals & Price Comparison â€” LootRadar">
     <meta property="og:description" content="Compare PC game prices across all major stores. Find the lowest price for any game.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://thelootradar.com/games.html">
@@ -17,7 +17,7 @@
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Game Deals & Price Comparison — LootRadar">
+    <meta name="twitter:title" content="Game Deals & Price Comparison â€” LootRadar">
     <meta name="twitter:description" content="Compare PC game prices across all major stores. Find the lowest price for any game.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +31,7 @@
     <header>
         <div class="header-inner">
             <a href="https://thelootradar.com/" class="header-brand" style="text-decoration:none;color:inherit">
-                <div class="logo-icon">🎯</div>
+                <div class="logo-icon">ðŸŽ¯</div>
                 <div class="logo-text">Loot<span>Radar</span></div>
             </a>
             <nav class="header-nav">
@@ -45,7 +45,7 @@
     <div class="controls-bar">
         <div class="controls-bar-inner">
             <div class="search-wrapper">
-                <span class="search-icon">🔍</span>
+                <span class="search-icon">ðŸ”</span>
                 <input type="text" id="gameSearch" placeholder="Search for a game to see the best price..." autocomplete="off">
             </div>
         </div>
@@ -58,12 +58,12 @@
         </div>
 
         <div id="gameResults" class="featured-section" style="display:none">
-            <div class="section-title">🎮 Search Results</div>
+            <div class="section-title">ðŸŽ® Search Results</div>
             <div id="gameList"></div>
         </div>
 
         <div id="topDeals" class="featured-section">
-            <div class="section-title">🔥 Top Game Deals Right Now</div>
+            <div class="section-title">ðŸ”¥ Top Game Deals Right Now</div>
             <div id="topDealsList" class="deals-grid"></div>
         </div>
 
@@ -71,8 +71,8 @@
     </main>
 
     <footer>
-        <p>LootRadar &copy; 2025 — Deals refresh daily. Prices sourced via CheapShark.<br>
-        <a href="https://thelootradar.com/">Home</a> · <a href="https://thelootradar.com/games.html">Games</a> · <a href="https://thelootradar.com/blog.html">Blog</a></p>
+        <p>LootRadar &copy; 2025 â€” Deals refresh daily. Prices sourced via CheapShark.<br>
+        <a href="https://thelootradar.com/">Home</a> Â· <a href="https://thelootradar.com/games.html">Games</a> Â· <a href="https://thelootradar.com/blog.html">Blog</a></p>
     </footer>
 
     <script>
@@ -126,7 +126,7 @@
                         <div class="card-body">
                             <div class="title">${g.external}</div>
                             <div class="pricing">
-                                <span class="sale-price">${cheapest === 0 ? '🎁 FREE' : '$' + cheapest.toFixed(2)}</span>
+                                <span class="sale-price">${cheapest === 0 ? 'ðŸŽ FREE' : '$' + cheapest.toFixed(2)}</span>
                                 <span class="rating" style="font-size:0.8rem">cheapest ever</span>
                             </div>
                         </div>
@@ -177,7 +177,7 @@
             scriptTag.textContent = JSON.stringify(jsonLd);
 
             // Update page title and meta for SEO
-            document.title = `${info.title} — Best Price & Deals | LootRadar`;
+            document.title = `${info.title} â€” Best Price & Deals | LootRadar`;
             const metaDesc = document.querySelector('meta[name="description"]');
             if (metaDesc) metaDesc.content = `Find the best price for ${info.title}. Compare ${deals.length} deals across Steam, Epic, GOG and more. Current lowest price: $${deals.length ? Math.min(...deals.map(d => parseFloat(d.price))).toFixed(2) : 'N/A'}.`;
 
@@ -189,7 +189,7 @@
                     <h1 style="color:#e8ecf1;font-size:1.8rem;margin:0 0 0.5rem">${info.title}</h1>
                     <p style="color:#8a94a6;font-size:1rem;margin:0 0 1rem">
                         ${cheapest !== null ? `Best price right now: <strong style="color:#4cda64;font-size:1.3rem">$${cheapest.toFixed(2)}</strong>` : 'No active deals'}
-                        ${cheapest === 0 ? ' — <span style="color:#ffd700">FREE!</span>' : ''}
+                        ${cheapest === 0 ? ' â€” <span style="color:#ffd700">FREE!</span>' : ''}
                     </p>
                     <p style="color:#6b7588;font-size:0.85rem">Compare ${deals.length} deal${deals.length !== 1 ? 's' : ''} across all major PC game stores</p>
                 </div>
@@ -210,10 +210,10 @@
                                     </div>
                                     <div class="pricing" style="margin:0.5rem 0">
                                         ${retail > price ? `<span class="original-price">$${retail.toFixed(2)}</span>` : ''}
-                                        <span class="sale-price">${price === 0 ? '🎁 FREE' : '$' + price.toFixed(2)}</span>
+                                        <span class="sale-price">${price === 0 ? 'ðŸŽ FREE' : '$' + price.toFixed(2)}</span>
                                     </div>
                                     <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer">
-                                        Buy on ${store} →
+                                        Buy on ${store} â†’
                                     </a>
                                 </div>
                             </div>`;
@@ -252,10 +252,10 @@
                             <div class="card-meta"><span class="store-tag">${store}</span></div>
                             <div class="title">${d.title}</div>
                             <div class="pricing">
-                                ${sale === 0 ? '<span class="free-tag">🎁 Free</span>' :
+                                ${sale === 0 ? '<span class="free-tag">ðŸŽ Free</span>' :
                                     `<span class="original-price">$${normal.toFixed(2)}</span><span class="sale-price">$${sale.toFixed(2)}</span>`}
                             </div>
-                            <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer">View Deal →</a>
+                            <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer">View Deal â†’</a>
                         </div>
                     </div>`;
             }).join('');
@@ -271,5 +271,5 @@
         if (id) showGameDetail(id);
     });
     </script>
-</body>
+    <!-- GoatCounter Analytics --><script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body>
 </html>
