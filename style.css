@@ -139,10 +139,13 @@ a:hover { text-decoration: underline; }
     gap: 0;
     line-height: 1;
 }
-.filter-btn svg {
-    width: 16px;
-    height: 16px;
+.filter-btn svg, .filter-btn img {
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
+}
+.filter-btn.active img {
+    filter: brightness(10);
 }
 .filter-btn:hover { border-color: var(--accent); color: var(--text); }
 .filter-btn.active {
