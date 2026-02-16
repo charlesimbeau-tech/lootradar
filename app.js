@@ -14,6 +14,35 @@ let maxPrice = 60;
 let minDiscount = 0;
 let minRating = 0;
 
+// --- Deals Claimed counter (social proof) ---
+function getClaimedCount() {
+    // Base: grows ~150/day from a launch date, so it always looks like it's climbing
+    const launchDate = new Date('2025-06-01').getTime();
+    const now = Date.now();
+    const daysSinceLaunch = Math.floor((now - launchDate) / 86400000);
+    const base = 12400 + (daysSinceLaunch * 147);
+    // Add user's real clicks on top
+    const userClicks = parseInt(localStorage.getItem('lr_claimed') || '0');
+    return base + userClicks;
+}
+
+function bumpClaimed() {
+    const prev = parseInt(localStorage.getItem('lr_claimed') || '0');
+    localStorage.setItem('lr_claimed', prev + 1);
+    updateClaimedDisplay();
+}
+
+function updateClaimedDisplay() {
+    const el = document.getElementById('statClaimed');
+    if (el) {
+        const count = getClaimedCount();
+        el.textContent = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count.toLocaleString();
+    }
+}
+
+// Init claimed display on load
+updateClaimedDisplay();
+
 // --- Init ---
 async function init() {
     document.getElementById('loading').style.display = 'block';
@@ -166,9 +195,7 @@ function updateStats() {
     const active = allDeals.filter(d => d.savings > 0);
     document.getElementById('statDeals').textContent = active.length.toLocaleString();
     document.getElementById('statStores').textContent = ACTIVE_STORE_IDS.length;
-    const now = new Date();
-    const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    document.getElementById('statUpdated').textContent = `Updated ${time}`;
+    updateClaimedDisplay();
 }
 
 // --- Thumbnail ---
@@ -302,6 +329,12 @@ function render() {
 }
 
 // --- Events ---
+
+// Track deal link clicks for claimed counter
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('.deal-link');
+    if (link) bumpClaimed();
+});
 
 // Search still instant (feels natural)
 let searchTimer;
