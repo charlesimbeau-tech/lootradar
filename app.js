@@ -164,14 +164,11 @@ async function fetchDeals() {
 // --- Stats ---
 function updateStats() {
     const active = allDeals.filter(d => d.savings > 0);
-    const best = Math.max(...allDeals.map(d => d.savings), 0);
-    const hasFree = allDeals.some(d => d.sale === 0);
-    const paid = allDeals.filter(d => d.sale > 0);
-    const lowest = paid.length ? Math.min(...paid.map(d => d.sale)) : 0;
-
     document.getElementById('statDeals').textContent = active.length.toLocaleString();
-    document.getElementById('statDiscount').textContent = `-${best}%`;
-    document.getElementById('statLowest').textContent = hasFree ? 'Free!' : `$${lowest.toFixed(2)}`;
+    document.getElementById('statStores').textContent = ACTIVE_STORE_IDS.length;
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    document.getElementById('statUpdated').textContent = `Updated ${time}`;
 }
 
 // --- Thumbnail ---
