@@ -82,10 +82,8 @@
         </div>
     </header>
 
-    <!-- Ad: Top Banner -->
-    <div class="ad-slot ad-banner" id="ad-top">
-        <!-- AdSense unit will go here after approval -->
-    </div>
+    <!-- Ezoic Ad: Top Banner -->
+    <div id="ezoic-pub-ad-placeholder-101"></div>
 
     <!-- Controls -->
     <div class="controls">
@@ -161,10 +159,8 @@
             <div id="featuredDeals" class="grid"></div>
         </div>
 
-        <!-- Ad: Mid-content -->
-        <div class="ad-slot ad-mid" id="ad-mid">
-            <!-- AdSense unit will go here after approval -->
-        </div>
+        <!-- Ezoic Ad: Mid-content -->
+        <div id="ezoic-pub-ad-placeholder-102"></div>
 
         <div id="allSection" class="section" style="display:none">
             <div class="section-title">🎮 All Deals</div>
@@ -177,6 +173,9 @@
 
         <div id="lastUpdated" class="last-updated"></div>
     </main>
+
+    <!-- Ezoic Ad: Before SEO -->
+    <div id="ezoic-pub-ad-placeholder-103"></div>
 
     <!-- SEO Content -->
     <section class="seo">
@@ -232,5 +231,12 @@
     }
     </script>
     <script src="app.js?v=5"></script>
+
+    <!-- Ezoic: Show all ad placements -->
+    <script>
+    ezstandalone.cmd.push(function() {
+        ezstandalone.showAds(101, 102, 103);
+    });
+    </script>
 </body>
 </html>
