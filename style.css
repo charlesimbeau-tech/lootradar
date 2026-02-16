@@ -135,6 +135,40 @@ a:hover { text-decoration: underline; }
 }
 .filter-bar .select-wrap select:focus { border-color: var(--accent); }
 
+/* Apply / Reset buttons */
+.apply-wrap {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+.apply-btn {
+    padding: 0.6rem 1.5rem;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    color: #fff;
+    font-size: 0.85rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+}
+.apply-btn:hover { background: #2898c8; transform: translateY(-1px); }
+.apply-btn:active { transform: translateY(0); }
+.reset-btn {
+    padding: 0.6rem 1rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text2);
+    font-size: 0.82rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.reset-btn:hover { border-color: var(--accent); color: var(--text); }
+
 /* Store Panel (Newegg-style checkboxes) */
 .store-panel {
     position: relative;

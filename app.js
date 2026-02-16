@@ -303,31 +303,52 @@ function render() {
 }
 
 // --- Events ---
+
+// Search still instant (feels natural)
 let searchTimer;
 document.getElementById('searchInput').addEventListener('input', () => {
     clearTimeout(searchTimer);
     searchTimer = setTimeout(render, 200);
 });
 
-document.getElementById('sortSelect').addEventListener('change', e => {
-    sort = e.target.value;
-    render();
-});
-
+// Sliders update their labels live but don't re-render
 document.getElementById('priceRange').addEventListener('input', e => {
-    maxPrice = parseInt(e.target.value);
-    document.getElementById('priceVal').textContent = maxPrice >= 60 ? 'Any' : `$${maxPrice}`;
-    render();
+    document.getElementById('priceVal').textContent = parseInt(e.target.value) >= 60 ? 'Any' : `$${parseInt(e.target.value)}`;
 });
 
 document.getElementById('discountRange').addEventListener('input', e => {
-    minDiscount = parseInt(e.target.value);
-    document.getElementById('discountVal').textContent = minDiscount === 0 ? 'Any' : `${minDiscount}%+`;
+    document.getElementById('discountVal').textContent = parseInt(e.target.value) === 0 ? 'Any' : `${parseInt(e.target.value)}%+`;
+});
+
+// Apply button reads all current values and renders
+document.getElementById('applyFilters').addEventListener('click', () => {
+    sort = document.getElementById('sortSelect').value;
+    maxPrice = parseInt(document.getElementById('priceRange').value);
+    minDiscount = parseInt(document.getElementById('discountRange').value);
+    minRating = parseInt(document.getElementById('ratingSelect').value);
     render();
 });
 
-document.getElementById('ratingSelect').addEventListener('change', e => {
-    minRating = parseInt(e.target.value);
+// Reset button
+document.getElementById('resetFilters').addEventListener('click', () => {
+    // Reset UI
+    document.getElementById('sortSelect').value = 'discount';
+    document.getElementById('priceRange').value = 60;
+    document.getElementById('priceVal').textContent = 'Any';
+    document.getElementById('discountRange').value = 0;
+    document.getElementById('discountVal').textContent = 'Any';
+    document.getElementById('ratingSelect').value = '0';
+    // Reset all store checkboxes
+    document.getElementById('storeSelectAll').checked = true;
+    document.querySelectorAll('#storeCheckboxes input[type="checkbox"]').forEach(cb => { cb.checked = true; });
+    ACTIVE_STORE_IDS.forEach(id => checkedStores.add(id));
+    updateSelectAllState();
+    updateStoreCount();
+    // Reset state and render
+    sort = 'discount';
+    maxPrice = 60;
+    minDiscount = 0;
+    minRating = 0;
     render();
 });
 
