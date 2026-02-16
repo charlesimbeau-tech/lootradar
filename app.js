@@ -1,10 +1,10 @@
-﻿// LootRadar â€” Game Deal Aggregator
+// LootRadar — Game Deal Aggregator
 // CheapShark API (free, no key)
 
 const API = 'https://www.cheapshark.com/api/1.0';
 
 // CheapShark supports CORS natively (Access-Control-Allow-Origin: *)
-// No proxy needed â€” direct fetch works from any origin
+// No proxy needed — direct fetch works from any origin
 
 const STORES = {
     '1':  { name: 'Steam',  css: 'steam',  key: 'steam' },
@@ -49,7 +49,7 @@ async function fetchDeals() {
             dealRating: parseFloat(d.dealRating) || 0,
         }));
 
-        // Dedupe â€” keep best deal per title
+        // Dedupe — keep best deal per title
         const map = {};
         allDeals.forEach(d => {
             if (!map[d.title] || d.savings > map[d.title].savings) map[d.title] = d;
@@ -93,9 +93,9 @@ function getThumb(d) {
 // --- Rating dot ---
 function ratingDot(pct) {
     if (!pct) return '';
-    if (pct >= 90) return 'ðŸŸ¢';
-    if (pct >= 70) return 'ðŸŸ¡';
-    return 'ðŸ”´';
+    if (pct >= 90) return '\u{1F7E2}';
+    if (pct >= 70) return '\u{1F7E1}';
+    return '\u{1F534}';
 }
 
 // --- Build Card ---
@@ -106,7 +106,7 @@ function buildCard(d) {
 
     let ratingHTML = '';
     if (d.steamRating > 0) ratingHTML = `<span class="rating">${ratingDot(d.steamRating)} ${d.steamRating}%</span>`;
-    else if (d.metacritic > 0) ratingHTML = `<span class="rating">â­ ${d.metacritic}</span>`;
+    else if (d.metacritic > 0) ratingHTML = `<span class="rating">\u2B50 ${d.metacritic}</span>`;
 
     let reviewsHTML = '';
     if (d.steamReviews > 0) {
@@ -128,11 +128,11 @@ function buildCard(d) {
             <div class="card-title">${d.title}</div>
             <div class="pricing">
                 ${free
-                    ? '<span class="price-free">ðŸŽ Free to Keep</span>'
+                    ? '<span class="price-free">\u{1F381} Free to Keep</span>'
                     : `<span class="price-old">$${d.normal.toFixed(2)}</span><span class="price-new">$${d.sale.toFixed(2)}</span>`
                 }
             </div>
-            <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer">View Deal â†’</a>
+            <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer">View Deal \u2192</a>
         </div>
     </div>`;
 }
