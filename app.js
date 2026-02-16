@@ -9,7 +9,7 @@ let ACTIVE_STORE_IDS = [];
 let checkedStores = new Set();
 
 let allDeals = [];
-let sort = 'discount';
+let sort = 'discount-high';
 let maxPrice = 60;
 let minDiscount = 0;
 let minRating = 0;
@@ -248,8 +248,10 @@ function filterDeals(deals) {
 function sortDeals(deals) {
     const s = [...deals];
     switch (sort) {
-        case 'discount':  s.sort((a, b) => b.savings - a.savings); break;
-        case 'price':     s.sort((a, b) => a.sale - b.sale); break;
+        case 'discount-high': s.sort((a, b) => b.savings - a.savings); break;
+        case 'discount-low':  s.sort((a, b) => a.savings - b.savings); break;
+        case 'price-low':     s.sort((a, b) => a.sale - b.sale); break;
+        case 'price-high':    s.sort((a, b) => b.sale - a.sale); break;
         case 'rating':    s.sort((a, b) => (b.steamRating || b.metacritic) - (a.steamRating || a.metacritic)); break;
         case 'popular':   s.sort((a, b) => b.steamReviews - a.steamReviews); break;
         case 'metacritic': s.sort((a, b) => b.metacritic - a.metacritic); break;
@@ -282,7 +284,7 @@ function render() {
     noRes.style.display = 'none';
 
     // Featured section: free + 90%+ off (only on default view)
-    if (!q && sort === 'discount' && !minDiscount && !minRating) {
+    if (!q && sort === 'discount-high' && !minDiscount && !minRating) {
         const feat = filtered.filter(d => d.sale === 0 || d.savings >= 90);
         const rest = filtered.filter(d => d.sale !== 0 && d.savings < 90);
 
@@ -338,7 +340,7 @@ document.getElementById('applyFilters').addEventListener('click', () => {
 // Reset button
 document.getElementById('resetFilters').addEventListener('click', () => {
     // Reset UI
-    document.getElementById('sortSelect').value = 'discount';
+    document.getElementById('sortSelect').value = 'discount-high';
     document.getElementById('priceRange').value = 60;
     document.getElementById('priceVal').textContent = 'Any';
     document.getElementById('discountRange').value = 0;
@@ -351,7 +353,7 @@ document.getElementById('resetFilters').addEventListener('click', () => {
     updateSelectAllState();
     updateStoreCount();
     // Reset state and render
-    sort = 'discount';
+    sort = 'discount-high';
     maxPrice = 60;
     minDiscount = 0;
     minRating = 0;
