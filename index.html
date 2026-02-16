@@ -39,7 +39,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=5">
     <link rel="icon" href="icons/logo.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/logo.svg">
     <link rel="manifest" href="manifest.json">
@@ -95,21 +95,19 @@
                 <input type="text" id="searchInput" placeholder="Search thousands of deals...">
             </div>
 
-            <!-- Store Filters -->
+            <!-- Store Filter (Newegg-style checkboxes) -->
             <div class="filters">
-                <button class="filter-btn active" data-store="all">All</button>
-                <button class="filter-btn" data-store="steam" title="Steam">
-                    <img src="https://cdn.simpleicons.org/steam/8a94a6" alt="Steam" width="18" height="18">
-                </button>
-                <button class="filter-btn" data-store="epic" title="Epic Games">
-                    <img src="https://cdn.simpleicons.org/epicgames/8a94a6" alt="Epic" width="18" height="18">
-                </button>
-                <button class="filter-btn" data-store="gog" title="GOG">
-                    <img src="https://cdn.simpleicons.org/gogdotcom/8a94a6" alt="GOG" width="18" height="18">
-                </button>
-                <button class="filter-btn" data-store="humble" title="Humble Bundle">
-                    <img src="https://cdn.simpleicons.org/humblebundle/8a94a6" alt="Humble" width="18" height="18">
-                </button>
+                <div class="store-panel">
+                    <button class="store-panel-toggle" id="storePanelToggle">Stores <span class="store-count" id="storeCount"></span> <span class="chevron">&#9660;</span></button>
+                    <div class="store-panel-body" id="storePanelBody">
+                        <label class="store-select-all">
+                            <input type="checkbox" id="storeSelectAll" checked> <strong>Select All</strong>
+                        </label>
+                        <div class="store-checkboxes" id="storeCheckboxes">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+                </div>
 
                 <div class="sort-wrap">
                     <select id="sortSelect">
@@ -233,7 +231,7 @@
         }
     }
     </script>
-    <script src="app.js?v=5"></script>
+    <script src="app.js?v=7"></script>
 
     <!-- Ezoic: Show all ad placements -->
     <script>

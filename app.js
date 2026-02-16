@@ -1,34 +1,125 @@
-// LootRadar — Game Deal Aggregator
+// LootRadar \u2014 Game Deal Aggregator
 // CheapShark API (free, no key)
 
 const API = 'https://www.cheapshark.com/api/1.0';
 
-// CheapShark supports CORS natively (Access-Control-Allow-Origin: *)
-// No proxy needed — direct fetch works from any origin
-
-const STORES = {
-    '1':  { name: 'Steam',  css: 'steam',  key: 'steam' },
-    '25': { name: 'Epic',   css: 'epic',   key: 'epic' },
-    '7':  { name: 'GOG',    css: 'gog',    key: 'gog' },
-    '11': { name: 'Humble', css: 'humble', key: 'humble' },
-};
-
-const STORE_IDS = Object.keys(STORES);
+// Dynamic store map populated from API
+let STORE_MAP = {};
+let ACTIVE_STORE_IDS = [];
+let checkedStores = new Set();
 
 let allDeals = [];
-let filter = 'all';
 let sort = 'discount';
 let maxPrice = 60;
 let minDiscount = 0;
 let minRating = 0;
 
-// --- Fetch ---
+// --- Init ---
+async function init() {
+    document.getElementById('loading').style.display = 'block';
+
+    try {
+        const storesRes = await fetch(`${API}/stores`);
+        const storesData = await storesRes.json();
+
+        storesData.forEach(s => {
+            if (s.isActive === 1) {
+                STORE_MAP[s.storeID] = {
+                    name: s.storeName,
+                    icon: `https://www.cheapshark.com/img/stores/icons/${parseInt(s.storeID) - 1}.png`
+                };
+            }
+        });
+        ACTIVE_STORE_IDS = Object.keys(STORE_MAP);
+
+        // All checked by default
+        ACTIVE_STORE_IDS.forEach(id => checkedStores.add(id));
+
+        buildStorePanel();
+        await fetchDeals();
+    } catch (e) {
+        console.error('Init failed:', e);
+        document.getElementById('deals').innerHTML = '<p class="no-results">Failed to load deals. Try refreshing.</p>';
+        document.getElementById('loading').style.display = 'none';
+    }
+}
+
+function buildStorePanel() {
+    const list = document.getElementById('storeCheckboxes');
+    list.innerHTML = '';
+
+    ACTIVE_STORE_IDS.forEach(id => {
+        const store = STORE_MAP[id];
+        const label = document.createElement('label');
+        label.className = 'store-cb-item';
+        label.innerHTML =
+            `<input type="checkbox" value="${id}" checked>` +
+            `<img src="${store.icon}" alt="" onerror="this.style.display='none'">` +
+            `<span>${store.name}</span>`;
+        const cb = label.querySelector('input');
+        cb.addEventListener('change', () => {
+            if (cb.checked) checkedStores.add(id); else checkedStores.delete(id);
+            updateSelectAllState();
+            updateStoreCount();
+            render();
+        });
+        list.appendChild(label);
+    });
+
+    updateStoreCount();
+
+    // Select All toggle
+    const selAll = document.getElementById('storeSelectAll');
+    selAll.checked = true;
+    selAll.addEventListener('change', () => {
+        const checked = selAll.checked;
+        list.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = checked; });
+        if (checked) ACTIVE_STORE_IDS.forEach(id => checkedStores.add(id));
+        else checkedStores.clear();
+        updateStoreCount();
+        render();
+    });
+
+    // Toggle panel open/close
+    const toggle = document.getElementById('storePanelToggle');
+    const body = document.getElementById('storePanelBody');
+    toggle.addEventListener('click', () => {
+        body.classList.toggle('open');
+        toggle.classList.toggle('open');
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.store-panel')) {
+            body.classList.remove('open');
+            toggle.classList.remove('open');
+        }
+    });
+}
+
+function updateStoreCount() {
+    const el = document.getElementById('storeCount');
+    if (el) {
+        if (checkedStores.size === ACTIVE_STORE_IDS.length) {
+            el.textContent = 'All';
+        } else {
+            el.textContent = `${checkedStores.size}/${ACTIVE_STORE_IDS.length}`;
+        }
+    }
+}
+
+function updateSelectAllState() {
+    const selAll = document.getElementById('storeSelectAll');
+    selAll.checked = checkedStores.size === ACTIVE_STORE_IDS.length;
+    selAll.indeterminate = checkedStores.size > 0 && checkedStores.size < ACTIVE_STORE_IDS.length;
+}
+
 async function fetchDeals() {
     document.getElementById('loading').style.display = 'block';
 
     try {
         const results = await Promise.all(
-            STORE_IDS.map(id =>
+            ACTIVE_STORE_IDS.map(id =>
                 fetch(`${API}/deals?storeID=${id}&upperPrice=60&pageSize=40&sortBy=Deal+Rating`)
                     .then(r => r.json()).catch(() => [])
             )
@@ -49,7 +140,7 @@ async function fetchDeals() {
             dealRating: parseFloat(d.dealRating) || 0,
         }));
 
-        // Dedupe — keep best deal per title
+        // Dedupe \u2014 keep best deal per title
         const map = {};
         allDeals.forEach(d => {
             if (!map[d.title] || d.savings > map[d.title].savings) map[d.title] = d;
@@ -100,7 +191,7 @@ function ratingDot(pct) {
 
 // --- Build Card ---
 function buildCard(d) {
-    const store = STORES[d.storeID] || { name: '?', css: 'steam' };
+    const store = STORE_MAP[d.storeID] || { name: '?', icon: '' };
     const thumb = getThumb(d);
     const free = d.sale === 0;
 
@@ -114,6 +205,8 @@ function buildCard(d) {
         reviewsHTML = `<span class="reviews">${c} reviews</span>`;
     }
 
+    const storeIconHTML = store.icon ? `<img class="store-icon" src="${store.icon}" alt="" onerror="this.style.display='none'">` : '';
+
     return `
     <div class="card">
         <div class="card-thumb">
@@ -122,7 +215,7 @@ function buildCard(d) {
         </div>
         <div class="card-body">
             <div class="card-meta">
-                <span class="store-tag store-${store.css}">${store.name}</span>
+                <span class="store-tag">${storeIconHTML} ${store.name}</span>
                 <div>${ratingHTML}${reviewsHTML}</div>
             </div>
             <div class="card-title">${d.title}</div>
@@ -141,9 +234,8 @@ function buildCard(d) {
 function filterDeals(deals) {
     const q = document.getElementById('searchInput').value.toLowerCase();
     return deals.filter(d => {
-        const s = STORES[d.storeID];
-        if (!s) return false;
-        if (filter !== 'all' && s.key !== filter) return false;
+        if (!STORE_MAP[d.storeID]) return false;
+        if (!checkedStores.has(d.storeID)) return false;
         if (q && !d.title.toLowerCase().includes(q)) return false;
         if (d.savings <= 0) return false;
         if (d.sale > maxPrice && maxPrice < 60) return false;
@@ -217,15 +309,6 @@ document.getElementById('searchInput').addEventListener('input', () => {
     searchTimer = setTimeout(render, 200);
 });
 
-document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        filter = btn.dataset.store;
-        render();
-    });
-});
-
 document.getElementById('sortSelect').addEventListener('change', e => {
     sort = e.target.value;
     render();
@@ -249,4 +332,4 @@ document.getElementById('ratingSelect').addEventListener('change', e => {
 });
 
 // --- Go ---
-fetchDeals();
+init();
