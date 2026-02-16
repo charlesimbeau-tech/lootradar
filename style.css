@@ -133,6 +133,78 @@ a:hover { text-decoration: underline; }
 #searchInput:focus { border-color: var(--accent); }
 #searchInput::placeholder { color: var(--text3); }
 
+/* Quick Search Pills */
+.quick-search-row {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+.quick-pill {
+    padding: 0.35rem 0.75rem;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text2);
+    font-size: 0.75rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.quick-pill:hover {
+    border-color: var(--accent);
+    color: var(--text);
+}
+
+/* Genre Tag Pills */
+.genre-tags-row {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+}
+.genre-tags-row::-webkit-scrollbar { display: none; }
+.genre-pill {
+    padding: 0.35rem 0.7rem;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text2);
+    font-size: 0.75rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.genre-pill:hover {
+    border-color: var(--accent);
+    color: var(--text);
+}
+.genre-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+.genre-pill.active .genre-count {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+}
+.genre-count {
+    background: var(--border);
+    color: var(--text3);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
 /* Filter Bar — 3 dropdowns in a row */
 .filter-bar {
     display: flex;

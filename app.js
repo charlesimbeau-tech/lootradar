@@ -3,6 +3,26 @@
 
 const API = 'https://www.cheapshark.com/api/1.0';
 
+// --- Genre keyword mapping ---
+const GENRE_KEYWORDS = {
+    'RPG': ['rpg', 'souls', 'fantasy', 'quest', 'elder scrolls', 'witcher', 'dragon', 'kingdom', 'final fantasy', 'tales of', 'diablo', 'baldur'],
+    'FPS': ['shooter', 'warfare', 'battlefield', 'counter-strike', 'doom', 'call of duty', 'halo', 'overwatch', 'rainbow six', 'far cry', 'bioshock'],
+    'Action': ['action', 'assassin', 'batman', 'devil may cry', 'god of war', 'metal gear', 'tomb raider', 'uncharted', 'hitman', 'just cause'],
+    'Strategy': ['strategy', 'civilization', 'total war', 'age of empires', 'command', 'xcom', 'crusader kings', 'stellaris', 'anno'],
+    'Horror': ['horror', 'resident evil', 'silent hill', 'dead space', 'amnesia', 'outlast', 'evil within', 'phasmophobia'],
+    'Racing': ['racing', 'forza', 'need for speed', 'gran turismo', 'dirt', 'f1 ', 'nascar', 'assetto'],
+    'Sports': ['sports', 'fifa', 'nba', 'nhl', 'madden', 'football', 'baseball', 'golf', 'tennis', 'wwe'],
+    'Simulation': ['simulator', 'simulation', 'farming', 'flight', 'train', 'tycoon', 'city', 'planet'],
+    'Adventure': ['adventure', 'life is strange', 'walking dead', 'monkey island', 'broken age', 'point and click'],
+    'Indie': ['indie', 'pixel', 'hollow knight', 'celeste', 'stardew', 'undertale', 'hades', 'cuphead'],
+    'Survival': ['survival', 'rust', 'ark', 'dayz', 'forest', 'subnautica', 'valheim', 'don\'t starve', 'craft'],
+    'Puzzle': ['puzzle', 'portal', 'tetris', 'baba is you', 'witness', 'talos'],
+    'Open World': ['open world', 'gta', 'grand theft', 'skyrim', 'cyberpunk', 'red dead', 'saints row', 'watch dogs'],
+    'Multiplayer': ['multiplayer', 'online', 'co-op', 'pvp', 'battle royale', 'mmo']
+};
+
+let selectedGenres = new Set();
+
 // Dynamic store map populated from API
 let STORE_MAP = {};
 let ACTIVE_STORE_IDS = [];
@@ -167,7 +187,19 @@ async function fetchDeals() {
             steamRating: parseInt(d.steamRatingPercent) || 0,
             steamReviews: parseInt(d.steamRatingCount) || 0,
             dealRating: parseFloat(d.dealRating) || 0,
+            steamRatingText: d.steamRatingText || '',
+            genres: [],
         }));
+
+        // Auto-tag genres
+        allDeals.forEach(deal => {
+            const text = (deal.title + ' ' + deal.steamRatingText).toLowerCase();
+            for (const [genre, keywords] of Object.entries(GENRE_KEYWORDS)) {
+                if (keywords.some(kw => text.includes(kw))) {
+                    deal.genres.push(genre);
+                }
+            }
+        });
 
         // Dedupe \u2014 keep best deal per title
         const map = {};
@@ -177,6 +209,7 @@ async function fetchDeals() {
         allDeals = Object.values(map);
 
         updateStats();
+        buildGenreTags();
 
         const now = new Date();
         document.getElementById('lastUpdated').textContent =
@@ -254,17 +287,77 @@ function buildCard(d) {
     </div>`;
 }
 
+// --- Genre Tags UI ---
+function buildGenreTags() {
+    const container = document.getElementById('genreTags');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Count deals per genre
+    const genreCounts = {};
+    allDeals.forEach(d => {
+        if (d.savings <= 0) return;
+        d.genres.forEach(g => { genreCounts[g] = (genreCounts[g] || 0) + 1; });
+    });
+
+    // Sort by count descending
+    const sorted = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]);
+
+    sorted.forEach(([genre, count]) => {
+        const pill = document.createElement('button');
+        pill.className = 'genre-pill' + (selectedGenres.has(genre) ? ' active' : '');
+        pill.innerHTML = `${genre} <span class="genre-count">${count}</span>`;
+        pill.addEventListener('click', () => {
+            if (selectedGenres.has(genre)) selectedGenres.delete(genre);
+            else selectedGenres.add(genre);
+            pill.classList.toggle('active');
+            render();
+        });
+        container.appendChild(pill);
+    });
+}
+
+// --- Quick Search Pills ---
+function initQuickSearch() {
+    const container = document.getElementById('quickSearchPills');
+    if (!container) return;
+
+    const pills = [
+        { label: '\uD83C\uDD93 Free', action: () => { document.getElementById('searchInput').value = ''; document.getElementById('priceRange').value = 0; document.getElementById('priceVal').textContent = '$0'; maxPrice = 0; render(); }},
+        { label: '\uD83D\uDCB5 Under $5', action: () => { document.getElementById('priceRange').value = 5; document.getElementById('priceVal').textContent = '$5'; maxPrice = 5; render(); }},
+        { label: '\uD83D\uDCB0 Under $10', action: () => { document.getElementById('priceRange').value = 10; document.getElementById('priceVal').textContent = '$10'; maxPrice = 10; render(); }},
+        { label: '\uD83D\uDD25 90%+ Off', action: () => { document.getElementById('discountRange').value = 90; document.getElementById('discountVal').textContent = '90%+'; minDiscount = 90; render(); }},
+        { label: '\u2B50 Top Rated', action: () => { document.getElementById('ratingSelect').value = '90'; minRating = 90; render(); }},
+    ];
+
+    pills.forEach(p => {
+        const btn = document.createElement('button');
+        btn.className = 'quick-pill';
+        btn.textContent = p.label;
+        btn.addEventListener('click', p.action);
+        container.appendChild(btn);
+    });
+}
+
 // --- Filter & Sort ---
 function filterDeals(deals) {
     const q = document.getElementById('searchInput').value.toLowerCase();
     return deals.filter(d => {
         if (!STORE_MAP[d.storeID]) return false;
         if (!checkedStores.has(d.storeID)) return false;
-        if (q && !d.title.toLowerCase().includes(q)) return false;
+        if (q) {
+            const storeName = (STORE_MAP[d.storeID] && STORE_MAP[d.storeID].name || '').toLowerCase();
+            const genreText = d.genres.join(' ').toLowerCase();
+            const ratingText = (d.steamRatingText || '').toLowerCase();
+            const searchable = d.title.toLowerCase() + ' ' + storeName + ' ' + genreText + ' ' + ratingText;
+            if (!searchable.includes(q)) return false;
+        }
         if (d.savings <= 0) return false;
         if (d.sale > maxPrice && maxPrice < 60) return false;
         if (d.savings < minDiscount) return false;
         if (minRating > 0 && d.steamRating < minRating && d.metacritic < minRating) return false;
+        // Genre filter
+        if (selectedGenres.size > 0 && !d.genres.some(g => selectedGenres.has(g))) return false;
         return true;
     });
 }
@@ -382,6 +475,11 @@ document.getElementById('resetFilters').addEventListener('click', () => {
     ACTIVE_STORE_IDS.forEach(id => checkedStores.add(id));
     updateSelectAllState();
     updateStoreCount();
+    // Reset genres
+    selectedGenres.clear();
+    document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
+    // Reset search
+    document.getElementById('searchInput').value = '';
     // Reset state and render
     sort = 'discount-high';
     maxPrice = 60;
@@ -391,4 +489,5 @@ document.getElementById('resetFilters').addEventListener('click', () => {
 });
 
 // --- Go ---
+initQuickSearch();
 init();
