@@ -323,10 +323,16 @@ document.getElementById('discountRange').addEventListener('input', e => {
 // Apply button reads all current values and renders
 document.getElementById('applyFilters').addEventListener('click', () => {
     sort = document.getElementById('sortSelect').value;
-    maxPrice = parseInt(document.getElementById('priceRange').value);
-    minDiscount = parseInt(document.getElementById('discountRange').value);
-    minRating = parseInt(document.getElementById('ratingSelect').value);
+    maxPrice = parseInt(document.getElementById('priceRange').value) || 60;
+    minDiscount = parseInt(document.getElementById('discountRange').value) || 0;
+    minRating = parseInt(document.getElementById('ratingSelect').value) || 0;
+    // Also update slider labels in case they got out of sync
+    document.getElementById('priceVal').textContent = maxPrice >= 60 ? 'Any' : `$${maxPrice}`;
+    document.getElementById('discountVal').textContent = minDiscount === 0 ? 'Any' : `${minDiscount}%+`;
     render();
+    // Scroll to results
+    const main = document.querySelector('main');
+    if (main) main.scrollIntoView({ behavior: 'smooth' });
 });
 
 // Reset button
