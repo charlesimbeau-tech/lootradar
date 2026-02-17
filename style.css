@@ -198,21 +198,39 @@ a:hover { text-decoration: underline; }
 }
 .quick-pill {
     padding: 0.35rem 0.75rem;
-    background: var(--glass-bg);
+    background: linear-gradient(135deg, rgba(15, 25, 40, 0.7), rgba(20, 35, 55, 0.6));
     backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(48, 229, 255, 0.12);
     border-radius: 20px;
     color: var(--text2);
     font-size: 0.75rem;
     font-family: inherit;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     white-space: nowrap;
+    position: relative;
+    overflow: hidden;
 }
+.quick-pill::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(135deg, transparent 40%, rgba(48, 229, 255, 0.08) 50%, transparent 60%);
+    transition: transform 0.5s;
+    transform: translateX(-100%);
+}
+.quick-pill:hover::before { transform: translateX(100%); }
 .quick-pill:hover {
     border-color: var(--accent);
     color: var(--text);
-    box-shadow: 0 0 10px rgba(48, 229, 255, 0.1);
+    box-shadow: 0 0 15px rgba(48, 229, 255, 0.2), inset 0 0 15px rgba(48, 229, 255, 0.05);
+    text-shadow: 0 0 8px rgba(48, 229, 255, 0.3);
+}
+.quick-pill:active {
+    box-shadow: 0 0 25px rgba(48, 229, 255, 0.4), inset 0 0 20px rgba(48, 229, 255, 0.1);
 }
 
 /* Genre Tag Pills */
@@ -227,25 +245,43 @@ a:hover { text-decoration: underline; }
 .genre-tags-row::-webkit-scrollbar { display: none; }
 .genre-pill {
     padding: 0.35rem 0.7rem;
-    background: var(--glass-bg);
+    background: linear-gradient(135deg, rgba(15, 25, 40, 0.7), rgba(20, 35, 55, 0.6));
     backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(48, 229, 255, 0.12);
     border-radius: 20px;
     color: var(--text2);
     font-size: 0.75rem;
     font-family: inherit;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     white-space: nowrap;
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
+    position: relative;
+    overflow: hidden;
 }
+.genre-pill::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(135deg, transparent 40%, rgba(48, 229, 255, 0.08) 50%, transparent 60%);
+    transition: transform 0.5s;
+    transform: translateX(-100%);
+}
+.genre-pill:hover::before { transform: translateX(100%); }
 .genre-pill:hover {
     border-color: var(--accent);
     color: var(--text);
-    box-shadow: 0 0 10px rgba(48, 229, 255, 0.1);
+    box-shadow: 0 0 15px rgba(48, 229, 255, 0.2), inset 0 0 15px rgba(48, 229, 255, 0.05);
+    text-shadow: 0 0 8px rgba(48, 229, 255, 0.3);
+}
+.genre-pill:active {
+    box-shadow: 0 0 25px rgba(48, 229, 255, 0.4), inset 0 0 20px rgba(48, 229, 255, 0.1);
 }
 .genre-pill.active {
     background: linear-gradient(135deg, var(--accent-dim), var(--accent));
@@ -276,19 +312,23 @@ a:hover { text-decoration: underline; }
 }
 .filter-bar .select-wrap select {
     padding: 0.5rem 0.75rem;
-    background: var(--glass-bg);
-    border: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(15, 25, 40, 0.7), rgba(20, 35, 55, 0.6));
+    border: 1px solid rgba(48, 229, 255, 0.12);
     border-radius: var(--radius);
     color: var(--text);
     font-size: 0.82rem;
     font-family: inherit;
     cursor: pointer;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: all 0.3s ease;
+}
+.filter-bar .select-wrap select:hover {
+    border-color: rgba(48, 229, 255, 0.3);
+    box-shadow: 0 0 12px rgba(48, 229, 255, 0.15);
 }
 .filter-bar .select-wrap select:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 10px rgba(48, 229, 255, 0.1);
+    box-shadow: 0 0 18px rgba(48, 229, 255, 0.25);
 }
 
 /* Apply / Reset buttons */
@@ -300,34 +340,74 @@ a:hover { text-decoration: underline; }
 .apply-btn {
     padding: 0.6rem 1.5rem;
     background: linear-gradient(135deg, #30a9de, #30e5ff);
-    border: none;
+    border: 1px solid rgba(48, 229, 255, 0.3);
     border-radius: var(--radius);
     color: #fff;
     font-size: 0.85rem;
     font-family: inherit;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     letter-spacing: 0.3px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 8px rgba(48, 229, 255, 0.15);
 }
+.apply-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(135deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+}
+.apply-btn:hover::before { transform: translateX(100%); }
 .apply-btn:hover {
-    box-shadow: 0 0 20px rgba(48, 229, 255, 0.3);
-    text-shadow: 0 0 10px rgba(48, 229, 255, 0.5);
+    box-shadow: 0 0 30px rgba(48, 229, 255, 0.4), inset 0 0 15px rgba(48, 229, 255, 0.1);
+    text-shadow: 0 0 12px rgba(48, 229, 255, 0.6);
     transform: translateY(-1px);
+    border-color: rgba(48, 229, 255, 0.6);
 }
-.apply-btn:active { transform: translateY(0); }
+.apply-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 0 40px rgba(48, 229, 255, 0.5), inset 0 0 25px rgba(48, 229, 255, 0.15);
+}
 .reset-btn {
     padding: 0.6rem 1rem;
-    background: transparent;
-    border: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(15, 25, 40, 0.7), rgba(20, 35, 55, 0.6));
+    border: 1px solid rgba(48, 229, 255, 0.12);
     border-radius: var(--radius);
     color: var(--text2);
     font-size: 0.82rem;
     font-family: inherit;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
-.reset-btn:hover { border-color: var(--accent); color: var(--text); }
+.reset-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(135deg, transparent 40%, rgba(48, 229, 255, 0.08) 50%, transparent 60%);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+}
+.reset-btn:hover::before { transform: translateX(100%); }
+.reset-btn:hover {
+    border-color: var(--accent);
+    color: var(--text);
+    box-shadow: 0 0 15px rgba(48, 229, 255, 0.2);
+}
+.reset-btn:active {
+    box-shadow: 0 0 25px rgba(48, 229, 255, 0.35);
+}
 
 /* Store Panel (Newegg-style checkboxes) */
 .store-panel {
@@ -339,14 +419,15 @@ a:hover { text-decoration: underline; }
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: var(--glass-bg);
-    border: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(15, 25, 40, 0.7), rgba(20, 35, 55, 0.6));
+    border: 1px solid rgba(48, 229, 255, 0.12);
     border-radius: var(--radius);
     color: var(--text);
     font-size: 0.82rem;
     font-family: inherit;
     font-weight: 500;
     cursor: pointer;
+    transition: all 0.3s ease;
     transition: all 0.2s;
     width: auto;
 }
