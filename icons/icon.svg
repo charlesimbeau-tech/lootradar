@@ -34,14 +34,14 @@
     </clipPath>
   </defs>
   
-  <!-- Dark rounded square background -->
-  <rect width="512" height="512" rx="100" fill="#0a1929"/>
+  <!-- Dark rounded square background - matches site bg -->
+  <rect width="512" height="512" rx="100" fill="#0f1923"/>
   
   <!-- Radar screen circle - dark with subtle glow -->
   <circle cx="256" cy="256" r="195" fill="url(#screen-glow)"/>
   
-  <!-- Outer ring - bright cyan -->
-  <circle cx="256" cy="256" r="195" stroke="#30e5ff" stroke-width="4" fill="none" filter="url(#cyan-glow)"/>
+  <!-- Outer ring - subtle -->
+  <circle cx="256" cy="256" r="195" stroke="#30e5ff" stroke-width="1.5" fill="none" opacity="0.4"/>
   
   <!-- Concentric range rings -->
   <circle cx="256" cy="256" r="145" stroke="#30e5ff" stroke-width="1.5" fill="none" opacity="0.4"/>
