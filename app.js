@@ -5,20 +5,27 @@ const API = 'https://www.cheapshark.com/api/1.0';
 
 // --- Genre keyword mapping ---
 const GENRE_KEYWORDS = {
-    'RPG': ['rpg', 'souls', 'fantasy', 'quest', 'elder scrolls', 'witcher', 'dragon', 'kingdom', 'final fantasy', 'tales of', 'diablo', 'baldur'],
-    'FPS': ['shooter', 'warfare', 'battlefield', 'counter-strike', 'doom', 'call of duty', 'halo', 'overwatch', 'rainbow six', 'far cry', 'bioshock'],
-    'Action': ['action', 'assassin', 'batman', 'devil may cry', 'god of war', 'metal gear', 'tomb raider', 'uncharted', 'hitman', 'just cause'],
-    'Strategy': ['strategy', 'civilization', 'total war', 'age of empires', 'command', 'xcom', 'crusader kings', 'stellaris', 'anno'],
-    'Horror': ['horror', 'resident evil', 'silent hill', 'dead space', 'amnesia', 'outlast', 'evil within', 'phasmophobia'],
-    'Racing': ['racing', 'forza', 'need for speed', 'gran turismo', 'dirt', 'f1 ', 'nascar', 'assetto'],
-    'Sports': ['sports', 'fifa', 'nba', 'nhl', 'madden', 'football', 'baseball', 'golf', 'tennis', 'wwe'],
-    'Simulation': ['simulator', 'simulation', 'farming', 'flight', 'train', 'tycoon', 'city', 'planet'],
-    'Adventure': ['adventure', 'life is strange', 'walking dead', 'monkey island', 'broken age', 'point and click'],
-    'Indie': ['indie', 'pixel', 'hollow knight', 'celeste', 'stardew', 'undertale', 'hades', 'cuphead'],
-    'Survival': ['survival', 'rust', 'ark', 'dayz', 'forest', 'subnautica', 'valheim', 'don\'t starve', 'craft'],
-    'Puzzle': ['puzzle', 'portal', 'tetris', 'baba is you', 'witness', 'talos'],
-    'Open World': ['open world', 'gta', 'grand theft', 'skyrim', 'cyberpunk', 'red dead', 'saints row', 'watch dogs'],
-    'Multiplayer': ['multiplayer', 'online', 'co-op', 'pvp', 'battle royale', 'mmo']
+    'RPG': ['rpg', 'fantasy', 'quest', 'elder scrolls', 'witcher', 'dragon', 'kingdom', 'final fantasy', 'tales of', 'diablo', 'baldur', 'pillars of eternity', 'divinity'],
+    'Souls-like': ['souls', 'dark souls', 'elden ring', 'bloodborne', 'sekiro', 'nioh', 'lies of p', 'lords of the fallen', 'mortal shell', 'remnant', 'salt and sanctuary', 'hollow knight'],
+    'Metroidvania': ['metroidvania', 'hollow knight', 'ori ', 'castlevania', 'dead cells', 'blasphemous', 'axiom verge', 'guacamelee', 'salt and sanctuary', 'bloodstained'],
+    'Roguelike': ['roguelike', 'roguelite', 'hades', 'dead cells', 'slay the spire', 'binding of isaac', 'enter the gungeon', 'risk of rain', 'returnal', 'noita', 'spelunky'],
+    'FPS': ['shooter', 'warfare', 'battlefield', 'counter-strike', 'doom', 'call of duty', 'halo', 'overwatch', 'rainbow six', 'far cry', 'bioshock', 'valorant', 'destiny'],
+    'Action': ['action', 'assassin', 'batman', 'devil may cry', 'god of war', 'metal gear', 'tomb raider', 'uncharted', 'hitman', 'just cause', 'bayonetta'],
+    'Strategy': ['strategy', 'civilization', 'total war', 'age of empires', 'command', 'xcom', 'crusader kings', 'stellaris', 'anno', 'factorio', 'rimworld'],
+    'Horror': ['horror', 'resident evil', 'silent hill', 'dead space', 'amnesia', 'outlast', 'evil within', 'phasmophobia', 'alan wake', 'soma'],
+    'Racing': ['racing', 'forza', 'need for speed', 'gran turismo', 'dirt', 'f1 ', 'nascar', 'assetto', 'hot wheels'],
+    'Sports': ['sports', 'fifa', 'nba', 'nhl', 'madden', 'football', 'baseball', 'golf', 'tennis', 'wwe', 'ea sports'],
+    'Simulation': ['simulator', 'simulation', 'farming', 'flight', 'train', 'tycoon', 'city', 'planet', 'kerbal'],
+    'Adventure': ['adventure', 'life is strange', 'walking dead', 'monkey island', 'broken age', 'point and click', 'firewatch', 'gone home'],
+    'Indie': ['indie', 'pixel', 'celeste', 'stardew', 'undertale', 'cuphead', 'shovel knight', 'braid'],
+    'Survival': ['survival', 'rust', 'ark', 'dayz', 'forest', 'subnautica', 'valheim', 'don\'t starve', 'craft', 'grounded', 'raft'],
+    'Puzzle': ['puzzle', 'portal', 'tetris', 'baba is you', 'witness', 'talos', 'lemmings', 'human fall flat'],
+    'Open World': ['open world', 'gta', 'grand theft', 'skyrim', 'cyberpunk', 'red dead', 'saints row', 'watch dogs', 'zelda', 'horizon'],
+    'Multiplayer': ['multiplayer', 'online', 'co-op', 'pvp', 'battle royale', 'mmo'],
+    'Platformer': ['platformer', 'mario', 'sonic', 'celeste', 'rayman', 'crash bandicoot', 'spyro', 'little nightmares', 'a hat in time'],
+    'Fighting': ['fighting', 'street fighter', 'mortal kombat', 'tekken', 'guilty gear', 'dragon ball', 'smash', 'brawl'],
+    'Stealth': ['stealth', 'hitman', 'dishonored', 'thief', 'splinter cell', 'metal gear solid', 'deus ex'],
+    'VR': ['vr', 'virtual reality', 'oculus', 'half-life alyx', 'beat saber', 'boneworks']
 };
 
 let selectedGenres = new Set();
