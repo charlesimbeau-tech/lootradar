@@ -14,11 +14,11 @@
   <circle cx="256" cy="256" r="45" stroke="#ffffff" stroke-width="8" fill="none" opacity="0.9"/>
   <!-- Center dot -->
   <circle cx="256" cy="256" r="14" fill="#ffffff"/>
-  <!-- Crosshair lines - bright white -->
-  <line x1="256" y1="60" x2="256" y2="150" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
-  <line x1="256" y1="362" x2="256" y2="452" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
-  <line x1="60" y1="256" x2="150" y2="256" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
-  <line x1="362" y1="256" x2="452" y2="256" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+  <!-- Crosshair lines - bright white, full length -->
+  <line x1="256" y1="30" x2="256" y2="150" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+  <line x1="256" y1="362" x2="256" y2="482" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+  <line x1="30" y1="256" x2="150" y2="256" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+  <line x1="362" y1="256" x2="482" y2="256" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
   <!-- Radar sweep -->
   <path d="M256 256 L256 96 A160 160 0 0 1 390 148 Z" fill="#ffffff" opacity="0.1"/>
 </svg>
