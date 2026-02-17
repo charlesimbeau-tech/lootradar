@@ -31,14 +31,18 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* Subtle grid overlay */
+/* Cyan powder mist overlay */
 body::before {
     content: '';
     position: fixed;
     inset: 0;
     background:
-        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(48, 229, 255, 0.03) 59px, rgba(48, 229, 255, 0.03) 60px),
-        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(48, 229, 255, 0.03) 59px, rgba(48, 229, 255, 0.03) 60px);
+        radial-gradient(ellipse 80% 50% at 20% 20%, rgba(48, 229, 255, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 70% at 80% 60%, rgba(48, 229, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse 90% 40% at 50% 90%, rgba(48, 229, 255, 0.04) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 50% at 70% 10%, rgba(48, 229, 255, 0.035) 0%, transparent 50%),
+        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(48, 229, 255, 0.02) 59px, rgba(48, 229, 255, 0.02) 60px),
+        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(48, 229, 255, 0.02) 59px, rgba(48, 229, 255, 0.02) 60px);
     pointer-events: none;
     z-index: 0;
 }
