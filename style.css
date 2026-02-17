@@ -287,7 +287,19 @@ a:hover { text-decoration: underline; }
     background: linear-gradient(135deg, var(--accent-dim), var(--accent));
     border-color: var(--accent);
     color: #fff;
-    box-shadow: 0 0 12px rgba(48, 229, 255, 0.2);
+    box-shadow: 0 0 12px rgba(48, 229, 255, 0.3);
+    animation: cyberPulse 2s ease-in-out infinite;
+}
+.quick-pill.active {
+    background: linear-gradient(135deg, var(--accent-dim), var(--accent));
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(48, 229, 255, 0.3);
+    animation: cyberPulse 2s ease-in-out infinite;
+}
+@keyframes cyberPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(48, 229, 255, 0.2), inset 0 0 8px rgba(48, 229, 255, 0.05); }
+    50% { box-shadow: 0 0 22px rgba(48, 229, 255, 0.45), inset 0 0 15px rgba(48, 229, 255, 0.1); }
 }
 .genre-pill.active .genre-count {
     background: rgba(255,255,255,0.25);
