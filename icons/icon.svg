@@ -9,8 +9,16 @@
       <stop offset="50%" style="stop-color:#30a9de"/>
       <stop offset="100%" style="stop-color:#20c4f4"/>
     </linearGradient>
+    <linearGradient id="sweep" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.35"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+    </linearGradient>
     <filter id="glow">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="blip-glow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
       <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
@@ -18,48 +26,37 @@
   <rect width="512" height="512" rx="108" fill="url(#outer-bg)"/>
   <!-- Inner bright blue rounded square -->
   <rect x="40" y="40" width="432" height="432" rx="80" fill="url(#inner-bg)"/>
-  <!-- Subtle inner highlight/shine -->
-  <rect x="40" y="40" width="432" height="216" rx="80" fill="white" opacity="0.08"/>
+  <!-- Subtle top highlight -->
+  <rect x="40" y="40" width="432" height="216" rx="80" fill="white" opacity="0.07"/>
   
-  <!-- Reticle group - white with glow -->
+  <!-- Radar screen -->
   <g filter="url(#glow)">
-    <!-- Outer ring -->
-    <circle cx="256" cy="256" r="155" stroke="#ffffff" stroke-width="14" fill="none"/>
-    <!-- Middle ring -->
-    <circle cx="256" cy="256" r="95" stroke="#ffffff" stroke-width="12" fill="none"/>
-    <!-- Inner ring -->
-    <circle cx="256" cy="256" r="42" stroke="#ffffff" stroke-width="10" fill="none"/>
+    <!-- Concentric range rings -->
+    <circle cx="256" cy="256" r="160" stroke="#ffffff" stroke-width="8" fill="none" opacity="0.25"/>
+    <circle cx="256" cy="256" r="115" stroke="#ffffff" stroke-width="6" fill="none" opacity="0.3"/>
+    <circle cx="256" cy="256" r="70" stroke="#ffffff" stroke-width="5" fill="none" opacity="0.4"/>
+    <circle cx="256" cy="256" r="28" stroke="#ffffff" stroke-width="4" fill="none" opacity="0.5"/>
+    
     <!-- Center dot -->
-    <circle cx="256" cy="256" r="12" fill="#ffffff"/>
+    <circle cx="256" cy="256" r="6" fill="#ffffff" opacity="0.8"/>
     
-    <!-- Crosshair lines - extending beyond outer ring to edge -->
-    <!-- Top -->
-    <line x1="256" y1="55" x2="256" y2="91" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
-    <line x1="256" y1="91" x2="256" y2="101" stroke="#ffffff" stroke-width="14"/>
-    <!-- Bottom -->
-    <line x1="256" y1="411" x2="256" y2="457" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
-    <line x1="256" y1="411" x2="256" y2="421" stroke="#ffffff" stroke-width="14"/>
-    <!-- Left -->
-    <line x1="55" y1="256" x2="91" y2="256" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
-    <line x1="91" y1="256" x2="101" y2="256" stroke="#ffffff" stroke-width="14"/>
-    <!-- Right -->
-    <line x1="411" y1="256" x2="457" y2="256" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
-    <line x1="411" y1="256" x2="421" y2="256" stroke="#ffffff" stroke-width="14"/>
-    
-    <!-- Cross lines through rings -->
-    <!-- Top segment (between outer and middle ring) -->
-    <line x1="256" y1="101" x2="256" y2="161" stroke="#ffffff" stroke-width="14"/>
-    <!-- Bottom segment -->
-    <line x1="256" y1="351" x2="256" y2="411" stroke="#ffffff" stroke-width="14"/>
-    <!-- Left segment -->
-    <line x1="101" y1="256" x2="161" y2="256" stroke="#ffffff" stroke-width="14"/>
-    <!-- Right segment -->
-    <line x1="351" y1="256" x2="411" y2="256" stroke="#ffffff" stroke-width="14"/>
-    
-    <!-- Inner cross (between middle and inner ring) -->
-    <line x1="256" y1="161" x2="256" y2="214" stroke="#ffffff" stroke-width="12"/>
-    <line x1="256" y1="298" x2="256" y2="351" stroke="#ffffff" stroke-width="12"/>
-    <line x1="161" y1="256" x2="214" y2="256" stroke="#ffffff" stroke-width="12"/>
-    <line x1="298" y1="256" x2="351" y2="256" stroke="#ffffff" stroke-width="12"/>
+    <!-- Crosshair lines (subtle, thin) -->
+    <line x1="256" y1="80" x2="256" y2="432" stroke="#ffffff" stroke-width="3" opacity="0.15"/>
+    <line x1="80" y1="256" x2="432" y2="256" stroke="#ffffff" stroke-width="3" opacity="0.15"/>
+  </g>
+  
+  <!-- Radar sweep (rotating wedge from center) -->
+  <path d="M256 256 L256 80 A176 176 0 0 1 408 168 Z" fill="url(#sweep)" opacity="0.8"/>
+  <!-- Sweep leading edge line -->
+  <line x1="256" y1="256" x2="408" y2="168" stroke="#ffffff" stroke-width="4" opacity="0.5"/>
+  
+  <!-- Blips (detected "loot") -->
+  <g filter="url(#blip-glow)">
+    <!-- Blip 1 - bright, just found -->
+    <circle cx="320" cy="180" r="10" fill="#ffffff" opacity="0.95"/>
+    <!-- Blip 2 - fading -->
+    <circle cx="200" cy="195" r="8" fill="#ffffff" opacity="0.5"/>
+    <!-- Blip 3 - almost faded -->
+    <circle cx="175" cy="310" r="7" fill="#ffffff" opacity="0.3"/>
   </g>
 </svg>
