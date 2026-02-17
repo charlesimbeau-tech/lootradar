@@ -51,7 +51,7 @@ a:hover { text-decoration: underline; }
 .hero-logo {
     width: 56px;
     height: 56px;
-    background: linear-gradient(135deg, var(--accent), #1a6fa8);
+    background: none;
     border-radius: 14px;
     display: grid;
     place-items: center;
