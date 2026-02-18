@@ -75,6 +75,61 @@ async function init() {
     document.getElementById('loading').style.display = 'block';
 
     try {
+        // Try loading pre-cached deals.json first (updated hourly by GitHub Actions)
+        let usedCache = false;
+        try {
+            const cached = await fetch('deals.json?v=' + Math.floor(Date.now() / 3600000))
+                .then(r => r.ok ? r.json() : null);
+            if (cached && cached.stores && cached.deals && cached.deals.length > 0) {
+                STORE_MAP = cached.stores;
+                ACTIVE_STORE_IDS = Object.keys(STORE_MAP);
+                ACTIVE_STORE_IDS.forEach(id => checkedStores.add(id));
+                buildStorePanel();
+
+                allDeals = cached.deals.map(d => ({
+                    title: d.title,
+                    sale: parseFloat(d.salePrice),
+                    normal: parseFloat(d.normalPrice),
+                    savings: Math.round(parseFloat(d.savings)),
+                    storeID: d.storeID,
+                    dealID: d.dealID,
+                    thumb: d.thumb,
+                    steamAppID: d.steamAppID,
+                    metacritic: parseInt(d.metacriticScore) || 0,
+                    steamRating: parseInt(d.steamRatingPercent) || 0,
+                    steamReviews: parseInt(d.steamRatingCount) || 0,
+                    dealRating: parseFloat(d.dealRating) || 0,
+                    steamRatingText: d.steamRatingText || '',
+                    genres: [],
+                }));
+
+                allDeals.forEach(deal => {
+                    const text = (deal.title + ' ' + deal.steamRatingText).toLowerCase();
+                    for (const [genre, keywords] of Object.entries(GENRE_KEYWORDS)) {
+                        if (keywords.some(kw => text.includes(kw))) {
+                            deal.genres.push(genre);
+                        }
+                    }
+                });
+
+                updateStats();
+                buildGenreTags();
+
+                const updated = new Date(cached.updatedAt);
+                document.getElementById('lastUpdated').textContent =
+                    'Deals updated: ' + updated.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' at ' + updated.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+                document.getElementById('loading').style.display = 'none';
+                render();
+                usedCache = true;
+            }
+        } catch (e) {
+            console.warn('deals.json unavailable, falling back to live API');
+        }
+
+        if (usedCache) return;
+
+        // Fallback: live API (only if deals.json missing or empty)
         const storesRes = await fetch(`${API}/stores`);
         const storesData = await storesRes.json();
 
