@@ -3,37 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Best PC Game Deals This Week â€” LootRadar Blog</title>
-    <meta name="description" content="Weekly roundup of the best PC game deals. Curated picks from Steam, Epic, GOG, and Humble Bundle sales. Never miss a great deal.">
-    <meta name="keywords" content="best game deals this week, steam sale, epic free games this week, pc game discounts, weekly game deals">
+    <title>Gaming Guides &amp; Deal Tips &mdash; LootRadar Blog</title>
+    <meta name="description" content="Expert guides on finding the best PC game deals, free games, Steam sales, and budget gaming tips. Updated weekly by the LootRadar team.">
+    <meta name="keywords" content="best game deals this week, steam sale guide, epic free games, pc game discounts, budget gaming, free games guide">
     <link rel="canonical" href="https://thelootradar.com/blog.html">
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="Best PC Game Deals This Week â€” LootRadar Blog">
-    <meta property="og:description" content="Weekly roundup of the best PC game deals across all major stores.">
+    <meta property="og:title" content="Gaming Guides &amp; Deal Tips &mdash; LootRadar Blog">
+    <meta property="og:description" content="Expert guides on finding the best PC game deals, free games, and budget gaming tips.">
     <meta property="og:type" content="blog">
     <meta property="og:url" content="https://thelootradar.com/blog.html">
     <meta property="og:site_name" content="LootRadar">
 
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Best PC Game Deals This Week â€” LootRadar Blog">
-    <meta name="twitter:description" content="Weekly roundup of the best PC game deals across all major stores.">
+    <meta name="twitter:title" content="Gaming Guides &amp; Deal Tips &mdash; LootRadar Blog">
+    <meta name="twitter:description" content="Expert guides on finding the best PC game deals and free games.">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
-    <meta name="theme-color" content="#30a9de">
-
-    <!-- Structured Data -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "Blog",
         "name": "LootRadar Blog",
-        "description": "Weekly roundups and guides for the best PC game deals",
+        "description": "Expert guides and tips for finding the best PC game deals",
         "url": "https://thelootradar.com/blog.html",
         "publisher": {
             "@type": "Organization",
@@ -42,96 +32,98 @@
         }
     }
     </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=13">
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#30a9de">
 </head>
 <body>
-    <header>
-        <div class="header-inner">
-            <a href="https://thelootradar.com/" class="header-brand" style="text-decoration:none;color:inherit">
-                <div class="logo-icon">ðŸŽ¯</div>
-                <div class="logo-text">Loot<span>Radar</span></div>
-            </a>
-            <nav class="header-nav">
-                <a href="https://thelootradar.com/">Home</a>
-                <a href="https://thelootradar.com/games.html">Games</a>
-                <a href="https://thelootradar.com/blog.html" class="active">Blog</a>
-            </nav>
+
+    <nav class="site-nav">
+        <div class="site-nav-inner">
+            <a href="index.html" class="nav-brand">Loot<span>Radar</span></a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="blog.html" class="active">Blog</a>
+                <a href="about.html">About</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <main style="max-width:800px;margin:0 auto;padding:2rem 1rem">
-        <h1 style="color:#e8ecf1;font-size:2rem;margin-bottom:0.5rem">ðŸ“° LootRadar Blog</h1>
-        <p style="color:#8a94a6;margin-bottom:2rem">Weekly roundups of the best PC game deals, curated by LootRadar.</p>
+    <main style="max-width:1100px;margin:0 auto;padding:2rem 1.5rem">
+        <h1 style="color:var(--text);font-size:2rem;margin-bottom:0.5rem">LootRadar Blog</h1>
+        <p style="color:var(--text2);margin-bottom:2rem">Expert guides, deal roundups, and budget gaming tips &mdash; updated weekly by the LootRadar team.</p>
 
-        <article class="blog-post" id="latest-post" style="background:#111720;border-radius:12px;padding:2rem;margin-bottom:2rem">
-            <h2 style="color:#e8ecf1;font-size:1.4rem;margin:0 0 0.5rem">ðŸ”¥ Best Deals This Week</h2>
-            <p style="color:#6b7588;font-size:0.85rem;margin-bottom:1rem" id="postDate"></p>
-            <div id="weeklyDeals" style="color:#c0c8d4">
-                <div class="loading"><div class="spinner"></div><p>Loading this week's top deals...</p></div>
-            </div>
-            <p style="color:#8a94a6;margin-top:1.5rem;font-size:0.9rem">
-                Want to browse all deals? Head to our <a href="https://thelootradar.com/" style="color:#30a9de">deal finder</a>
-                or <a href="https://thelootradar.com/games.html" style="color:#30a9de">search for a specific game</a>.
-            </p>
-        </article>
+        <div class="blog-grid">
 
-        <article class="blog-post" style="background:#111720;border-radius:12px;padding:2rem;margin-bottom:2rem">
-            <h2 style="color:#e8ecf1;font-size:1.4rem;margin:0 0 0.5rem">ðŸ’¡ How to Never Overpay for PC Games</h2>
-            <p style="color:#6b7588;font-size:0.85rem;margin-bottom:1rem">Guide</p>
-            <div style="color:#c0c8d4;line-height:1.7">
-                <p>PC games go on sale constantly â€” but timing matters. Here are the best strategies:</p>
-                <ol style="padding-left:1.2rem;margin:1rem 0">
-                    <li><strong>Use LootRadar</strong> â€” We compare prices across Steam, Epic, GOG, Humble Bundle, and dozens of other stores in real-time.</li>
-                    <li><strong>Wait for seasonal sales</strong> â€” Steam Summer/Winter sales, Epic's holiday events, and GOG's seasonal sales offer the deepest discounts.</li>
-                    <li><strong>Check Epic's free games</strong> â€” Epic gives away free games every week. Our homepage highlights them.</li>
-                    <li><strong>Compare before you buy</strong> â€” The same game can vary by 50%+ between stores. Use our <a href="https://thelootradar.com/games.html" style="color:#30a9de">game search</a> to compare.</li>
-                    <li><strong>Don't buy at launch</strong> â€” Most games drop 30-50% within 3-6 months of release.</li>
-                </ol>
-            </div>
-        </article>
+            <a href="blog/how-to-get-free-games.html" class="blog-card">
+                <div class="blog-card-thumb">&#127873;</div>
+                <div class="blog-card-body">
+                    <h3>How to Get Free PC Games Legally &mdash; The Complete Guide</h3>
+                    <p>Every legitimate way to get free PC games in 2026: Epic freebies, Steam giveaways, Amazon Prime Gaming, GOG, and more. Never pay full price again.</p>
+                    <div class="blog-card-meta">Feb 17, 2026 &middot; 12 min read &middot; LootRadar Team</div>
+                </div>
+            </a>
+
+            <a href="blog/steam-sale-guide.html" class="blog-card">
+                <div class="blog-card-thumb">&#128176;</div>
+                <div class="blog-card-body">
+                    <h3>The Ultimate Steam Sale Guide &mdash; When, How, and What to Buy</h3>
+                    <p>When do Steam sales happen? How to prepare your wishlist, historical sale patterns, and strategies to get the deepest discounts every time.</p>
+                    <div class="blog-card-meta">Feb 17, 2026 &middot; 11 min read &middot; LootRadar Team</div>
+                </div>
+            </a>
+
+            <a href="blog/indie-games-under-five.html" class="blog-card">
+                <div class="blog-card-thumb">&#127918;</div>
+                <div class="blog-card-body">
+                    <h3>25 Amazing Indie Games Under $5 You Need to Play</h3>
+                    <p>The best indie games you can buy for less than a coffee. From roguelikes to narrative adventures, these hidden gems punch way above their price tag.</p>
+                    <div class="blog-card-meta">Feb 17, 2026 &middot; 13 min read &middot; LootRadar Team</div>
+                </div>
+            </a>
+
+            <a href="blog/best-free-pc-games.html" class="blog-card">
+                <div class="blog-card-thumb">&#127381;</div>
+                <div class="blog-card-body">
+                    <h3>Best Free PC Games Right Now (Updated Weekly)</h3>
+                    <p>The ultimate list of free PC games you can claim right now. Epic freebies, Steam giveaways, free-to-play gems, and permanently free titles.</p>
+                    <div class="blog-card-meta">Feb 16, 2026 &middot; 10 min read &middot; LootRadar Team</div>
+                </div>
+            </a>
+
+            <a href="blog/cheapest-steam-games.html" class="blog-card">
+                <div class="blog-card-thumb">&#128184;</div>
+                <div class="blog-card-body">
+                    <h3>Cheapest Steam Games Worth Playing in 2025</h3>
+                    <p>The best cheap Steam games under $5 and $10. Budget gaming picks that are actually good &mdash; hidden gems, indie masterpieces, and AAA deals.</p>
+                    <div class="blog-card-meta">Feb 16, 2026 &middot; 9 min read &middot; LootRadar Team</div>
+                </div>
+            </a>
+
+            <a href="blog/game-price-comparison.html" class="blog-card">
+                <div class="blog-card-thumb">&#128269;</div>
+                <div class="blog-card-body">
+                    <h3>How to Compare Game Prices Across Every PC Store</h3>
+                    <p>Why PC game prices differ across stores, which stores to check, and how to use price comparison tools to find the lowest price every time.</p>
+                    <div class="blog-card-meta">Feb 16, 2026 &middot; 10 min read &middot; LootRadar Team</div>
+                </div>
+            </a>
+
+        </div>
     </main>
 
     <footer>
-        <p>LootRadar &copy; 2025 â€” Deals refresh daily. Prices sourced via CheapShark.<br>
-        <a href="https://thelootradar.com/">Home</a> Â· <a href="https://thelootradar.com/games.html">Games</a> Â· <a href="https://thelootradar.com/blog.html">Blog</a></p>
+        <p>LootRadar &copy; 2025 &mdash; Prices sourced via CheapShark.</p>
+        <p class="footer-nav"><a href="index.html">Home</a> &middot; <a href="blog.html">Blog</a> &middot; <a href="about.html">About</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a></p>
+        <p><small>Affiliate links help keep the site free.</small></p>
     </footer>
 
-    <script>
-    async function loadWeeklyDeals() {
-        const container = document.getElementById('weeklyDeals');
-        const dateEl = document.getElementById('postDate');
-
-        const now = new Date();
-        const weekStart = new Date(now);
-        weekStart.setDate(now.getDate() - now.getDay());
-        dateEl.textContent = `Week of ${weekStart.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
-
-        try {
-            const res = await fetch('https://www.cheapshark.com/api/1.0/deals?sortBy=Deal+Rating&upperPrice=60&pageSize=10');
-            const deals = await res.json();
-
-            container.innerHTML = deals.map((d, i) => {
-                const savings = Math.round(parseFloat(d.savings));
-                const sale = parseFloat(d.salePrice);
-                const normal = parseFloat(d.normalPrice);
-                return `
-                    <div style="display:flex;align-items:center;gap:1rem;padding:0.75rem 0;${i < deals.length - 1 ? 'border-bottom:1px solid #1a2233;' : ''}">
-                        <span style="color:#30a9de;font-weight:700;min-width:1.5rem">${i + 1}.</span>
-                        <div style="flex:1">
-                            <strong style="color:#e8ecf1">${d.title}</strong>
-                            <div style="font-size:0.85rem;color:#6b7588;margin-top:0.2rem">
-                                ${sale === 0 ? '<span style="color:#4cda64">FREE</span>' :
-                                    `<span style="text-decoration:line-through">$${normal.toFixed(2)}</span> â†’ <span style="color:#4cda64">$${sale.toFixed(2)}</span> <span style="color:#ffd700">(-${savings}%)</span>`}
-                            </div>
-                        </div>
-                        <a href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer"
-                           style="color:#30a9de;text-decoration:none;font-size:0.85rem;white-space:nowrap">Get Deal â†’</a>
-                    </div>`;
-            }).join('');
-        } catch(e) {
-            container.innerHTML = '<p style="color:#ff6b6b">Failed to load deals. Please refresh.</p>';
-        }
-    }
-    loadWeeklyDeals();
-    </script>
-    <!-- GoatCounter Analytics --><script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body>
+    <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
 </html>

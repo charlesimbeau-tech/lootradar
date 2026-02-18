@@ -816,6 +816,173 @@ footer {
 }
 footer a { color: var(--text2); }
 
+/* === Site Navigation === */
+.site-nav {
+    background: rgba(10, 14, 23, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(48, 229, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.site-nav-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.nav-brand {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+}
+.nav-brand span { color: var(--accent); }
+.nav-brand:hover { text-decoration: none; }
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+.nav-links a {
+    color: var(--text2);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+    position: relative;
+}
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--accent);
+    text-decoration: none;
+}
+.nav-links a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 1px;
+}
+
+/* === Ad Zones === */
+.ad-zone {
+    max-width: 1280px;
+    margin: 1.5rem auto;
+    padding: 0 1.5rem;
+}
+.ad-zone-inner {
+    min-height: 90px;
+    background: rgba(15, 25, 40, 0.4);
+    border: 1px solid rgba(48, 229, 255, 0.08);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ad-label {
+    display: block;
+    text-align: center;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text3);
+    margin-bottom: 0.25rem;
+}
+
+/* === Blog Styles === */
+.blog-content { max-width: 780px; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.75; }
+.blog-content h1 { font-size: 2rem; margin-bottom: 0.5rem; color: var(--text); }
+.blog-content .meta { color: var(--text2); font-size: 0.9rem; margin-bottom: 2rem; }
+.blog-content h2 { margin-top: 2.5rem; font-size: 1.5rem; color: var(--text); }
+.blog-content h3 { margin-top: 1.8rem; font-size: 1.2rem; color: var(--text); }
+.blog-content p { margin-bottom: 1rem; color: #ccc; }
+.blog-content ul, .blog-content ol { margin-bottom: 1rem; padding-left: 1.5rem; color: #ccc; }
+.blog-content li { margin-bottom: 0.5rem; }
+.blog-content a { color: var(--accent); }
+.blog-content a:hover { text-decoration: underline; }
+.blog-content .cta-box {
+    background: rgba(48,169,222,0.1);
+    border: 1px solid rgba(48,169,222,0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    text-align: center;
+}
+.blog-content .cta-box a { font-weight: 700; font-size: 1.1rem; }
+
+/* Blog Cards Grid */
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+.blog-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+.blog-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 20px rgba(48, 229, 255, 0.15);
+    border-color: rgba(48, 229, 255, 0.25);
+    text-decoration: none;
+}
+.blog-card-thumb {
+    aspect-ratio: 16/9;
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+}
+.blog-card-body { padding: 1.25rem; }
+.blog-card-body h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+}
+.blog-card-body p {
+    color: var(--text2);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.blog-card-meta {
+    font-size: 0.75rem;
+    color: var(--text3);
+}
+
+/* Footer nav */
+.footer-nav {
+    margin: 0.5rem 0;
+}
+.footer-nav a {
+    color: var(--text2);
+    margin: 0 0.25rem;
+}
+
 /* === Responsive === */
 @media (max-width: 768px) {
     .hero-inner { padding: 1.5rem 1rem 1rem; }

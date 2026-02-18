@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy â€” LootRadar</title>
-    <link rel="stylesheet" href="style.css?v=4">
-    <link rel="icon" href="icons/logo.svg" type="image/svg+xml">
+    <title>Privacy Policy &mdash; LootRadar</title>
+    <link rel="stylesheet" href="style.css?v=13">
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <meta name="theme-color" content="#30a9de">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         .legal { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
         .legal h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
@@ -18,28 +21,32 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-inner">
-            <a href="/" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:0.7rem">
-                <div class="logo">LR</div>
-                <div class="brand-name">Loot<span>Radar</span></div>
-            </a>
+
+    <nav class="site-nav">
+        <div class="site-nav-inner">
+            <a href="index.html" class="nav-brand">Loot<span>Radar</span></a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="blog.html">Blog</a>
+                <a href="about.html">About</a>
+                <a href="privacy.html" class="active">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </div>
         </div>
-    </header>
+    </nav>
 
     <div class="legal">
         <h1>Privacy Policy</h1>
-        <p class="updated">Last updated: February 15, 2026</p>
+        <p class="updated">Last updated: February 17, 2026</p>
 
         <h2>Information We Collect</h2>
         <p>LootRadar does not collect personal information directly. We do not require registration, login, or any form of personal data to use the site.</p>
 
-        <h2>Cookies &amp; Tracking</h2>
-        <p>We use the following third-party services that may set cookies:</p>
-        <ul>
-            <li><strong>Google AdSense</strong> â€” Serves advertisements and may use cookies to personalize ads based on your browsing history. You can opt out of personalized advertising at <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Google Ads Settings</a>.</li>
-            <li><strong>Google Analytics</strong> â€” Helps us understand how visitors use the site. Data is anonymized and aggregated.</li>
-        </ul>
+        <h2>Analytics</h2>
+        <p>We use <a href="https://www.goatcounter.com/" target="_blank" rel="noopener">GoatCounter</a> for basic, privacy-friendly analytics. GoatCounter does not use cookies, does not collect personal data, and does not track users across websites. We use it solely to understand aggregate traffic patterns.</p>
+
+        <h2>Advertising</h2>
+        <p>LootRadar may display advertisements from third-party advertising networks. These networks may use cookies or similar technologies to serve relevant ads. You can manage your ad preferences through your browser settings or the ad network's opt-out mechanisms.</p>
 
         <h2>Affiliate Links</h2>
         <p>LootRadar contains affiliate links to game stores. When you click a deal and make a purchase, we may earn a small commission through the CheapShark affiliate program. This does not affect the price you pay.</p>
@@ -58,15 +65,14 @@
 
         <h2>Contact</h2>
         <p>If you have questions about this privacy policy, contact us at <strong>contact@thelootradar.com</strong>.</p>
-
-        <h2>Third-Party Advertising Disclosures</h2>
-        <span id="ezoic-privacy-policy-embed"></span>
     </div>
 
     <footer>
-        <p>LootRadar &copy; 2025 â€” Prices sourced via CheapShark.<br>
-        <a href="/">Home</a> Â· <a href="/privacy.html">Privacy Policy</a> Â· <a href="/terms.html">Terms of Service</a><br>
-        <small>Affiliate links help keep the site free.</small></p>
+        <p>LootRadar &copy; 2025 &mdash; Prices sourced via CheapShark.</p>
+        <p class="footer-nav"><a href="index.html">Home</a> &middot; <a href="blog.html">Blog</a> &middot; <a href="about.html">About</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a></p>
+        <p><small>Affiliate links help keep the site free.</small></p>
     </footer>
-    <!-- GoatCounter Analytics --><script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body>
+
+    <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
 </html>

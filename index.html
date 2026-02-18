@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LootRadar — Best PC Game Deals, Updated Daily</title>
+    <title>LootRadar &mdash; Best PC Game Deals, Updated Daily</title>
     <meta name="description" content="Find the best PC game deals across Steam, Epic Games Store, GOG, and Humble Bundle. Updated daily with price tracking. Never overpay for games again.">
     <meta name="keywords" content="game deals, steam sales, epic free games, gog deals, humble bundle, pc game discounts, cheap games">
     <link rel="canonical" href="https://thelootradar.com/">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="LootRadar — Best PC Game Deals, Updated Daily">
+    <meta property="og:title" content="LootRadar &mdash; Best PC Game Deals, Updated Daily">
     <meta property="og:description" content="Live game deal aggregator. Compare prices across Steam, Epic, GOG, Humble Bundle and more.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://thelootradar.com/">
@@ -17,7 +17,7 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="LootRadar — Best PC Game Deals">
+    <meta name="twitter:title" content="LootRadar &mdash; Best PC Game Deals">
     <meta name="twitter:description" content="Find the best PC game deals across Steam, Epic, GOG, and Humble Bundle. Updated daily.">
 
     <!-- Structured Data -->
@@ -39,24 +39,27 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=12">
+    <link rel="stylesheet" href="style.css?v=13">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icons/icon.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#30a9de">
-
-    <!-- Ezoic Privacy Scripts (must load first) -->
-    <script data-cfasync="false" src="https://cmp.gatekeeperconsent.com/min.js"></script>
-    <script data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js"></script>
-
-    <!-- Ezoic Header Script -->
-    <script async src="//www.ezojs.com/ezoic/sa.min.js"></script>
-    <script>
-    window.ezstandalone = window.ezstandalone || {};
-    ezstandalone.cmd = ezstandalone.cmd || [];
-    </script>
 </head>
 <body>
+
+    <!-- Navigation -->
+    <nav class="site-nav">
+        <div class="site-nav-inner">
+            <a href="index.html" class="nav-brand">Loot<span>Radar</span></a>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="blog.html">Blog</a>
+                <a href="about.html">About</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </div>
+        </div>
+    </nav>
 
     <!-- Hero -->
     <header class="hero">
@@ -67,16 +70,18 @@
             </div>
             <p class="hero-tagline">Compare game prices across 15+ stores. Never overpay.</p>
             <div class="hero-stats">
-                <div class="hero-stat"><span class="hero-stat-val" id="statDeals">—</span><span class="hero-stat-lbl">deals</span></div>
-                <div class="hero-stat"><span class="hero-stat-val" id="statStores">—</span><span class="hero-stat-lbl">stores</span></div>
-                <div class="hero-stat"><span class="hero-stat-val" id="statClaimed">—</span><span class="hero-stat-lbl">claimed</span></div>
+                <div class="hero-stat"><span class="hero-stat-val" id="statDeals">&mdash;</span><span class="hero-stat-lbl">deals</span></div>
+                <div class="hero-stat"><span class="hero-stat-val" id="statStores">&mdash;</span><span class="hero-stat-lbl">stores</span></div>
+                <div class="hero-stat"><span class="hero-stat-val" id="statClaimed">&mdash;</span><span class="hero-stat-lbl">claimed</span></div>
             </div>
         </div>
     </header>
 
-    <!-- Ezoic - top_of_page - top_of_page -->
-    <div id="ezoic-pub-ad-placeholder-118"></div>
-    <!-- End Ezoic - top_of_page - top_of_page -->
+    <!-- Ad Zone: Top -->
+    <div class="ad-zone ad-zone-top">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-zone-inner"></div>
+    </div>
 
     <!-- Controls -->
     <div class="controls">
@@ -101,28 +106,26 @@
                         <label class="store-select-all">
                             <input type="checkbox" id="storeSelectAll" checked> <strong>Select All</strong>
                         </label>
-                        <div class="store-checkboxes" id="storeCheckboxes">
-                            <!-- Populated dynamically by JS -->
-                        </div>
+                        <div class="store-checkboxes" id="storeCheckboxes"></div>
                     </div>
                 </div>
 
                 <div class="select-wrap">
                     <select id="sortSelect">
-                        <option value="discount-high">🔥 Discount: High → Low</option>
-                        <option value="discount-low">📉 Discount: Low → High</option>
-                        <option value="price-low">💰 Price: Low → High</option>
-                        <option value="price-high">💸 Price: High → Low</option>
-                        <option value="popular">👥 Most Popular</option>
-                        <option value="rating">⭐ Highest Rated</option>
-                        <option value="metacritic">🏆 Metacritic</option>
-                        <option value="name">🔤 A — Z</option>
+                        <option value="discount-high">Discount: High &rarr; Low</option>
+                        <option value="discount-low">Discount: Low &rarr; High</option>
+                        <option value="price-low">Price: Low &rarr; High</option>
+                        <option value="price-high">Price: High &rarr; Low</option>
+                        <option value="popular">Most Popular</option>
+                        <option value="rating">Highest Rated</option>
+                        <option value="metacritic">Metacritic</option>
+                        <option value="name">A &mdash; Z</option>
                     </select>
                 </div>
 
                 <div class="select-wrap">
                     <select id="ratingSelect">
-                        <option value="0">⭐ Any Rating</option>
+                        <option value="0">Any Rating</option>
                         <option value="50">50%+ Positive</option>
                         <option value="70">70%+ Positive</option>
                         <option value="80">80%+ Positive</option>
@@ -160,70 +163,74 @@
         </div>
 
         <div id="featuredSection" class="section" style="display:none">
-            <div class="section-title">🔥 Featured Deals</div>
+            <div class="section-title">Featured Deals</div>
             <div id="featuredDeals" class="grid"></div>
         </div>
 
-        <!-- Ezoic - mid_content - mid_content -->
-        <div id="ezoic-pub-ad-placeholder-119"></div>
-        <!-- End Ezoic - mid_content - mid_content -->
+        <!-- Ad Zone: Mid -->
+        <div class="ad-zone ad-zone-mid">
+            <span class="ad-label">Advertisement</span>
+            <div class="ad-zone-inner"></div>
+        </div>
 
         <div id="allSection" class="section" style="display:none">
-            <div class="section-title">🎮 All Deals</div>
+            <div class="section-title">All Deals</div>
             <div id="deals" class="grid"></div>
         </div>
 
         <div id="noResults" class="no-results" style="display:none">
-            <p>😔 No deals matched your search. Try different keywords or filters.</p>
+            <p>No deals matched your search. Try different keywords or filters.</p>
         </div>
 
         <div id="lastUpdated" class="last-updated"></div>
     </main>
 
-    <!-- Ezoic - bottom_of_page - bottom_of_page -->
-    <div id="ezoic-pub-ad-placeholder-120"></div>
-    <!-- End Ezoic - bottom_of_page - bottom_of_page -->
+    <!-- Ad Zone: Bottom -->
+    <div class="ad-zone ad-zone-bottom">
+        <span class="ad-label">Advertisement</span>
+        <div class="ad-zone-inner"></div>
+    </div>
 
     <!-- SEO Content -->
     <section class="seo">
         <div class="seo-inner">
-            <h1>Find the Best PC Game Deals — Updated Daily</h1>
-            <p>LootRadar scans thousands of deals across <strong>Steam</strong>, <strong>Epic Games Store</strong>, <strong>GOG</strong>, and <strong>Humble Bundle</strong> to bring you the lowest prices on PC games every single day. Whether you're hunting for free games, massive discounts, or hidden indie gems — we've got you covered.</p>
+            <h1>Find the Best PC Game Deals &mdash; Updated Daily</h1>
+            <p>LootRadar scans thousands of deals across <strong>Steam</strong>, <strong>Epic Games Store</strong>, <strong>GOG</strong>, and <strong>Humble Bundle</strong> to bring you the lowest prices on PC games every single day. Whether you're hunting for free games, massive discounts, or hidden indie gems &mdash; we've got you covered.</p>
 
             <div class="seo-grid">
                 <div class="seo-card">
-                    <h2>🔥 How It Works</h2>
+                    <h2>How It Works</h2>
                     <p>We aggregate deals from all major PC game stores in real-time. Filter by store, price, discount, and ratings. Every deal links directly to the store.</p>
                 </div>
                 <div class="seo-card">
-                    <h2>🎮 Stores We Track</h2>
+                    <h2>Stores We Track</h2>
                     <p>Steam, Epic Games Store, GOG.com, Humble Bundle, Green Man Gaming, Fanatical, and dozens more. One search, every store.</p>
                 </div>
                 <div class="seo-card">
-                    <h2>💰 Never Overpay</h2>
+                    <h2>Never Overpay</h2>
                     <p>Compare prices across 30+ retailers instantly. Sort by discount, rating, or popularity to find deals worth your money.</p>
                 </div>
                 <div class="seo-card">
-                    <h2>⚡ Free Games</h2>
+                    <h2>Free Games</h2>
                     <p>Epic, Steam, and others give away free games regularly. LootRadar highlights every freebie so you never miss one.</p>
                 </div>
             </div>
 
             <div class="faq">
                 <h2>Frequently Asked Questions</h2>
-                <details><summary>Is LootRadar free?</summary><p>Yes — completely free. We earn a small commission through affiliate links.</p></details>
+                <details><summary>Is LootRadar free?</summary><p>Yes &mdash; completely free. We earn a small commission through affiliate links.</p></details>
                 <details><summary>How often are deals updated?</summary><p>Daily, via the CheapShark API which tracks thousands of deals across 30+ stores.</p></details>
                 <details><summary>Which stores are tracked?</summary><p>Steam, Epic, GOG, Humble Bundle, Green Man Gaming, Fanatical, GamersGate, and many more.</p></details>
-                <details><summary>Can I use this on my phone?</summary><p>Yes! LootRadar is a PWA — install it on Android or iOS like a native app.</p></details>
+                <details><summary>Can I use this on my phone?</summary><p>Yes! LootRadar is a PWA &mdash; install it on Android or iOS like a native app.</p></details>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <p>LootRadar &copy; 2025 — Prices sourced via CheapShark.<br>
-        <a href="/">Home</a> · <a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a><br>
-        <small>Affiliate links help keep the site free.</small></p>
+        <p>LootRadar &copy; 2025 &mdash; Prices sourced via CheapShark.</p>
+        <p class="footer-nav"><a href="index.html">Home</a> &middot; <a href="blog.html">Blog</a> &middot; <a href="about.html">About</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a></p>
+        <p><small>Affiliate links help keep the site free.</small></p>
     </footer>
 
     <script>
@@ -241,12 +248,5 @@
     <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
     <script src="app.js?v=14"></script>
-
-    <!-- Ezoic: Show all ad placements -->
-    <script>
-    ezstandalone.cmd.push(function() {
-        ezstandalone.showAds(118, 119, 120);
-    });
-    </script>
 </body>
 </html>
