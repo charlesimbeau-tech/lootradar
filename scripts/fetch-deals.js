@@ -6,6 +6,9 @@ const fs = require('fs');
 const path = require('path');
 
 const API = 'https://www.cheapshark.com/api/1.0';
+const MAX_PRICE = Number(process.env.MAX_PRICE || 70);
+const PAGE_SIZE = Number(process.env.PAGE_SIZE || 80);
+const PAGES_PER_STORE = Number(process.env.PAGES_PER_STORE || 3);
 
 function fetchJSON(url) {
   return new Promise((resolve, reject) => {
@@ -38,37 +41,47 @@ async function main() {
   });
 
   console.log(`Found ${activeStores.length} active stores. Fetching deals...`);
+  console.log(`Config: upperPrice=${MAX_PRICE}, pageSize=${PAGE_SIZE}, pagesPerStore=${PAGES_PER_STORE}`);
 
   const allDeals = [];
 
-  // Fetch deals from each store with a small delay to be polite
+  // Fetch deals from each store with pagination + small delay to be polite
   for (const store of activeStores) {
+    let storeCount = 0;
     try {
-      const deals = await fetchJSON(
-        `${API}/deals?storeID=${store.storeID}&upperPrice=60&pageSize=40&sortBy=Deal+Rating`
-      );
-      if (Array.isArray(deals)) {
-        allDeals.push(...deals.map(d => ({
-          title: d.title,
-          salePrice: d.salePrice,
-          normalPrice: d.normalPrice,
-          savings: d.savings,
-          storeID: d.storeID,
-          dealID: d.dealID,
-          thumb: d.thumb,
-          steamAppID: d.steamAppID,
-          metacriticScore: d.metacriticScore,
-          steamRatingPercent: d.steamRatingPercent,
-          steamRatingCount: d.steamRatingCount,
-          steamRatingText: d.steamRatingText,
-          dealRating: d.dealRating,
-        })));
+      for (let page = 0; page < PAGES_PER_STORE; page++) {
+        const deals = await fetchJSON(
+          `${API}/deals?storeID=${store.storeID}&upperPrice=${MAX_PRICE}&pageSize=${PAGE_SIZE}&pageNumber=${page}&sortBy=Deal+Rating`
+        );
+
+        if (Array.isArray(deals) && deals.length) {
+          allDeals.push(...deals.map(d => ({
+            title: d.title,
+            salePrice: d.salePrice,
+            normalPrice: d.normalPrice,
+            savings: d.savings,
+            storeID: d.storeID,
+            dealID: d.dealID,
+            thumb: d.thumb,
+            steamAppID: d.steamAppID,
+            metacriticScore: d.metacriticScore,
+            steamRatingPercent: d.steamRatingPercent,
+            steamRatingCount: d.steamRatingCount,
+            steamRatingText: d.steamRatingText,
+            dealRating: d.dealRating,
+          })));
+          storeCount += deals.length;
+        }
+
+        // if a page is sparse/empty, likely no more high-quality deals for this store
+        if (!Array.isArray(deals) || deals.length < Math.floor(PAGE_SIZE * 0.25)) break;
+        await sleep(120);
       }
-      console.log(`  ${store.storeName}: ${Array.isArray(deals) ? deals.length : 0} deals`);
+      console.log(`  ${store.storeName}: ${storeCount} deals`);
     } catch (e) {
       console.warn(`  ${store.storeName}: FAILED - ${e.message}`);
     }
-    await sleep(200); // Be nice to the API
+    await sleep(180);
   }
 
   // Dedupe - keep best deal per title

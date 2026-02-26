@@ -10,6 +10,7 @@ A game deals aggregator that pulls live pricing from 15+ stores and caches resul
 
 - **15+ store coverage** via [CheapShark API](https://www.cheapshark.com/) (Steam, GOG, Humble, etc.)
 - **Hourly deal caching** — GitHub Actions workflow keeps data fresh without hammering the API
+- **Expanded sales feed** via paginated CheapShark pulls (more deals per store)
 - **Recommendations tab** with profile-based ranking + local feedback learning
 - **Optional enriched catalog** (`enriched-deals.json`) using RAWG metadata (genres/tags/platforms)
 - **Genre & store filters** for quick browsing
