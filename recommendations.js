@@ -148,27 +148,66 @@ function dealCardHtml(d) {
   </div>`;
 }
 
+function getDealGenres(deal) {
+  return (deal.rawg?.genres && deal.rawg.genres.length)
+    ? deal.rawg.genres
+    : inferGenres((deal.title || '') + ' ' + (deal.steamRatingText || ''));
+}
+
+function renderBecauseYouLiked(scoredDeals) {
+  const becauseGrid = document.getElementById('becauseGrid');
+  const becauseReason = document.getElementById('becauseReason');
+  const likedIds = Object.keys(profile.likes || {});
+
+  if (!likedIds.length) {
+    becauseReason.textContent = 'Like a few games and this section will learn your taste.';
+    becauseGrid.innerHTML = '';
+    return;
+  }
+
+  const likedDeals = deals.filter(d => likedIds.includes(d.dealID));
+  const likedGenres = new Map();
+  likedDeals.forEach(d => {
+    getDealGenres(d).forEach(g => likedGenres.set(g, (likedGenres.get(g) || 0) + 1));
+  });
+
+  const topGenre = [...likedGenres.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || 'your favorites';
+
+  const picks = scoredDeals
+    .filter(x => !profile.likes[x.d.dealID] && !profile.dislikes[x.d.dealID])
+    .filter(x => getDealGenres(x.d).includes(topGenre))
+    .slice(0, 8);
+
+  becauseReason.textContent = `Picked from ${topGenre} games you’ve liked.`;
+  becauseGrid.innerHTML = picks.map(x => dealCardHtml(x.d)).join('');
+}
+
 function renderRecommendations() {
   const scored = deals
     .map(d => ({ d, score: scoreDeal(d) }))
     .filter(x => x.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 36);
+    .sort((a, b) => b.score - a.score);
 
   const grid = document.getElementById('recommendationGrid');
   const empty = document.getElementById('emptyState');
   const count = document.getElementById('recCount');
 
-  if (!scored.length) {
+  const filtered = scored
+    .filter(x => !profile.dislikes[x.d.dealID])
+    .slice(0, 36);
+
+  if (!filtered.length) {
     grid.innerHTML = '';
     empty.style.display = 'block';
     count.textContent = '';
+    renderBecauseYouLiked([]);
     return;
   }
 
   empty.style.display = 'none';
-  count.textContent = `${scored.length} personalized deals found`;
-  grid.innerHTML = scored.map(x => dealCardHtml(x.d)).join('');
+  count.textContent = `${filtered.length} personalized deals found`;
+  grid.innerHTML = filtered.map(x => dealCardHtml(x.d)).join('');
+  renderBecauseYouLiked(scored);
 }
 
 function bindControls() {
