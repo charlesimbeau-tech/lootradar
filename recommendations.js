@@ -31,6 +31,7 @@ const GENRE_KEYWORDS = {
 
 const DEFAULT_PROFILE = {
   budget: 70, minRating: 0, minDiscount: 0, mode: 'all',
+  genreMatchMode: 'any',
   genres: ['RPG','Action','Indie'], likes: {}, dislikes: {}
 };
 const STORAGE_KEY = 'lr_rec_profile_v3';
@@ -87,9 +88,15 @@ function getGenres(game) {
   return inferGenres((game.title || '') + ' ' + (game.steamRatingText || ''));
 }
 
-function hasGenreMatch(gameGenres, selectedGenres) {
-  if (!selectedGenres || !selectedGenres.length) return true;
+function hasGenreMatch(gameGenres, selectedGenres, mode) {
+  if (!selectedGenres || !selectedGenres.length) return false;
   var gs = gameGenres.map(normalizeLabel);
+  if (mode === 'all') {
+    for (var j = 0; j < selectedGenres.length; j++) {
+      if (gs.indexOf(normalizeLabel(selectedGenres[j])) === -1) return false;
+    }
+    return true;
+  }
   for (var i = 0; i < selectedGenres.length; i++) {
     if (gs.indexOf(normalizeLabel(selectedGenres[i])) !== -1) return true;
   }
@@ -113,7 +120,7 @@ function scoreGame(game) {
   if (profile.mode === 'on-sale' && !isOnSale) return -999;
 
   var genres = getGenres(game);
-  if (!hasGenreMatch(genres, profile.genres)) return -999;
+  if (!hasGenreMatch(genres, profile.genres, profile.genreMatchMode || 'any')) return -999;
 
   var genreMatches = 0;
   for (var i = 0; i < genres.length; i++) {
@@ -207,6 +214,20 @@ function cardHtml(game, why) {
     + '</div></div></div>';
 }
 
+function updateGenreHint() {
+  var hint = document.getElementById('genreHint');
+  if (!hint) return;
+  if (!profile.genres.length) {
+    hint.textContent = 'No genres selected = no results. Pick at least one genre.';
+    return;
+  }
+  if (profile.genres.length === GENRES.length) {
+    hint.textContent = 'All genres selected = widest results.';
+    return;
+  }
+  hint.textContent = 'Selected ' + profile.genres.length + ' genre(s).';
+}
+
 function buildGenrePills() {
   var wrap = document.getElementById('genrePills');
   if (!wrap) return;
@@ -225,6 +246,7 @@ function buildGenrePills() {
       else profile.genres.push(g);
       this.classList.toggle('active');
       saveProfile();
+      updateGenreHint();
       renderRecommendations();
     });
     wrap.appendChild(btn);
@@ -306,11 +328,16 @@ function bindControls() {
   var minRating = document.getElementById('minRating');
   var minDiscount = document.getElementById('minDiscount');
   var recMode = document.getElementById('recMode');
+  var genreMatchMode = document.getElementById('genreMatchMode');
+  var selectAllGenres = document.getElementById('selectAllGenres');
+  var clearGenres = document.getElementById('clearGenres');
 
   if (budgetRange) { budgetRange.value = profile.budget; budgetVal.textContent = '$' + profile.budget; }
   if (minRating) minRating.value = String(profile.minRating);
   if (minDiscount) minDiscount.value = String(profile.minDiscount);
   if (recMode) recMode.value = profile.mode || 'all';
+  if (genreMatchMode) genreMatchMode.value = profile.genreMatchMode || 'any';
+  updateGenreHint();
 
   if (budgetRange) budgetRange.addEventListener('input', function() {
     profile.budget = parseInt(budgetRange.value, 10);
@@ -328,6 +355,18 @@ function bindControls() {
   if (recMode) recMode.addEventListener('change', function() {
     profile.mode = recMode.value;
     saveProfile(); renderRecommendations();
+  });
+  if (genreMatchMode) genreMatchMode.addEventListener('change', function() {
+    profile.genreMatchMode = genreMatchMode.value;
+    saveProfile(); renderRecommendations();
+  });
+  if (selectAllGenres) selectAllGenres.addEventListener('click', function() {
+    profile.genres = GENRES.slice();
+    saveProfile(); buildGenrePills(); updateGenreHint(); renderRecommendations();
+  });
+  if (clearGenres) clearGenres.addEventListener('click', function() {
+    profile.genres = [];
+    saveProfile(); buildGenrePills(); updateGenreHint(); renderRecommendations();
   });
 
   var saveBtn = document.getElementById('savePrefs');

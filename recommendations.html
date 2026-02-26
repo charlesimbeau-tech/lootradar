@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=15">
-    <link rel="stylesheet" href="recommendations.css?v=6">
+    <link rel="stylesheet" href="recommendations.css?v=7">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 </head>
 <body>
@@ -84,8 +84,17 @@
                     </div>
                 </div>
 
-                <h3 style="margin:16px 0 10px 0;">Genres you like</h3>
+                <h3 style="margin:16px 0 8px 0;">Genres you like</h3>
+                <div class="genre-controls">
+                    <select id="genreMatchMode" class="genre-match-select">
+                        <option value="any">Match any selected genre</option>
+                        <option value="all">Match all selected genres</option>
+                    </select>
+                    <button class="reset-btn" id="selectAllGenres" type="button">Select All</button>
+                    <button class="reset-btn" id="clearGenres" type="button">Clear All</button>
+                </div>
                 <div id="genrePills" class="genre-tags-row"></div>
+                <div class="genre-hint" id="genreHint">Tip: all genres selected = widest results.</div>
 
                 <div class="apply-wrap" style="margin-top:14px;">
                     <button class="apply-btn" id="savePrefs">Save Preferences</button>
@@ -130,7 +139,7 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <script src="recommendations.js?v=9"></script>
+    <script src="recommendations.js?v=10"></script>
 </body>
 </html>
 
