@@ -1,433 +1,483 @@
+/* LootRadar Recommendations Engine v7 — clean rebuild */
+
 const GENRES = [
-  'RPG','Souls-like','Metroidvania','Roguelike','FPS','Action','Strategy','Horror','Racing','Sports','Simulation','Adventure','Indie','Survival','Puzzle','Open World','Multiplayer','Platformer','Fighting','Stealth'
+  'RPG','Action','Adventure','Indie','FPS','Strategy','Horror','Racing',
+  'Sports','Simulation','Survival','Puzzle','Open World','Multiplayer',
+  'Platformer','Fighting','Stealth','Roguelike','Souls-like','Metroidvania'
 ];
 
 const GENRE_KEYWORDS = {
-  'RPG': ['rpg', 'fantasy', 'quest', 'witcher', 'dragon', 'final fantasy', 'baldur'],
-  'Souls-like': ['souls', 'elden ring', 'sekiro', 'nioh', 'lies of p'],
-  'Metroidvania': ['metroidvania', 'hollow knight', 'ori', 'dead cells', 'blasphemous'],
-  'Roguelike': ['roguelike', 'roguelite', 'hades', 'slay the spire', 'risk of rain'],
-  'FPS': ['shooter', 'doom', 'battlefield', 'counter-strike', 'halo', 'overwatch'],
-  'Action': ['action', 'assassin', 'tomb raider', 'hitman', 'devil may cry'],
-  'Strategy': ['strategy', 'civilization', 'xcom', 'total war', 'stellaris'],
-  'Horror': ['horror', 'resident evil', 'dead space', 'outlast', 'alan wake'],
-  'Racing': ['racing', 'forza', 'need for speed', 'f1', 'dirt'],
-  'Sports': ['sports', 'fifa', 'nba', 'madden', 'wwe'],
-  'Simulation': ['simulator', 'simulation', 'farming', 'flight', 'tycoon'],
-  'Adventure': ['adventure', 'life is strange', 'firewatch', 'walking dead'],
-  'Indie': ['indie', 'stardew', 'undertale', 'cuphead', 'celeste'],
-  'Survival': ['survival', 'rust', 'dayz', 'forest', 'subnautica', 'valheim'],
-  'Puzzle': ['puzzle', 'portal', 'tetris', 'witness'],
-  'Open World': ['open world', 'gta', 'cyberpunk', 'red dead', 'skyrim'],
-  'Multiplayer': ['multiplayer', 'co-op', 'online', 'pvp', 'battle royale'],
-  'Platformer': ['platformer', 'mario', 'sonic', 'rayman'],
-  'Fighting': ['fighting', 'street fighter', 'tekken', 'mortal kombat'],
-  'Stealth': ['stealth', 'dishonored', 'thief', 'splinter cell', 'deus ex']
+  'RPG':['rpg','fantasy','quest','witcher','dragon','final fantasy','baldur'],
+  'Action':['action','assassin','tomb raider','hitman','devil may cry'],
+  'Adventure':['adventure','life is strange','firewatch','walking dead'],
+  'Indie':['indie','stardew','undertale','cuphead','celeste'],
+  'FPS':['shooter','doom','battlefield','counter-strike','halo','overwatch'],
+  'Strategy':['strategy','civilization','xcom','total war','stellaris'],
+  'Horror':['horror','resident evil','dead space','outlast','alan wake'],
+  'Racing':['racing','forza','need for speed','f1','dirt'],
+  'Sports':['sports','fifa','nba','madden','wwe'],
+  'Simulation':['simulator','simulation','farming','flight','tycoon'],
+  'Survival':['survival','rust','dayz','forest','subnautica','valheim'],
+  'Puzzle':['puzzle','portal','tetris','witness'],
+  'Open World':['open world','gta','cyberpunk','red dead','skyrim'],
+  'Multiplayer':['multiplayer','co-op','online','pvp','battle royale'],
+  'Platformer':['platformer','mario','sonic','rayman'],
+  'Fighting':['fighting','street fighter','tekken','mortal kombat'],
+  'Stealth':['stealth','dishonored','thief','splinter cell','deus ex'],
+  'Roguelike':['roguelike','roguelite','hades','slay the spire','risk of rain'],
+  'Souls-like':['souls','elden ring','sekiro','nioh','lies of p'],
+  'Metroidvania':['metroidvania','hollow knight','ori','dead cells','blasphemous']
 };
 
 const DEFAULT_PROFILE = {
-  budget: 70,
-  minRating: 70,
-  minDiscount: 20,
-  mode: 'all',
-  genres: ['RPG', 'Action', 'Indie'],
-  likes: {},
-  dislikes: {}
+  budget: 70, minRating: 0, minDiscount: 0, mode: 'all',
+  genres: ['RPG','Action','Indie'], likes: {}, dislikes: {}
 };
+const STORAGE_KEY = 'lr_rec_profile_v3';
 
-const STORAGE_KEY = 'lr_recommendation_profile_v2';
-
-let stores = {};
-let deals = [];
-let catalog = [];
-let supabase = null;
-let authedUserId = null;
-let profile = loadProfile();
+var stores = {};
+var deals = [];
+var catalog = [];
+var supabase = null;
+var authedUserId = null;
+var profile = loadProfile();
 
 function loadProfile() {
-  try { return { ...DEFAULT_PROFILE, ...(JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}) }; }
-  catch { return { ...DEFAULT_PROFILE }; }
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved && typeof saved === 'object') {
+      return Object.assign({}, DEFAULT_PROFILE, saved);
+    }
+  } catch(e) { /* ignore */ }
+  return Object.assign({}, DEFAULT_PROFILE);
 }
+
 function saveProfile() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-  saveProfileToCloud();
-}
-function itemKey(x) { return x.dealID || `app-${x.steamAppID || x.appid || x.id}`; }
-
-async function saveProfileToCloud() {
-  if (!supabase || !authedUserId) return;
-  try {
-    await supabase.from('lr_profiles').upsert({
-      user_id: authedUserId,
-      data: profile,
-      updated_at: new Date().toISOString()
-    });
-  } catch (e) {
-    console.warn('Cloud profile save failed', e?.message || e);
+  if (supabase && authedUserId) {
+    supabase.from('lr_profiles').upsert({
+      user_id: authedUserId, data: profile, updated_at: new Date().toISOString()
+    }).then(function(){}).catch(function(){});
   }
 }
 
-function inferGenres(text = '') {
-  const t = text.toLowerCase();
-  const out = [];
-  for (const [genre, kws] of Object.entries(GENRE_KEYWORDS)) {
-    if (kws.some(k => t.includes(k))) out.push(genre);
+function itemKey(x) {
+  return x.dealID || ('app-' + (x.steamAppID || x.appid || x.id || 'unknown'));
+}
+
+function inferGenres(text) {
+  var t = (text || '').toLowerCase();
+  var out = [];
+  for (var genre in GENRE_KEYWORDS) {
+    var kws = GENRE_KEYWORDS[genre];
+    for (var i = 0; i < kws.length; i++) {
+      if (t.indexOf(kws[i]) !== -1) { out.push(genre); break; }
+    }
   }
   return out;
 }
 
 function getGenres(game) {
-  const g = game.rawg?.genres || game.genres || [];
-  return g.length ? g : inferGenres(`${game.title || ''} ${game.steamRatingText || ''}`);
+  var g = (game.rawg && game.rawg.genres) || game.genres || [];
+  if (g.length) return g;
+  return inferGenres((game.title || '') + ' ' + (game.steamRatingText || ''));
 }
 
 function getTags(game) {
-  return game.rawg?.tags || game.tags || inferGenres(game.title || '');
+  return (game.rawg && game.rawg.tags) || game.tags || inferGenres(game.title || '');
 }
 
 function scoreGame(game) {
-  const rawSale = game.salePrice ?? game.price_usd ?? game.price ?? null;
-  const sale = rawSale == null ? null : Number(rawSale);
-  const savings = Number(game.savings ?? game.discount ?? 0);
-  const rating = Number(game.steamRatingPercent ?? game.rating ?? game.userscore ?? 0);
-  const isOnSale = Number(game.savings || 0) > 0 || !!game.dealID;
+  var saleRaw = game.salePrice != null ? game.salePrice : (game.price_usd != null ? game.price_usd : game.price);
+  var sale = saleRaw != null ? Number(saleRaw) : null;
+  var savings = Number(game.savings || game.discount || 0);
+  var rating = Number(game.steamRatingPercent || game.rating || game.userscore || 0);
+  var isOnSale = savings > 0 || !!game.dealID;
 
-  if (sale != null && !Number.isNaN(sale) && sale > profile.budget) return -999;
-  if (rating < profile.minRating) return -999;
+  if (sale != null && !isNaN(sale) && sale > profile.budget) return -999;
+  if (rating > 0 && rating < profile.minRating) return -999;
   if (profile.mode === 'on-sale' && !isOnSale) return -999;
   if (profile.mode === 'on-sale' && savings < profile.minDiscount) return -999;
 
-  const genres = getGenres(game);
-  const genreMatches = genres.filter(g => profile.genres.includes(g)).length;
-  const key = itemKey(game);
+  var genres = getGenres(game);
+  var genreMatches = 0;
+  for (var i = 0; i < genres.length; i++) {
+    if (profile.genres.indexOf(genres[i]) !== -1) genreMatches++;
+  }
+  var key = itemKey(game);
 
-  let score = 0;
+  var score = 0;
   score += Math.min(1, genreMatches / Math.max(1, profile.genres.length)) * 0.35;
   score += Math.min(1, savings / 100) * 0.25;
   score += Math.min(1, rating / 100) * 0.25;
-  const effectivePrice = (sale == null || Number.isNaN(sale)) ? profile.budget : sale;
-  score += Math.max(0, 1 - effectivePrice / Math.max(1, profile.budget)) * 0.15;
-
+  var ep = (sale == null || isNaN(sale)) ? profile.budget : sale;
+  score += Math.max(0, 1 - ep / Math.max(1, profile.budget)) * 0.15;
   if (profile.likes[key]) score += 0.2;
   if (profile.dislikes[key]) score -= 1;
-
-  return Number(score.toFixed(4));
+  return Math.round(score * 10000) / 10000;
 }
 
-function getConfidenceLabel(game) {
-  const rating = Number(game.steamRatingPercent ?? game.rating ?? game.userscore ?? 0);
-  const reviews = Number(game.steamRatingCount ?? game.positive ?? 0);
-  const discount = Number(game.savings ?? game.discount ?? 0);
-  let points = 0;
-  if (rating >= 85) points += 2; else if (rating >= 75) points += 1;
-  if (reviews >= 1000) points += 2; else if (reviews >= 250) points += 1;
-  if (discount >= 60) points += 1;
-  if (points >= 4) return 'High Confidence';
-  if (points >= 2) return 'Medium Confidence';
-  return 'Low Confidence';
+function confidenceLabel(game) {
+  var rating = Number(game.steamRatingPercent || game.rating || game.userscore || 0);
+  var reviews = Number(game.steamRatingCount || game.positive || 0);
+  var discount = Number(game.savings || game.discount || 0);
+  var pts = 0;
+  if (rating >= 85) pts += 2; else if (rating >= 75) pts += 1;
+  if (reviews >= 1000) pts += 2; else if (reviews >= 250) pts += 1;
+  if (discount >= 60) pts += 1;
+  if (pts >= 4) return 'High';
+  if (pts >= 2) return 'Medium';
+  return 'Low';
 }
 
-function buildWhyChip(game, topGenres = [], topTags = []) {
-  const genres = getGenres(game);
-  const tags = getTags(game).map(String);
-  const savings = Math.round(Number(game.savings ?? game.discount ?? 0));
-
-  const mg = genres.find(g => topGenres.includes(g));
-  const mt = tags.find(t => topTags.map(z => z.toLowerCase()).includes(t.toLowerCase()));
-  const parts = [];
-  if (mg) parts.push(mg);
-  if (mt) parts.push(mt);
-  if (savings > 0) parts.push(`${savings}% off`);
-  return parts.length ? `Why: ${parts.join(' · ')}` : null;
+function whyChip(game, topGenres, topTags) {
+  var genres = getGenres(game);
+  var tags = getTags(game);
+  var savings = Math.round(Number(game.savings || game.discount || 0));
+  var parts = [];
+  for (var i = 0; i < genres.length; i++) {
+    if (topGenres.indexOf(genres[i]) !== -1) { parts.push(genres[i]); break; }
+  }
+  for (var j = 0; j < tags.length; j++) {
+    var tl = String(tags[j]).toLowerCase();
+    for (var k = 0; k < topTags.length; k++) {
+      if (tl === topTags[k].toLowerCase()) { parts.push(tags[j]); break; }
+    }
+    if (parts.length >= 2) break;
+  }
+  if (savings > 0) parts.push(savings + '% off');
+  return parts.length ? parts.join(' \u00b7 ') : '';
 }
 
-function cardLink(game) {
-  if (game.dealID) return `https://www.cheapshark.com/redirect?dealID=${encodeURIComponent(game.dealID)}`;
-  const app = game.steamAppID || game.appid;
-  if (app) return `https://store.steampowered.com/app/${app}`;
+function gameLink(game) {
+  if (game.dealID) return 'https://www.cheapshark.com/redirect?dealID=' + encodeURIComponent(game.dealID);
+  var app = game.steamAppID || game.appid;
+  if (app) return 'https://store.steampowered.com/app/' + app;
   return '#';
 }
 
-function cardHtml(game, why = null) {
-  const sale = Number(game.salePrice ?? game.price_usd ?? game.price ?? 0);
-  const normal = Number(game.normalPrice ?? game.initial_price_usd ?? sale ?? 0);
-  const savings = Math.round(Number(game.savings ?? game.discount ?? 0));
-  const rating = Number(game.steamRatingPercent ?? game.rating ?? game.userscore ?? 0);
-  const key = itemKey(game);
-  const confidence = getConfidenceLabel(game);
-  const title = game.title || game.rawg?.name || 'Untitled';
-  const thumb = game.thumb || game.rawg?.backgroundImage || 'icons/icon.png';
-  const onSale = !!game.dealID || savings > 0;
+function cardHtml(game, why) {
+  var sale = Number(game.salePrice || game.price_usd || game.price || 0);
+  var normal = Number(game.normalPrice || game.initial_price_usd || sale || 0);
+  var savings = Math.round(Number(game.savings || game.discount || 0));
+  var rating = Number(game.steamRatingPercent || game.rating || game.userscore || 0);
+  var key = itemKey(game);
+  var conf = confidenceLabel(game);
+  var title = game.title || (game.rawg && game.rawg.name) || 'Untitled';
+  var thumb = game.thumb || (game.rawg && game.rawg.backgroundImage) || 'icons/icon.png';
+  var onSale = !!game.dealID || savings > 0;
+  var badge = onSale ? ('-' + savings + '%') : 'REC';
+  var storeLabel = onSale ? 'On Sale' : 'Catalog';
+  var linkText = onSale ? 'View Deal \u2192' : 'View on Steam \u2192';
+  var priceHtml = onSale
+    ? '<span class="price-old">$' + normal.toFixed(2) + '</span><span class="price-new">$' + sale.toFixed(2) + '</span>'
+    : '<span class="price-new">' + (sale > 0 ? '$' + sale.toFixed(2) : 'Free / N/A') + '</span>';
+  var whyHtml = why ? '<div class="why-chip">' + why + '</div>' : '';
 
-  return `
-  <div class="card">
-    <div class="card-thumb">
-      <img src="${thumb}" alt="${title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='icons/icon.png'">
-      <span class="badge">${onSale ? `-${savings}%` : 'REC'}</span>
-    </div>
-    <div class="card-body">
-      <div class="card-meta">
-        <span class="store-tag">${onSale ? 'On Sale' : 'Catalog Pick'}</span>
-        <div><span class="rating">⭐ ${rating || 'N/A'}%</span></div>
-      </div>
-      <div class="card-title">${title}</div>
-      <div class="confidence-chip">${confidence}</div>
-      ${why ? `<div class="why-chip">${why}</div>` : ''}
-      <div class="pricing">
-        ${onSale ? `<span class="price-old">$${normal.toFixed(2)}</span><span class="price-new">$${sale.toFixed(2)}</span>` : `<span class="price-new">$${sale.toFixed(2) || 'N/A'}</span>`}
-      </div>
-      <a class="deal-link" href="${cardLink(game)}" target="_blank" rel="noopener noreferrer">${onSale ? 'View Deal →' : 'View on Steam →'}</a>
-      <div class="card-actions" style="margin-top:8px;display:flex;gap:8px;">
-        <button class="feedback-btn" data-fb="like" data-id="${key}">👍 Like</button>
-        <button class="feedback-btn" data-fb="dislike" data-id="${key}">👎 Skip</button>
-      </div>
-    </div>
-  </div>`;
+  return '<div class="card">'
+    + '<div class="card-thumb">'
+    + '<img src="' + thumb + '" alt="' + title.replace(/"/g,'&quot;') + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.src=\'icons/icon.png\'">'
+    + '<span class="badge">' + badge + '</span>'
+    + '</div>'
+    + '<div class="card-body">'
+    + '<div class="card-meta"><span class="store-tag">' + storeLabel + '</span><span class="rating">\u2B50 ' + (rating || 'N/A') + '%</span></div>'
+    + '<div class="card-title">' + title + '</div>'
+    + '<div class="confidence-chip">' + conf + '</div>'
+    + whyHtml
+    + '<div class="pricing">' + priceHtml + '</div>'
+    + '<a class="deal-link" href="' + gameLink(game) + '" target="_blank" rel="noopener noreferrer">' + linkText + '</a>'
+    + '<div class="card-actions" style="margin-top:8px;display:flex;gap:8px;">'
+    + '<button class="feedback-btn" data-fb="like" data-id="' + key + '">\uD83D\uDC4D Like</button>'
+    + '<button class="feedback-btn" data-fb="dislike" data-id="' + key + '">\uD83D\uDC4E Skip</button>'
+    + '</div></div></div>';
 }
 
 function buildGenrePills() {
-  const wrap = document.getElementById('genrePills');
+  var wrap = document.getElementById('genrePills');
+  if (!wrap) return;
   wrap.innerHTML = '';
-  GENRES.forEach(genre => {
-    const btn = document.createElement('button');
-    btn.className = 'genre-pill' + (profile.genres.includes(genre) ? ' active' : '');
+  for (var i = 0; i < GENRES.length; i++) {
+    var genre = GENRES[i];
+    var btn = document.createElement('button');
+    btn.className = 'genre-pill' + (profile.genres.indexOf(genre) !== -1 ? ' active' : '');
     btn.type = 'button';
     btn.textContent = genre;
-    btn.addEventListener('click', () => {
-      if (profile.genres.includes(genre)) profile.genres = profile.genres.filter(g => g !== genre);
-      else profile.genres.push(genre);
-      btn.classList.toggle('active');
+    btn.setAttribute('data-genre', genre);
+    btn.addEventListener('click', function() {
+      var g = this.getAttribute('data-genre');
+      var idx = profile.genres.indexOf(g);
+      if (idx !== -1) profile.genres.splice(idx, 1);
+      else profile.genres.push(g);
+      this.classList.toggle('active');
       saveProfile();
       renderRecommendations();
     });
     wrap.appendChild(btn);
-  });
+  }
 }
 
 function renderBecause(scored) {
-  const becauseGrid = document.getElementById('becauseGrid');
-  const becauseReason = document.getElementById('becauseReason');
-  const likedIds = Object.keys(profile.likes || {});
-
+  var grid = document.getElementById('becauseGrid');
+  var reason = document.getElementById('becauseReason');
+  if (!grid || !reason) return;
+  var likedIds = Object.keys(profile.likes || {});
   if (!likedIds.length) {
-    becauseReason.textContent = 'Like a few games and this section will learn your taste.';
-    becauseGrid.innerHTML = '';
+    reason.textContent = 'Like a few games and this section will learn your taste.';
+    grid.innerHTML = '';
     return;
   }
-
-  const likedGames = catalog.filter(g => likedIds.includes(itemKey(g)));
-  const likedGenres = new Map();
-  const likedTags = new Map();
-  likedGames.forEach(g => {
-    getGenres(g).forEach(x => likedGenres.set(x, (likedGenres.get(x) || 0) + 1));
-    getTags(g).forEach(x => likedTags.set(String(x).toLowerCase(), (likedTags.get(String(x).toLowerCase()) || 0) + 1));
+  var likedGames = catalog.filter(function(g) { return likedIds.indexOf(itemKey(g)) !== -1; });
+  var gMap = {}, tMap = {};
+  likedGames.forEach(function(g) {
+    getGenres(g).forEach(function(x) { gMap[x] = (gMap[x] || 0) + 1; });
+    getTags(g).forEach(function(x) { var k = String(x).toLowerCase(); tMap[k] = (tMap[k] || 0) + 1; });
   });
+  var topG = Object.keys(gMap).sort(function(a,b) { return gMap[b] - gMap[a]; }).slice(0,3);
+  var topT = Object.keys(tMap).sort(function(a,b) { return tMap[b] - tMap[a]; }).slice(0,6);
 
-  const topGenres = [...likedGenres.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3).map(([g])=>g);
-  const topTags = [...likedTags.entries()].sort((a,b)=>b[1]-a[1]).slice(0,6).map(([t])=>t);
-
-  const picks = scored
-    .filter(x => !profile.likes[itemKey(x.g)] && !profile.dislikes[itemKey(x.g)])
-    .map(x => {
-      const g = getGenres(x.g);
-      const t = getTags(x.g).map(v => String(v).toLowerCase());
-      const boost = g.filter(v => topGenres.includes(v)).length * 0.12 + t.filter(v => topTags.includes(v)).length * 0.04;
-      return { ...x, blendScore: x.score + boost };
+  var picks = scored
+    .filter(function(x) { var k = itemKey(x.g); return !profile.likes[k] && !profile.dislikes[k]; })
+    .map(function(x) {
+      var gg = getGenres(x.g), tt = getTags(x.g).map(function(v){return String(v).toLowerCase();});
+      var boost = gg.filter(function(v){return topG.indexOf(v)!==-1;}).length * 0.12
+               + tt.filter(function(v){return topT.indexOf(v)!==-1;}).length * 0.04;
+      return { g: x.g, score: x.score, blend: x.score + boost };
     })
-    .sort((a,b)=>b.blendScore-a.blendScore)
-    .slice(0,8);
+    .sort(function(a,b){return b.blend - a.blend;})
+    .slice(0, 8);
 
-  becauseReason.textContent = `Based on your likes in: ${topGenres.join(', ') || 'your favorites'}.`;
-  becauseGrid.innerHTML = picks.map(x => cardHtml(x.g, buildWhyChip(x.g, topGenres, topTags))).join('');
+  reason.textContent = 'Based on your likes in: ' + (topG.join(', ') || 'your favorites') + '.';
+  grid.innerHTML = picks.map(function(x) { return cardHtml(x.g, whyChip(x.g, topG, topT)); }).join('');
 }
 
 function renderRecommendations() {
-  const scored = catalog.map(g => ({ g, score: scoreGame(g) })).filter(x => x.score > 0).sort((a,b)=>b.score-a.score);
-  const filtered = scored.filter(x => !profile.dislikes[itemKey(x.g)]).slice(0, 36);
+  var scored = [];
+  for (var i = 0; i < catalog.length; i++) {
+    var s = scoreGame(catalog[i]);
+    if (s > 0) scored.push({ g: catalog[i], score: s });
+  }
+  scored.sort(function(a,b) { return b.score - a.score; });
 
-  const grid = document.getElementById('recommendationGrid');
-  const empty = document.getElementById('emptyState');
-  const count = document.getElementById('recCount');
+  var filtered = [];
+  for (var j = 0; j < scored.length && filtered.length < 36; j++) {
+    if (!profile.dislikes[itemKey(scored[j].g)]) filtered.push(scored[j]);
+  }
+
+  var grid = document.getElementById('recommendationGrid');
+  var empty = document.getElementById('emptyState');
+  var count = document.getElementById('recCount');
 
   if (!filtered.length) {
-    grid.innerHTML = '';
-    empty.style.display = 'block';
-    count.textContent = '';
+    if (grid) grid.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    if (count) count.textContent = '';
     renderBecause([]);
     return;
   }
 
-  empty.style.display = 'none';
-  const modeLabel = profile.mode === 'on-sale' ? 'on-sale recommendations' : 'umbrella recommendations';
-  count.textContent = `${filtered.length} ${modeLabel} found`;
-  grid.innerHTML = filtered.map(x => cardHtml(x.g, buildWhyChip(x.g, profile.genres, profile.genres))).join('');
+  if (empty) empty.style.display = 'none';
+  var label = profile.mode === 'on-sale' ? 'on-sale deals' : 'recommendations';
+  if (count) count.textContent = filtered.length + ' ' + label + ' found';
+  if (grid) grid.innerHTML = filtered.map(function(x) {
+    return cardHtml(x.g, whyChip(x.g, profile.genres, profile.genres));
+  }).join('');
   renderBecause(scored);
 }
 
 function bindControls() {
-  const budgetRange = document.getElementById('budgetRange');
-  const budgetVal = document.getElementById('budgetVal');
-  const minRating = document.getElementById('minRating');
-  const minDiscount = document.getElementById('minDiscount');
-  const recMode = document.getElementById('recMode');
+  var budgetRange = document.getElementById('budgetRange');
+  var budgetVal = document.getElementById('budgetVal');
+  var minRating = document.getElementById('minRating');
+  var minDiscount = document.getElementById('minDiscount');
+  var recMode = document.getElementById('recMode');
 
-  budgetRange.value = profile.budget;
-  budgetVal.textContent = `$${profile.budget}`;
-  minRating.value = String(profile.minRating);
-  minDiscount.value = String(profile.minDiscount);
-  recMode.value = profile.mode || 'all';
+  if (budgetRange) { budgetRange.value = profile.budget; budgetVal.textContent = '$' + profile.budget; }
+  if (minRating) minRating.value = String(profile.minRating);
+  if (minDiscount) minDiscount.value = String(profile.minDiscount);
+  if (recMode) recMode.value = profile.mode || 'all';
 
-  budgetRange.addEventListener('input', () => { profile.budget = parseInt(budgetRange.value, 10); budgetVal.textContent = `$${profile.budget}`; saveProfile(); renderRecommendations(); });
-  minRating.addEventListener('change', () => { profile.minRating = parseInt(minRating.value, 10); saveProfile(); renderRecommendations(); });
-  minDiscount.addEventListener('change', () => { profile.minDiscount = parseInt(minDiscount.value, 10); saveProfile(); renderRecommendations(); });
-  recMode.addEventListener('change', () => { profile.mode = recMode.value; saveProfile(); renderRecommendations(); });
-
-  document.getElementById('savePrefs').addEventListener('click', () => { saveProfile(); alert('Preferences saved.'); });
-  document.getElementById('resetPrefs').addEventListener('click', () => {
-    if (!confirm('Reset your recommendation profile?')) return;
-    profile = { ...DEFAULT_PROFILE };
-    saveProfile();
-    bindControls();
-    buildGenrePills();
-    renderRecommendations();
+  if (budgetRange) budgetRange.addEventListener('input', function() {
+    profile.budget = parseInt(budgetRange.value, 10);
+    budgetVal.textContent = '$' + profile.budget;
+    saveProfile(); renderRecommendations();
+  });
+  if (minRating) minRating.addEventListener('change', function() {
+    profile.minRating = parseInt(minRating.value, 10);
+    saveProfile(); renderRecommendations();
+  });
+  if (minDiscount) minDiscount.addEventListener('change', function() {
+    profile.minDiscount = parseInt(minDiscount.value, 10);
+    saveProfile(); renderRecommendations();
+  });
+  if (recMode) recMode.addEventListener('change', function() {
+    profile.mode = recMode.value;
+    saveProfile(); renderRecommendations();
   });
 
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.feedback-btn');
-    if (!btn) return;
-    const id = btn.dataset.id;
-    const type = btn.dataset.fb;
-    if (!id || !type) return;
+  var saveBtn = document.getElementById('savePrefs');
+  if (saveBtn) saveBtn.addEventListener('click', function() { saveProfile(); alert('Preferences saved.'); });
 
+  var resetBtn = document.getElementById('resetPrefs');
+  if (resetBtn) resetBtn.addEventListener('click', function() {
+    if (!confirm('Reset your recommendation profile?')) return;
+    profile = Object.assign({}, DEFAULT_PROFILE);
+    saveProfile(); bindControls(); buildGenrePills(); renderRecommendations();
+  });
+
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.feedback-btn');
+    if (!btn) return;
+    var id = btn.dataset.id, type = btn.dataset.fb;
+    if (!id || !type) return;
     if (type === 'like') { profile.likes[id] = true; delete profile.dislikes[id]; }
     else { profile.dislikes[id] = true; delete profile.likes[id]; }
-
     if (supabase && authedUserId) {
       supabase.from('lr_feedback').upsert({
-        user_id: authedUserId,
-        item_id: id,
-        action: type,
+        user_id: authedUserId, item_id: id, action: type,
         updated_at: new Date().toISOString()
-      }).then(() => {}).catch(() => {});
+      }).then(function(){}).catch(function(){});
     }
-
-    saveProfile();
-    renderRecommendations();
+    saveProfile(); renderRecommendations();
   });
 }
 
-async function initAuth() {
-  const statusEl = document.getElementById('authStatus');
-  const signOutBtn = document.getElementById('authSignOut');
+function initAuth() {
+  var statusEl = document.getElementById('authStatus');
+  var signOutBtn = document.getElementById('authSignOut');
+  var loginBtn = document.getElementById('authLoginPage');
 
-  const setGuest = () => {
+  function setGuest() {
     authedUserId = null;
     if (statusEl) statusEl.textContent = 'Guest mode (local only)';
     if (signOutBtn) signOutBtn.style.display = 'none';
-  };
+    if (loginBtn) loginBtn.style.display = '';
+  }
 
-  const applySession = async (session) => {
-    if (!session?.user) return setGuest();
-    authedUserId = session.user.id;
-    if (statusEl) statusEl.textContent = `Signed in: ${session.user.email || 'account'}`;
+  function setSignedIn(user) {
+    authedUserId = user.id;
+    if (statusEl) statusEl.textContent = 'Signed in: ' + (user.email || 'account');
     if (signOutBtn) signOutBtn.style.display = 'inline-block';
-
-    try {
-      const { data } = await supabase.from('lr_profiles').select('data').eq('user_id', authedUserId).single();
-      if (data?.data) {
-        profile = { ...DEFAULT_PROFILE, ...data.data };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-      }
-    } catch (_) {}
-  };
+    if (loginBtn) loginBtn.style.display = 'none';
+  }
 
   if (!window.supabase || !window.LR_SUPABASE_URL || !window.LR_SUPABASE_ANON_KEY) {
     setGuest();
-    return;
+    return Promise.resolve();
   }
 
-  supabase = window.supabase.createClient(window.LR_SUPABASE_URL, window.LR_SUPABASE_ANON_KEY);
-
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get('code');
-  if (code) {
-    try {
-      await supabase.auth.exchangeCodeForSession(code);
-      params.delete('code');
-      const clean = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
-      window.history.replaceState({}, '', clean);
-    } catch (_) {}
+  try {
+    supabase = window.supabase.createClient(window.LR_SUPABASE_URL, window.LR_SUPABASE_ANON_KEY);
+  } catch(e) {
+    console.warn('Supabase init failed:', e);
+    setGuest();
+    return Promise.resolve();
   }
-
-  const { data: { session } } = await supabase.auth.getSession();
-  await applySession(session);
-
-  supabase.auth.onAuthStateChange(async (_event, session2) => {
-    await applySession(session2);
-    renderRecommendations();
-  });
-
-  // Quick inline email sign-in removed; use dedicated login page.
 
   if (signOutBtn) {
-    signOutBtn.addEventListener('click', async () => {
-      await supabase.auth.signOut();
-      setGuest();
+    signOutBtn.addEventListener('click', function() {
+      supabase.auth.signOut().then(function() { setGuest(); });
     });
   }
+
+  // Auth check with 3-second timeout so it never blocks rendering
+  return new Promise(function(resolve) {
+    var done = false;
+    var timer = setTimeout(function() {
+      if (!done) { done = true; setGuest(); resolve(); }
+    }, 3000);
+
+    supabase.auth.getSession().then(function(result) {
+      if (done) return;
+      done = true; clearTimeout(timer);
+      var session = result && result.data && result.data.session;
+      if (session && session.user) {
+        setSignedIn(session.user);
+        // Try loading cloud profile (non-blocking)
+        supabase.from('lr_profiles').select('data')
+          .eq('user_id', session.user.id).single()
+          .then(function(res) {
+            if (res.data && res.data.data) {
+              profile = Object.assign({}, DEFAULT_PROFILE, res.data.data);
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+            }
+          }).catch(function(){});
+      } else {
+        setGuest();
+      }
+      resolve();
+    }).catch(function(e) {
+      if (done) return;
+      done = true; clearTimeout(timer);
+      console.warn('Auth check failed:', e);
+      setGuest();
+      resolve();
+    });
+  });
 }
 
-async function init() {
-  try {
-    await initAuth();
-    const v = Math.floor(Date.now() / 3600000);
+function init() {
+  initAuth().then(function() {
+    var v = Math.floor(Date.now() / 3600000);
 
-    let enriched = null;
-    try {
-      const r = await fetch('enriched-deals.json?v=' + v);
-      if (r.ok) enriched = await r.json();
-    } catch (_) {}
+    // Load enriched deals first, fallback to plain deals
+    var dealsPromise = fetch('enriched-deals.json?v=' + v)
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .catch(function() { return null; })
+      .then(function(enriched) {
+        if (enriched && enriched.games && enriched.games.length) {
+          stores = enriched.stores || {};
+          deals = enriched.games.map(function(d) {
+            return Object.assign({}, d, {
+              steamAppID: d.steamAppID || d.appid,
+              title: (d.rawg && d.rawg.name) || d.title
+            });
+          });
+        } else {
+          return fetch('deals.json?v=' + v).then(function(r) { return r.json(); }).then(function(data) {
+            stores = data.stores || {};
+            deals = (data.deals || []).map(function(d) {
+              return Object.assign({}, d, { steamAppID: d.steamAppID || d.appid });
+            });
+          });
+        }
+      });
 
-    let dealsData = null;
-    if (enriched?.games?.length) {
-      dealsData = { stores: enriched.stores || {}, deals: enriched.games };
-    } else {
-      const fallback = await fetch('deals.json?v=' + v).then(r => r.json());
-      dealsData = { stores: fallback.stores || {}, deals: fallback.deals || [] };
-    }
+    // Load umbrella catalog
+    var catalogPromise = fetch('games-catalog.json?v=' + v)
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .catch(function() { return null; });
 
-    stores = dealsData.stores;
-    deals = dealsData.deals.map(d => ({ ...d, steamAppID: d.steamAppID || d.appid, title: d.rawg?.name || d.title }));
+    Promise.all([dealsPromise, catalogPromise]).then(function(results) {
+      var catData = results[1];
 
-    // Try umbrella catalog first
-    try {
-      const c = await fetch('games-catalog.json?v=' + v);
-      if (c.ok) {
-        const j = await c.json();
-        const dealByApp = new Map();
-        deals.forEach(d => {
-          const app = String(d.steamAppID || d.appid || '');
-          if (app && !dealByApp.has(app)) dealByApp.set(app, d);
+      if (catData && catData.games && catData.games.length) {
+        var dealByApp = {};
+        deals.forEach(function(d) {
+          var app = String(d.steamAppID || d.appid || '');
+          if (app && !dealByApp[app]) dealByApp[app] = d;
         });
-
-        catalog = (j.games || []).map(g => {
-          const app = String(g.appid || '');
-          const deal = dealByApp.get(app);
-          return deal ? { ...g, ...deal, steamAppID: app } : { ...g, steamAppID: app };
+        catalog = catData.games.map(function(g) {
+          var app = String(g.appid || '');
+          var deal = dealByApp[app];
+          return deal ? Object.assign({}, g, deal, { steamAppID: app }) : Object.assign({}, g, { steamAppID: app });
         });
       }
-    } catch (_) {}
 
-    if (!catalog.length) catalog = deals;
+      if (!catalog.length) catalog = deals;
 
-    bindControls();
-    buildGenrePills();
-    renderRecommendations();
-  } catch (err) {
-    console.error(err);
-    document.getElementById('emptyState').style.display = 'block';
-    document.getElementById('emptyState').innerHTML = '<p>Could not load recommendations right now. Please refresh.</p>';
-  }
+      console.log('LootRadar: loaded ' + catalog.length + ' games, ' + deals.length + ' deals');
+      bindControls();
+      buildGenrePills();
+      renderRecommendations();
+    }).catch(function(err) {
+      console.error('LootRadar init error:', err);
+      var empty = document.getElementById('emptyState');
+      if (empty) {
+        empty.style.display = 'block';
+        empty.innerHTML = '<p>Could not load recommendations. Please refresh.</p>';
+      }
+    });
+  });
 }
 
 init();
