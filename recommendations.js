@@ -48,7 +48,9 @@ function loadProfile() {
   try {
     var saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (saved && typeof saved === 'object') {
-      return Object.assign({}, DEFAULT_PROFILE, saved);
+      var merged = Object.assign({}, DEFAULT_PROFILE, saved);
+      if (!Array.isArray(merged.genres)) merged.genres = DEFAULT_PROFILE.genres.slice();
+      return merged;
     }
   } catch(e) { /* ignore */ }
   return Object.assign({}, DEFAULT_PROFILE);
@@ -90,7 +92,7 @@ function getGenres(game) {
 }
 
 function hasGenreMatch(gameGenres, selectedGenres, mode) {
-  if (!selectedGenres || !selectedGenres.length) return false;
+  if (!selectedGenres || !selectedGenres.length) return true;
   var gs = gameGenres.map(normalizeLabel);
   if (mode === 'all') {
     for (var j = 0; j < selectedGenres.length; j++) {
@@ -256,7 +258,7 @@ function updateGenreHint() {
   var hint = document.getElementById('genreHint');
   if (!hint) return;
   if (!profile.genres.length) {
-    hint.textContent = 'No genres selected = no results. Pick at least one genre.';
+    hint.textContent = 'No genres selected = broad results (all genres).';
     return;
   }
   if (profile.genres.length === GENRES.length) {
