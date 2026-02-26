@@ -52,6 +52,16 @@
             <div class="controls-inner" style="max-width:none;">
                 <div class="filter-bar rec-filter-bar">
                     <div class="select-wrap">
+                        <label for="presetMode">Quick Preset</label>
+                        <select id="presetMode">
+                            <option value="custom">Custom</option>
+                            <option value="trending">Trending</option>
+                            <option value="new">New & Fresh</option>
+                            <option value="aaa">AAA Hits</option>
+                            <option value="indie">Indie Gems</option>
+                        </select>
+                    </div>
+                    <div class="select-wrap">
                         <label for="budgetRange">Max Budget: <strong id="budgetVal">$70</strong></label>
                         <input type="range" id="budgetRange" min="0" max="70" step="5" value="70">
                     </div>
@@ -139,7 +149,7 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <script src="recommendations.js?v=10"></script>
+    <script src="recommendations.js?v=11"></script>
 </body>
 </html>
 
