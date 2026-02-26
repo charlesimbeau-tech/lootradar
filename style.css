@@ -537,6 +537,14 @@ a:hover { text-decoration: underline; }
     font-family: inherit;
     cursor: pointer;
     outline: none;
+    color-scheme: dark;
+}
+
+select,
+select option,
+select optgroup {
+    background-color: #0f1b2b;
+    color: #dce7ff;
 }
 
 /* Advanced Filters */
