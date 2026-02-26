@@ -36,4 +36,5 @@ jobs:
           [ -f enriched-deals.json ] && git add enriched-deals.json || true
           [ -f games-catalog.json ] && git add games-catalog.json || true
           git diff --cached --quiet || git commit -m "Update deals + enriched + umbrella catalog [skip ci]"
+          git pull --rebase origin main
           git push
