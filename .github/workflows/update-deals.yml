@@ -25,11 +25,15 @@ jobs:
       - name: Enrich catalog with Steam metadata (no key)
         run: node scripts/enrich-catalog-steam.js
 
+      - name: Build umbrella games catalog (no key)
+        run: node scripts/build-games-catalog.js
+
       - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add deals.json
           [ -f enriched-deals.json ] && git add enriched-deals.json || true
-          git diff --cached --quiet || git commit -m "Update deals + enriched catalog [skip ci]"
+          [ -f games-catalog.json ] && git add games-catalog.json || true
+          git diff --cached --quiet || git commit -m "Update deals + enriched + umbrella catalog [skip ci]"
           git push

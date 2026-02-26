@@ -24,6 +24,7 @@ A game deals aggregator that pulls live pricing from 15+ stores and caches resul
 - GitHub Pages (hosting)
 - Cloudflare (DNS & CDN)
 - CheapShark API + Steam/SteamSpy metadata enrichment (no API key)
+- Umbrella catalog generation (`games-catalog.json`) for recommendations beyond active deals
 
 ## Local Setup
 

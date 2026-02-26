@@ -25,89 +25,156 @@ const GENRE_KEYWORDS = {
   'Stealth': ['stealth', 'dishonored', 'thief', 'splinter cell', 'deus ex']
 };
 
-const STORE_ICONS = {
-  '1':'https://www.cheapshark.com/img/stores/icons/0.png','2':'https://www.cheapshark.com/img/stores/icons/1.png','3':'https://www.cheapshark.com/img/stores/icons/2.png','4':'https://www.cheapshark.com/img/stores/icons/3.png','5':'https://www.cheapshark.com/img/stores/icons/4.png','6':'https://www.cheapshark.com/img/stores/icons/5.png','7':'https://www.cheapshark.com/img/stores/icons/6.png','8':'https://www.cheapshark.com/img/stores/icons/7.png','9':'https://www.cheapshark.com/img/stores/icons/8.png','10':'https://www.cheapshark.com/img/stores/icons/9.png'
-};
-
 const DEFAULT_PROFILE = {
   budget: 30,
   minRating: 70,
   minDiscount: 20,
+  mode: 'all',
   genres: ['RPG', 'Action', 'Indie'],
   likes: {},
   dislikes: {}
 };
 
-const STORAGE_KEY = 'lr_recommendation_profile_v1';
+const STORAGE_KEY = 'lr_recommendation_profile_v2';
 
-let deals = [];
 let stores = {};
+let deals = [];
+let catalog = [];
 let profile = loadProfile();
 
 function loadProfile() {
-  try {
-    return { ...DEFAULT_PROFILE, ...(JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}) };
-  } catch {
-    return { ...DEFAULT_PROFILE };
-  }
+  try { return { ...DEFAULT_PROFILE, ...(JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}) }; }
+  catch { return { ...DEFAULT_PROFILE }; }
 }
+function saveProfile() { localStorage.setItem(STORAGE_KEY, JSON.stringify(profile)); }
+function itemKey(x) { return x.dealID || `app-${x.steamAppID || x.appid || x.id}`; }
 
-function saveProfile() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-}
-
-function inferGenres(text) {
+function inferGenres(text = '') {
   const t = text.toLowerCase();
-  const tags = [];
+  const out = [];
   for (const [genre, kws] of Object.entries(GENRE_KEYWORDS)) {
-    if (kws.some(k => t.includes(k))) tags.push(genre);
+    if (kws.some(k => t.includes(k))) out.push(genre);
   }
-  return tags;
+  return out;
 }
 
-function scoreDeal(deal) {
-  const sale = parseFloat(deal.salePrice || 0);
-  const savings = parseFloat(deal.savings || 0);
-  const rating = parseInt(deal.steamRatingPercent || 0, 10);
-  const title = deal.title || '';
-  const genres = (deal.rawg?.genres && deal.rawg.genres.length)
-    ? deal.rawg.genres
-    : inferGenres(title + ' ' + (deal.steamRatingText || ''));
+function getGenres(game) {
+  const g = game.rawg?.genres || game.genres || [];
+  return g.length ? g : inferGenres(`${game.title || ''} ${game.steamRatingText || ''}`);
+}
+
+function getTags(game) {
+  return game.rawg?.tags || game.tags || inferGenres(game.title || '');
+}
+
+function scoreGame(game) {
+  const sale = Number(game.salePrice ?? game.price_usd ?? game.price ?? 9999);
+  const savings = Number(game.savings ?? game.discount ?? 0);
+  const rating = Number(game.steamRatingPercent ?? game.rating ?? game.userscore ?? 0);
 
   if (sale > profile.budget) return -999;
   if (rating < profile.minRating) return -999;
   if (savings < profile.minDiscount) return -999;
+  if (profile.mode === 'on-sale' && !(Number(game.savings || 0) > 0 || game.dealID)) return -999;
 
+  const genres = getGenres(game);
   const genreMatches = genres.filter(g => profile.genres.includes(g)).length;
-  const likeBoost = profile.likes[deal.dealID] ? 0.25 : 0;
-  const dislikePenalty = profile.dislikes[deal.dealID] ? 1 : 0;
+  const key = itemKey(game);
 
   let score = 0;
   score += Math.min(1, genreMatches / Math.max(1, profile.genres.length)) * 0.35;
   score += Math.min(1, savings / 100) * 0.25;
   score += Math.min(1, rating / 100) * 0.25;
   score += Math.max(0, 1 - sale / Math.max(1, profile.budget)) * 0.15;
-  score += likeBoost;
-  score -= dislikePenalty;
+
+  if (profile.likes[key]) score += 0.2;
+  if (profile.dislikes[key]) score -= 1;
 
   return Number(score.toFixed(4));
+}
+
+function getConfidenceLabel(game) {
+  const rating = Number(game.steamRatingPercent ?? game.rating ?? game.userscore ?? 0);
+  const reviews = Number(game.steamRatingCount ?? game.positive ?? 0);
+  const discount = Number(game.savings ?? game.discount ?? 0);
+  let points = 0;
+  if (rating >= 85) points += 2; else if (rating >= 75) points += 1;
+  if (reviews >= 1000) points += 2; else if (reviews >= 250) points += 1;
+  if (discount >= 60) points += 1;
+  if (points >= 4) return 'High Confidence';
+  if (points >= 2) return 'Medium Confidence';
+  return 'Low Confidence';
+}
+
+function buildWhyChip(game, topGenres = [], topTags = []) {
+  const genres = getGenres(game);
+  const tags = getTags(game).map(String);
+  const savings = Math.round(Number(game.savings ?? game.discount ?? 0));
+
+  const mg = genres.find(g => topGenres.includes(g));
+  const mt = tags.find(t => topTags.map(z => z.toLowerCase()).includes(t.toLowerCase()));
+  const parts = [];
+  if (mg) parts.push(mg);
+  if (mt) parts.push(mt);
+  if (savings > 0) parts.push(`${savings}% off`);
+  return parts.length ? `Why: ${parts.join(' · ')}` : null;
+}
+
+function cardLink(game) {
+  if (game.dealID) return `https://www.cheapshark.com/redirect?dealID=${encodeURIComponent(game.dealID)}`;
+  const app = game.steamAppID || game.appid;
+  if (app) return `https://store.steampowered.com/app/${app}`;
+  return '#';
+}
+
+function cardHtml(game, why = null) {
+  const sale = Number(game.salePrice ?? game.price_usd ?? game.price ?? 0);
+  const normal = Number(game.normalPrice ?? game.initial_price_usd ?? sale || 0);
+  const savings = Math.round(Number(game.savings ?? game.discount ?? 0));
+  const rating = Number(game.steamRatingPercent ?? game.rating ?? game.userscore ?? 0);
+  const key = itemKey(game);
+  const confidence = getConfidenceLabel(game);
+  const title = game.title || game.rawg?.name || 'Untitled';
+  const thumb = game.thumb || game.rawg?.backgroundImage || 'icons/icon.png';
+  const onSale = !!game.dealID || savings > 0;
+
+  return `
+  <div class="card">
+    <div class="card-thumb">
+      <img src="${thumb}" alt="${title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='icons/icon.png'">
+      <span class="badge">${onSale ? `-${savings}%` : 'REC'}</span>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="store-tag">${onSale ? 'On Sale' : 'Catalog Pick'}</span>
+        <div><span class="rating">⭐ ${rating || 'N/A'}%</span></div>
+      </div>
+      <div class="card-title">${title}</div>
+      <div class="confidence-chip">${confidence}</div>
+      ${why ? `<div class="why-chip">${why}</div>` : ''}
+      <div class="pricing">
+        ${onSale ? `<span class="price-old">$${normal.toFixed(2)}</span><span class="price-new">$${sale.toFixed(2)}</span>` : `<span class="price-new">$${sale.toFixed(2) || 'N/A'}</span>`}
+      </div>
+      <a class="deal-link" href="${cardLink(game)}" target="_blank" rel="noopener noreferrer">${onSale ? 'View Deal →' : 'View on Steam →'}</a>
+      <div class="card-actions" style="margin-top:8px;display:flex;gap:8px;">
+        <button class="feedback-btn" data-fb="like" data-id="${key}">👍 Like</button>
+        <button class="feedback-btn" data-fb="dislike" data-id="${key}">👎 Skip</button>
+      </div>
+    </div>
+  </div>`;
 }
 
 function buildGenrePills() {
   const wrap = document.getElementById('genrePills');
   wrap.innerHTML = '';
-
   GENRES.forEach(genre => {
     const btn = document.createElement('button');
     btn.className = 'genre-pill' + (profile.genres.includes(genre) ? ' active' : '');
     btn.type = 'button';
     btn.textContent = genre;
     btn.addEventListener('click', () => {
-      if (profile.genres.includes(genre)) {
-        profile.genres = profile.genres.filter(g => g !== genre);
-      } else {
-        profile.genres.push(genre);
-      }
+      if (profile.genres.includes(genre)) profile.genres = profile.genres.filter(g => g !== genre);
+      else profile.genres.push(genre);
       btn.classList.toggle('active');
       renderRecommendations();
     });
@@ -115,89 +182,7 @@ function buildGenrePills() {
   });
 }
 
-function getConfidenceLabel(deal) {
-  const rating = parseInt(deal.steamRatingPercent || 0, 10);
-  const reviews = parseInt(deal.steamRatingCount || 0, 10);
-  const discount = parseFloat(deal.savings || 0);
-
-  let points = 0;
-  if (rating >= 85) points += 2;
-  else if (rating >= 75) points += 1;
-
-  if (reviews >= 1000) points += 2;
-  else if (reviews >= 250) points += 1;
-
-  if (discount >= 60) points += 1;
-
-  if (points >= 4) return 'High Confidence';
-  if (points >= 2) return 'Medium Confidence';
-  return 'Low Confidence';
-}
-
-function dealCardHtml(d, why = null) {
-  const sale = parseFloat(d.salePrice || 0);
-  const normal = parseFloat(d.normalPrice || 0);
-  const savings = Math.round(parseFloat(d.savings || 0));
-  const rating = parseInt(d.steamRatingPercent || 0, 10);
-  const storeName = stores[d.storeID]?.name || `Store ${d.storeID}`;
-  const storeIcon = stores[d.storeID]?.icon || STORE_ICONS[d.storeID] || '';
-  const link = `https://www.cheapshark.com/redirect?dealID=${encodeURIComponent(d.dealID)}`;
-  const confidence = getConfidenceLabel(d);
-
-  return `
-  <div class="card">
-    <div class="card-thumb">
-      <img src="${d.thumb}" alt="${d.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='icons/icon.png'">
-      <span class="badge">-${savings}%</span>
-    </div>
-    <div class="card-body">
-      <div class="card-meta">
-        <span class="store-tag">${storeIcon ? `<img class="store-icon" src="${storeIcon}" alt="" onerror="this.style.display='none'">` : ''} ${storeName}</span>
-        <div><span class="rating">⭐ ${rating || 'N/A'}%</span></div>
-      </div>
-      <div class="card-title">${d.title}</div>
-      <div class="confidence-chip">${confidence}</div>
-      ${why ? `<div class="why-chip">${why}</div>` : ''}
-      <div class="pricing">
-        <span class="price-old">$${normal.toFixed(2)}</span><span class="price-new">$${sale.toFixed(2)}</span>
-      </div>
-      <a class="deal-link" href="${link}" target="_blank" rel="noopener noreferrer" data-dealid="${d.dealID}">View Deal →</a>
-      <div class="card-actions" style="margin-top:8px;display:flex;gap:8px;">
-        <button class="feedback-btn" data-fb="like" data-id="${d.dealID}">👍 Like</button>
-        <button class="feedback-btn" data-fb="dislike" data-id="${d.dealID}">👎 Skip</button>
-      </div>
-    </div>
-  </div>`;
-}
-
-function getDealGenres(deal) {
-  return (deal.rawg?.genres && deal.rawg.genres.length)
-    ? deal.rawg.genres
-    : inferGenres((deal.title || '') + ' ' + (deal.steamRatingText || ''));
-}
-
-function getDealTags(deal) {
-  if (deal.rawg?.tags && deal.rawg.tags.length) return deal.rawg.tags;
-  return inferGenres((deal.title || '') + ' ' + (deal.steamRatingText || ''));
-}
-
-function buildWhyChip(deal, topGenres = [], topTags = []) {
-  const genres = getDealGenres(deal);
-  const tags = getDealTags(deal).map(v => String(v));
-  const savings = Math.round(parseFloat(deal.savings || 0));
-
-  const matchedGenre = genres.find(g => topGenres.includes(g));
-  const matchedTag = tags.find(t => topTags.map(z => z.toLowerCase()).includes(t.toLowerCase()));
-
-  const parts = [];
-  if (matchedGenre) parts.push(matchedGenre);
-  if (matchedTag) parts.push(matchedTag);
-  if (savings > 0) parts.push(`${savings}% off`);
-
-  return parts.length ? `Why: ${parts.join(' · ')}` : null;
-}
-
-function renderBecauseYouLiked(scoredDeals) {
+function renderBecause(scored) {
   const becauseGrid = document.getElementById('becauseGrid');
   const becauseReason = document.getElementById('becauseReason');
   const likedIds = Object.keys(profile.likes || {});
@@ -208,70 +193,53 @@ function renderBecauseYouLiked(scoredDeals) {
     return;
   }
 
-  const likedDeals = deals.filter(d => likedIds.includes(d.dealID));
+  const likedGames = catalog.filter(g => likedIds.includes(itemKey(g)));
   const likedGenres = new Map();
   const likedTags = new Map();
-
-  likedDeals.forEach(d => {
-    getDealGenres(d).forEach(g => likedGenres.set(g, (likedGenres.get(g) || 0) + 1));
-    getDealTags(d).forEach(t => likedTags.set(t, (likedTags.get(t) || 0) + 1));
+  likedGames.forEach(g => {
+    getGenres(g).forEach(x => likedGenres.set(x, (likedGenres.get(x) || 0) + 1));
+    getTags(g).forEach(x => likedTags.set(String(x).toLowerCase(), (likedTags.get(String(x).toLowerCase()) || 0) + 1));
   });
 
-  const topGenres = [...likedGenres.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([g]) => g);
+  const topGenres = [...likedGenres.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3).map(([g])=>g);
+  const topTags = [...likedTags.entries()].sort((a,b)=>b[1]-a[1]).slice(0,6).map(([t])=>t);
 
-  const topTags = [...likedTags.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 6)
-    .map(([t]) => t.toLowerCase());
-
-  const blended = scoredDeals
-    .filter(x => !profile.likes[x.d.dealID] && !profile.dislikes[x.d.dealID])
+  const picks = scored
+    .filter(x => !profile.likes[itemKey(x.g)] && !profile.dislikes[itemKey(x.g)])
     .map(x => {
-      const g = getDealGenres(x.d);
-      const t = getDealTags(x.d).map(v => String(v).toLowerCase());
-      const genreOverlap = g.filter(v => topGenres.includes(v)).length;
-      const tagOverlap = t.filter(v => topTags.includes(v)).length;
-      const blendBoost = (genreOverlap * 0.12) + (tagOverlap * 0.04);
-      return { ...x, blendScore: x.score + blendBoost };
+      const g = getGenres(x.g);
+      const t = getTags(x.g).map(v => String(v).toLowerCase());
+      const boost = g.filter(v => topGenres.includes(v)).length * 0.12 + t.filter(v => topTags.includes(v)).length * 0.04;
+      return { ...x, blendScore: x.score + boost };
     })
-    .filter(x => x.blendScore > 0)
-    .sort((a, b) => b.blendScore - a.blendScore)
-    .slice(0, 8);
+    .sort((a,b)=>b.blendScore-a.blendScore)
+    .slice(0,8);
 
-  const reasonGenres = topGenres.length ? topGenres.join(', ') : 'your favorites';
-  becauseReason.textContent = `Based on your likes in: ${reasonGenres}.`;
-  becauseGrid.innerHTML = blended.map(x => dealCardHtml(x.d, buildWhyChip(x.d, topGenres, topTags))).join('');
+  becauseReason.textContent = `Based on your likes in: ${topGenres.join(', ') || 'your favorites'}.`;
+  becauseGrid.innerHTML = picks.map(x => cardHtml(x.g, buildWhyChip(x.g, topGenres, topTags))).join('');
 }
 
 function renderRecommendations() {
-  const scored = deals
-    .map(d => ({ d, score: scoreDeal(d) }))
-    .filter(x => x.score > 0)
-    .sort((a, b) => b.score - a.score);
+  const scored = catalog.map(g => ({ g, score: scoreGame(g) })).filter(x => x.score > 0).sort((a,b)=>b.score-a.score);
+  const filtered = scored.filter(x => !profile.dislikes[itemKey(x.g)]).slice(0, 36);
 
   const grid = document.getElementById('recommendationGrid');
   const empty = document.getElementById('emptyState');
   const count = document.getElementById('recCount');
 
-  const filtered = scored
-    .filter(x => !profile.dislikes[x.d.dealID])
-    .slice(0, 36);
-
   if (!filtered.length) {
     grid.innerHTML = '';
     empty.style.display = 'block';
     count.textContent = '';
-    renderBecauseYouLiked([]);
+    renderBecause([]);
     return;
   }
 
   empty.style.display = 'none';
-  count.textContent = `${filtered.length} personalized deals found`;
-  grid.innerHTML = filtered.map(x => dealCardHtml(x.d, buildWhyChip(x.d, profile.genres, profile.genres))).join('');
-  renderBecauseYouLiked(scored);
+  const modeLabel = profile.mode === 'on-sale' ? 'on-sale recommendations' : 'umbrella recommendations';
+  count.textContent = `${filtered.length} ${modeLabel} found`;
+  grid.innerHTML = filtered.map(x => cardHtml(x.g, buildWhyChip(x.g, profile.genres, profile.genres))).join('');
+  renderBecause(scored);
 }
 
 function bindControls() {
@@ -279,31 +247,20 @@ function bindControls() {
   const budgetVal = document.getElementById('budgetVal');
   const minRating = document.getElementById('minRating');
   const minDiscount = document.getElementById('minDiscount');
+  const recMode = document.getElementById('recMode');
 
   budgetRange.value = profile.budget;
   budgetVal.textContent = `$${profile.budget}`;
   minRating.value = String(profile.minRating);
   minDiscount.value = String(profile.minDiscount);
+  recMode.value = profile.mode || 'all';
 
-  budgetRange.addEventListener('input', () => {
-    profile.budget = parseInt(budgetRange.value, 10);
-    budgetVal.textContent = `$${profile.budget}`;
-    renderRecommendations();
-  });
-  minRating.addEventListener('change', () => {
-    profile.minRating = parseInt(minRating.value, 10);
-    renderRecommendations();
-  });
-  minDiscount.addEventListener('change', () => {
-    profile.minDiscount = parseInt(minDiscount.value, 10);
-    renderRecommendations();
-  });
+  budgetRange.addEventListener('input', () => { profile.budget = parseInt(budgetRange.value, 10); budgetVal.textContent = `$${profile.budget}`; renderRecommendations(); });
+  minRating.addEventListener('change', () => { profile.minRating = parseInt(minRating.value, 10); renderRecommendations(); });
+  minDiscount.addEventListener('change', () => { profile.minDiscount = parseInt(minDiscount.value, 10); renderRecommendations(); });
+  recMode.addEventListener('change', () => { profile.mode = recMode.value; renderRecommendations(); });
 
-  document.getElementById('savePrefs').addEventListener('click', () => {
-    saveProfile();
-    alert('Preferences saved.');
-  });
-
+  document.getElementById('savePrefs').addEventListener('click', () => { saveProfile(); alert('Preferences saved.'); });
   document.getElementById('resetPrefs').addEventListener('click', () => {
     if (!confirm('Reset your recommendation profile?')) return;
     profile = { ...DEFAULT_PROFILE };
@@ -320,13 +277,8 @@ function bindControls() {
     const type = btn.dataset.fb;
     if (!id || !type) return;
 
-    if (type === 'like') {
-      profile.likes[id] = true;
-      delete profile.dislikes[id];
-    } else {
-      profile.dislikes[id] = true;
-      delete profile.likes[id];
-    }
+    if (type === 'like') { profile.likes[id] = true; delete profile.dislikes[id]; }
+    else { profile.dislikes[id] = true; delete profile.likes[id]; }
 
     saveProfile();
     renderRecommendations();
@@ -336,28 +288,44 @@ function bindControls() {
 async function init() {
   try {
     const v = Math.floor(Date.now() / 3600000);
-    let data = null;
 
+    let enriched = null;
     try {
-      const enriched = await fetch('enriched-deals.json?v=' + v);
-      if (enriched.ok) {
-        const ej = await enriched.json();
-        stores = ej.stores || {};
-        deals = (ej.games || []).map(g => ({
-          ...g,
-          title: g.rawg?.name || g.title,
-          steamRatingPercent: g.steamRatingPercent,
-          steamRatingText: g.steamRatingText
-        }));
-        data = ej;
+      const r = await fetch('enriched-deals.json?v=' + v);
+      if (r.ok) enriched = await r.json();
+    } catch (_) {}
+
+    let dealsData = null;
+    if (enriched?.games?.length) {
+      dealsData = { stores: enriched.stores || {}, deals: enriched.games };
+    } else {
+      const fallback = await fetch('deals.json?v=' + v).then(r => r.json());
+      dealsData = { stores: fallback.stores || {}, deals: fallback.deals || [] };
+    }
+
+    stores = dealsData.stores;
+    deals = dealsData.deals.map(d => ({ ...d, steamAppID: d.steamAppID || d.appid, title: d.rawg?.name || d.title }));
+
+    // Try umbrella catalog first
+    try {
+      const c = await fetch('games-catalog.json?v=' + v);
+      if (c.ok) {
+        const j = await c.json();
+        const dealByApp = new Map();
+        deals.forEach(d => {
+          const app = String(d.steamAppID || d.appid || '');
+          if (app && !dealByApp.has(app)) dealByApp.set(app, d);
+        });
+
+        catalog = (j.games || []).map(g => {
+          const app = String(g.appid || '');
+          const deal = dealByApp.get(app);
+          return deal ? { ...g, ...deal, steamAppID: app } : { ...g, steamAppID: app };
+        });
       }
     } catch (_) {}
 
-    if (!data) {
-      const fallback = await fetch('deals.json?v=' + v).then(r => r.json());
-      stores = fallback.stores || {};
-      deals = fallback.deals || [];
-    }
+    if (!catalog.length) catalog = deals;
 
     bindControls();
     buildGenrePills();
@@ -365,7 +333,7 @@ async function init() {
   } catch (err) {
     console.error(err);
     document.getElementById('emptyState').style.display = 'block';
-    document.getElementById('emptyState').innerHTML = '<p>Could not load deals right now. Please refresh.</p>';
+    document.getElementById('emptyState').innerHTML = '<p>Could not load recommendations right now. Please refresh.</p>';
   }
 }
 
