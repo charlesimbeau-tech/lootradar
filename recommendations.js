@@ -371,6 +371,58 @@ function renderRecommendations() {
   renderBecause(scored);
 }
 
+function openQuiz() {
+  var modal = document.getElementById('quizModal');
+  if (!modal) return;
+  modal.style.display = 'grid';
+}
+
+function closeQuiz() {
+  var modal = document.getElementById('quizModal');
+  if (!modal) return;
+  modal.style.display = 'none';
+}
+
+function setupQuiz() {
+  var apply = document.getElementById('quizApply');
+  var skip = document.getElementById('quizSkip');
+  var budget = document.getElementById('quizBudget');
+  var style = document.getElementById('quizStyle');
+  var rating = document.getElementById('quizRating');
+
+  if (skip) skip.addEventListener('click', function() {
+    localStorage.setItem('lr_quiz_done', '1');
+    closeQuiz();
+  });
+
+  if (apply) apply.addEventListener('click', function() {
+    profile.budget = Number((budget && budget.value) || 70);
+    profile.minRating = Number((rating && rating.value) || 0);
+    applyPreset((style && style.value) || 'trending');
+    profile.preset = (style && style.value) || 'trending';
+    saveProfile();
+    buildGenrePills();
+    updateGenreHint();
+
+    var br = document.getElementById('budgetRange');
+    var bv = document.getElementById('budgetVal');
+    var mr = document.getElementById('minRating');
+    var pm = document.getElementById('presetMode');
+    if (br) br.value = profile.budget;
+    if (bv) bv.textContent = '$' + profile.budget;
+    if (mr) mr.value = String(profile.minRating);
+    if (pm) pm.value = profile.preset;
+
+    renderRecommendations();
+    localStorage.setItem('lr_quiz_done', '1');
+    closeQuiz();
+  });
+
+  if (!localStorage.getItem('lr_quiz_done')) {
+    setTimeout(openQuiz, 650);
+  }
+}
+
 function bindControls() {
   var budgetRange = document.getElementById('budgetRange');
   var budgetVal = document.getElementById('budgetVal');
@@ -381,6 +433,7 @@ function bindControls() {
   var genreMatchMode = document.getElementById('genreMatchMode');
   var selectAllGenres = document.getElementById('selectAllGenres');
   var clearGenres = document.getElementById('clearGenres');
+  var launchQuiz = document.getElementById('launchQuiz');
 
   if (budgetRange) { budgetRange.value = profile.budget; budgetVal.textContent = '$' + profile.budget; }
   if (minRating) minRating.value = String(profile.minRating);
@@ -435,6 +488,7 @@ function bindControls() {
     profile.preset = 'custom'; if (presetMode) presetMode.value = 'custom';
     saveProfile(); buildGenrePills(); updateGenreHint(); renderRecommendations();
   });
+  if (launchQuiz) launchQuiz.addEventListener('click', function() { openQuiz(); });
 
   var saveBtn = document.getElementById('savePrefs');
   if (saveBtn) saveBtn.addEventListener('click', function() { saveProfile(); alert('Preferences saved.'); });
@@ -591,6 +645,7 @@ function init() {
       bindControls();
       buildGenrePills();
       renderRecommendations();
+      setupQuiz();
     }).catch(function(err) {
       console.error('LootRadar init error:', err);
       var empty = document.getElementById('emptyState');

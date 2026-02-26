@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=15">
-    <link rel="stylesheet" href="recommendations.css?v=7">
+    <link rel="stylesheet" href="recommendations.css?v=8">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 </head>
 <body>
@@ -109,6 +109,7 @@
                 <div class="apply-wrap" style="margin-top:14px;">
                     <button class="apply-btn" id="savePrefs">Save Preferences</button>
                     <button class="reset-btn" id="resetPrefs">Reset Profile</button>
+                    <button class="reset-btn" id="launchQuiz" type="button">Questionnaire</button>
                 </div>
             </div>
         </section>
@@ -128,6 +129,23 @@
             </div>
         </section>
     </main>
+
+    <div id="quizModal" class="quiz-modal" style="display:none;">
+        <div class="quiz-card">
+            <h3>Quick Preference Quiz</h3>
+            <p class="quiz-sub">30 seconds to personalize recommendations.</p>
+            <label>Budget comfort</label>
+            <select id="quizBudget"><option value="40">Budget ($40)</option><option value="70" selected>Standard ($70)</option><option value="100">Premium ($100)</option></select>
+            <label>Favorite style</label>
+            <select id="quizStyle"><option value="trending">Trending Mix</option><option value="aaa">AAA</option><option value="indie">Indie</option><option value="new">New & Fresh</option></select>
+            <label>Min rating</label>
+            <select id="quizRating"><option value="0">Any</option><option value="70" selected>70%+</option><option value="80">80%+</option><option value="90">90%+</option></select>
+            <div class="quiz-actions">
+                <button class="apply-btn" id="quizApply" type="button">Apply</button>
+                <button class="reset-btn" id="quizSkip" type="button">Skip</button>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <p>LootRadar &copy; 2025 — Prices sourced via CheapShark.</p>
@@ -149,7 +167,7 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <script src="recommendations.js?v=13"></script>
+    <script src="recommendations.js?v=14"></script>
 </body>
 </html>
 

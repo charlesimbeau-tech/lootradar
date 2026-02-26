@@ -105,6 +105,29 @@ html, body {
   margin-top: 18px;
 }
 
+.quiz-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,10,18,0.72);
+  display: grid;
+  place-items: center;
+  z-index: 2500;
+}
+
+.quiz-card {
+  width: min(92vw, 430px);
+  background: rgba(11,22,35,0.95);
+  border: 1px solid rgba(48,169,222,0.35);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.quiz-card h3 { margin: 0 0 6px; }
+.quiz-sub { margin: 0 0 10px; color: #9fb0c9; font-size: 0.9rem; }
+.quiz-card label { display:block; margin: 8px 0 5px; font-size: 0.86rem; color:#b5c5df; }
+.quiz-card select { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); color: #dce7ff; border-radius: 8px; padding: 8px 10px; }
+.quiz-actions { display:flex; gap: 8px; margin-top: 12px; }
+
 /* show all genre pills without clipping */
 .genre-tags-row {
   flex-wrap: wrap;
