@@ -17,7 +17,7 @@
     <nav class="site-nav">
         <div class="site-nav-inner">
             <a href="index.html" class="nav-brand">Loot<span>Radar</span></a>
-            <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+            <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation" aria-expanded="false">Menu</button>
             <div class="nav-links" id="mobileNavLinks">
                 <a href="index.html">Home</a>
                 <a href="recommendations.html" class="active">Recommendations</a>
@@ -126,7 +126,7 @@
         toggle.addEventListener('click', () => {
           const open = links.classList.toggle('open');
           toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-          toggle.textContent = open ? '✕' : '☰';
+          toggle.textContent = open ? 'Close' : 'Menu';
         });
       })();
     </script>
