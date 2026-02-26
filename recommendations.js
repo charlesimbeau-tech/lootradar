@@ -26,7 +26,7 @@ const GENRE_KEYWORDS = {
 };
 
 const DEFAULT_PROFILE = {
-  budget: 60,
+  budget: 70,
   minRating: 70,
   minDiscount: 20,
   mode: 'all',
