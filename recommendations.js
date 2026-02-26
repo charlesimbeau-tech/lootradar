@@ -154,6 +154,11 @@ function getDealGenres(deal) {
     : inferGenres((deal.title || '') + ' ' + (deal.steamRatingText || ''));
 }
 
+function getDealTags(deal) {
+  if (deal.rawg?.tags && deal.rawg.tags.length) return deal.rawg.tags;
+  return inferGenres((deal.title || '') + ' ' + (deal.steamRatingText || ''));
+}
+
 function renderBecauseYouLiked(scoredDeals) {
   const becauseGrid = document.getElementById('becauseGrid');
   const becauseReason = document.getElementById('becauseReason');
@@ -167,19 +172,40 @@ function renderBecauseYouLiked(scoredDeals) {
 
   const likedDeals = deals.filter(d => likedIds.includes(d.dealID));
   const likedGenres = new Map();
+  const likedTags = new Map();
+
   likedDeals.forEach(d => {
     getDealGenres(d).forEach(g => likedGenres.set(g, (likedGenres.get(g) || 0) + 1));
+    getDealTags(d).forEach(t => likedTags.set(t, (likedTags.get(t) || 0) + 1));
   });
 
-  const topGenre = [...likedGenres.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || 'your favorites';
+  const topGenres = [...likedGenres.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([g]) => g);
 
-  const picks = scoredDeals
+  const topTags = [...likedTags.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([t]) => t.toLowerCase());
+
+  const blended = scoredDeals
     .filter(x => !profile.likes[x.d.dealID] && !profile.dislikes[x.d.dealID])
-    .filter(x => getDealGenres(x.d).includes(topGenre))
+    .map(x => {
+      const g = getDealGenres(x.d);
+      const t = getDealTags(x.d).map(v => String(v).toLowerCase());
+      const genreOverlap = g.filter(v => topGenres.includes(v)).length;
+      const tagOverlap = t.filter(v => topTags.includes(v)).length;
+      const blendBoost = (genreOverlap * 0.12) + (tagOverlap * 0.04);
+      return { ...x, blendScore: x.score + blendBoost };
+    })
+    .filter(x => x.blendScore > 0)
+    .sort((a, b) => b.blendScore - a.blendScore)
     .slice(0, 8);
 
-  becauseReason.textContent = `Picked from ${topGenre} games you’ve liked.`;
-  becauseGrid.innerHTML = picks.map(x => dealCardHtml(x.d)).join('');
+  const reasonGenres = topGenres.length ? topGenres.join(', ') : 'your favorites';
+  becauseReason.textContent = `Based on your likes in: ${reasonGenres}.`;
+  becauseGrid.innerHTML = blended.map(x => dealCardHtml(x.d)).join('');
 }
 
 function renderRecommendations() {
