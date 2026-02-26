@@ -25,8 +25,11 @@ jobs:
       - name: Enrich catalog with Steam metadata (no key)
         run: node scripts/enrich-catalog-steam.js
 
-      - name: Build umbrella games catalog (no key)
-        run: node scripts/build-games-catalog.js
+      - name: Build large umbrella games catalog (no key)
+        env:
+          MAX_GAMES: 5000
+          MAX_PAGES: 8
+        run: node scripts/build-games-catalog-large.js
 
       - name: Commit and push if changed
         run: |
