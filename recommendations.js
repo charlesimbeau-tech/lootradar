@@ -95,9 +95,9 @@ function scoreGame(game) {
   var isOnSale = savings > 0 || !!game.dealID;
 
   if (sale != null && !isNaN(sale) && sale > profile.budget) return -999;
-  if (rating > 0 && rating < profile.minRating) return -999;
+  if (rating < profile.minRating) return -999;
+  if (savings < profile.minDiscount) return -999;
   if (profile.mode === 'on-sale' && !isOnSale) return -999;
-  if (profile.mode === 'on-sale' && savings < profile.minDiscount) return -999;
 
   var genres = getGenres(game);
   var genreMatches = 0;
@@ -258,10 +258,11 @@ function renderRecommendations() {
   }
   scored.sort(function(a,b) { return b.score - a.score; });
 
-  var filtered = [];
-  for (var j = 0; j < scored.length && filtered.length < 36; j++) {
-    if (!profile.dislikes[itemKey(scored[j].g)]) filtered.push(scored[j]);
+  var matched = [];
+  for (var j = 0; j < scored.length; j++) {
+    if (!profile.dislikes[itemKey(scored[j].g)]) matched.push(scored[j]);
   }
+  var filtered = matched.slice(0, 36);
 
   var grid = document.getElementById('recommendationGrid');
   var empty = document.getElementById('emptyState');
@@ -277,7 +278,7 @@ function renderRecommendations() {
 
   if (empty) empty.style.display = 'none';
   var label = profile.mode === 'on-sale' ? 'on-sale deals' : 'recommendations';
-  if (count) count.textContent = filtered.length + ' ' + label + ' found';
+  if (count) count.textContent = 'Showing ' + filtered.length + ' of ' + matched.length + ' ' + label;
   if (grid) grid.innerHTML = filtered.map(function(x) {
     return cardHtml(x.g, whyChip(x.g, profile.genres, profile.genres));
   }).join('');

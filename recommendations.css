@@ -79,6 +79,10 @@ html, body {
   row-gap: 0.7rem;
 }
 
+#becauseSection {
+  margin-top: 18px;
+}
+
 /* show all genre pills without clipping */
 .genre-tags-row {
   flex-wrap: wrap;
