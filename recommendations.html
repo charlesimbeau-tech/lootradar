@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LootRadar — Personalized Game Recommendations</title>
+    <meta name="description" content="Get personalized game deal recommendations based on your budget, favorite genres, and store preferences.">
+    <link rel="canonical" href="https://thelootradar.com/recommendations.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=15">
+    <link rel="stylesheet" href="recommendations.css?v=1">
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="site-nav-inner">
+            <a href="index.html" class="nav-brand">Loot<span>Radar</span></a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="recommendations.html" class="active">Recommendations</a>
+                <a href="blog.html">Blog</a>
+                <a href="about.html">About</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero" style="padding-bottom:24px;">
+        <div class="hero-inner">
+            <div class="hero-brand">
+                <div class="hero-logo"><img src="icons/icon.svg" alt="LootRadar" width="48" height="48" style="border-radius:10px"></div>
+                <div class="hero-name">For<span>You</span></div>
+            </div>
+            <p class="hero-tagline">Personalized deal picks from live LootRadar data.</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="section" style="display:block;max-width:1150px;margin:0 auto;padding:0 16px;">
+            <div class="controls-inner" style="max-width:none;">
+                <div class="filter-bar" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
+                    <div class="select-wrap">
+                        <label for="budgetRange">Max Budget: <strong id="budgetVal">$30</strong></label>
+                        <input type="range" id="budgetRange" min="0" max="70" step="5" value="30">
+                    </div>
+                    <div class="select-wrap">
+                        <label for="minRating">Min Steam Rating</label>
+                        <select id="minRating">
+                            <option value="0">Any</option>
+                            <option value="60">60%+</option>
+                            <option value="70">70%+</option>
+                            <option value="80">80%+</option>
+                            <option value="90">90%+</option>
+                        </select>
+                    </div>
+                    <div class="select-wrap">
+                        <label for="minDiscount">Min Discount</label>
+                        <select id="minDiscount">
+                            <option value="0">Any</option>
+                            <option value="20">20%+</option>
+                            <option value="40">40%+</option>
+                            <option value="60">60%+</option>
+                            <option value="75">75%+</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3 style="margin:16px 0 10px 0;">Genres you like</h3>
+                <div id="genrePills" class="genre-tags-row"></div>
+
+                <div class="apply-wrap" style="margin-top:14px;">
+                    <button class="apply-btn" id="savePrefs">Save Preferences</button>
+                    <button class="reset-btn" id="resetPrefs">Reset Profile</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="recommendationSection" class="section" style="display:block;">
+            <div class="section-title">Top Picks for You</div>
+            <div id="recCount" class="result-count" style="margin-bottom:12px;"></div>
+            <div id="recommendationGrid" class="grid"></div>
+            <div id="emptyState" class="no-results" style="display:none;">
+                <p>No matches yet — widen your budget or select more genres.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>LootRadar &copy; 2025 — Prices sourced via CheapShark.</p>
+        <p class="footer-nav"><a href="index.html">Home</a> &middot; <a href="recommendations.html">Recommendations</a> &middot; <a href="blog.html">Blog</a> &middot; <a href="about.html">About</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a></p>
+        <p><small>Affiliate links help keep the site free.</small></p>
+    </footer>
+
+    <script src="recommendations.js?v=1"></script>
+</body>
+</html>
