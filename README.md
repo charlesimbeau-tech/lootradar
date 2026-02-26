@@ -23,7 +23,7 @@ A game deals aggregator that pulls live pricing from 15+ stores and caches resul
 - GitHub Actions (scheduled caching workflow)
 - GitHub Pages (hosting)
 - Cloudflare (DNS & CDN)
-- CheapShark API + optional RAWG metadata enrichment
+- CheapShark API + Steam/SteamSpy metadata enrichment (no API key)
 
 ## Local Setup
 
@@ -36,13 +36,15 @@ npx serve .
 
 > **Note:** Cached deal data is committed to the repo by the GitHub Actions workflow. Locally you'll see the last cached snapshot.
 
-## Optional: Fuller Game Catalog (RAWG)
+## Fuller Game Catalog (No API Key)
 
-To enrich deals with a deeper game database:
+Deals are automatically enriched during the workflow using:
+- Steam Store `appdetails`
+- SteamSpy `appdetails`
 
-1. Add a GitHub repo secret: `RAWG_API_KEY`
-2. Workflow will auto-run `scripts/enrich-catalog.js` after each deal sync
-3. Output file: `enriched-deals.json`
-4. `recommendations.html` automatically prefers `enriched-deals.json` and falls back to `deals.json`
+Workflow runs `scripts/enrich-catalog-steam.js` after each deal sync and writes:
+- `enriched-deals.json`
+
+`recommendations.html` automatically prefers `enriched-deals.json` and falls back to `deals.json`.
 
 For future server-side personalization, starter Postgres schema is in `db/schema.sql`.

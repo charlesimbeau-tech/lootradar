@@ -22,11 +22,8 @@ jobs:
       - name: Fetch deals from CheapShark
         run: node scripts/fetch-deals.js
 
-      - name: Enrich catalog with RAWG metadata (optional)
-        if: ${{ secrets.RAWG_API_KEY != '' }}
-        env:
-          RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
-        run: node scripts/enrich-catalog.js
+      - name: Enrich catalog with Steam metadata (no key)
+        run: node scripts/enrich-catalog-steam.js
 
       - name: Commit and push if changed
         run: |
