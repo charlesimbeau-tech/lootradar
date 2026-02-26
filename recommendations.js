@@ -150,7 +150,7 @@ function cardLink(game) {
 
 function cardHtml(game, why = null) {
   const sale = Number(game.salePrice ?? game.price_usd ?? game.price ?? 0);
-  const normal = Number(game.normalPrice ?? game.initial_price_usd ?? sale || 0);
+  const normal = Number(game.normalPrice ?? game.initial_price_usd ?? sale ?? 0);
   const savings = Math.round(Number(game.savings ?? game.discount ?? 0));
   const rating = Number(game.steamRatingPercent ?? game.rating ?? game.userscore ?? 0);
   const key = itemKey(game);
