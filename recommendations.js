@@ -322,15 +322,14 @@ async function initAuth() {
   const signInBtn = document.getElementById('authSignIn');
   const signOutBtn = document.getElementById('authSignOut');
 
-  if (!window.supabase || !window.LR_SUPABASE_URL || !window.LR_SUPABASE_ANON_KEY) {
+  const setGuest = () => {
+    authedUserId = null;
     if (statusEl) statusEl.textContent = 'Guest mode (local only)';
-    return;
-  }
+    if (signOutBtn) signOutBtn.style.display = 'none';
+  };
 
-  supabase = window.supabase.createClient(window.LR_SUPABASE_URL, window.LR_SUPABASE_ANON_KEY);
-
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session?.user) {
+  const applySession = async (session) => {
+    if (!session?.user) return setGuest();
     authedUserId = session.user.id;
     if (statusEl) statusEl.textContent = `Signed in: ${session.user.email || 'account'}`;
     if (signOutBtn) signOutBtn.style.display = 'inline-block';
@@ -342,13 +341,39 @@ async function initAuth() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
       }
     } catch (_) {}
+  };
+
+  if (!window.supabase || !window.LR_SUPABASE_URL || !window.LR_SUPABASE_ANON_KEY) {
+    setGuest();
+    return;
   }
+
+  supabase = window.supabase.createClient(window.LR_SUPABASE_URL, window.LR_SUPABASE_ANON_KEY);
+
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  if (code) {
+    try {
+      await supabase.auth.exchangeCodeForSession(code);
+      params.delete('code');
+      const clean = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+      window.history.replaceState({}, '', clean);
+    } catch (_) {}
+  }
+
+  const { data: { session } } = await supabase.auth.getSession();
+  await applySession(session);
+
+  supabase.auth.onAuthStateChange(async (_event, session2) => {
+    await applySession(session2);
+    renderRecommendations();
+  });
 
   if (signInBtn) {
     signInBtn.addEventListener('click', async () => {
       const email = (emailEl?.value || '').trim();
       if (!email) return alert('Enter your email first.');
-      const redirectTo = `${window.location.origin}${window.location.pathname}`;
+      const redirectTo = `${window.location.origin}/login.html?next=${encodeURIComponent('recommendations.html')}`;
       const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
       if (error) return alert(error.message || 'Sign in failed.');
       alert('Magic link sent. Check your email.');
@@ -358,9 +383,7 @@ async function initAuth() {
   if (signOutBtn) {
     signOutBtn.addEventListener('click', async () => {
       await supabase.auth.signOut();
-      authedUserId = null;
-      signOutBtn.style.display = 'none';
-      if (statusEl) statusEl.textContent = 'Guest mode (local only)';
+      setGuest();
     });
   }
 }
