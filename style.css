@@ -237,8 +237,8 @@ a:hover { text-decoration: underline; }
 .genre-tags-row {
     display: flex;
     gap: 0.4rem;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    flex-wrap: wrap;
+    overflow: visible;
     scrollbar-width: none;
     padding-bottom: 2px;
 }
@@ -995,6 +995,12 @@ footer a { color: var(--text2); }
     .adv-filters { gap: 1rem; }
     .range-wrap input[type="range"] { width: 90px; }
     .store-checkboxes { grid-template-columns: 1fr 1fr; }
+    .genre-tags-row {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
 }
 
 @media (max-width: 480px) {
