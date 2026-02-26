@@ -10,14 +10,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=15">
-    <link rel="stylesheet" href="recommendations.css?v=2">
+    <link rel="stylesheet" href="recommendations.css?v=3">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 </head>
 <body>
     <nav class="site-nav">
         <div class="site-nav-inner">
             <a href="index.html" class="nav-brand">Loot<span>Radar</span></a>
-            <div class="nav-links">
+            <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+            <div class="nav-links" id="mobileNavLinks">
                 <a href="index.html">Home</a>
                 <a href="recommendations.html" class="active">Recommendations</a>
                 <a href="blog.html">Blog</a>
@@ -107,6 +108,18 @@
         <p><small>Affiliate links help keep the site free.</small></p>
     </footer>
 
+    <script>
+      (() => {
+        const toggle = document.getElementById('mobileNavToggle');
+        const links = document.getElementById('mobileNavLinks');
+        if (!toggle || !links) return;
+        toggle.addEventListener('click', () => {
+          const open = links.classList.toggle('open');
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+          toggle.textContent = open ? '✕' : '☰';
+        });
+      })();
+    </script>
     <script src="recommendations.js?v=1"></script>
 </body>
 </html>
