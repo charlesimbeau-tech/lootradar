@@ -36,3 +36,58 @@
   font-size: 0.73rem;
   font-weight: 600;
 }
+
+/* Recommendations page mobile layout fixes */
+html, body {
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .site-nav-inner {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.65rem 0.8rem;
+  }
+
+  .nav-brand {
+    font-size: 1.1rem;
+  }
+
+  .nav-links {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    gap: 1rem;
+    padding-bottom: 4px;
+  }
+
+  .nav-links a {
+    flex: 0 0 auto;
+  }
+
+  .controls-inner {
+    padding: 0 0.85rem !important;
+  }
+
+  .filter-bar {
+    grid-template-columns: 1fr !important;
+  }
+
+  .select-wrap,
+  .select-wrap select,
+  .select-wrap input[type="range"] {
+    width: 100%;
+  }
+
+  .apply-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+
+  .apply-wrap .apply-btn,
+  .apply-wrap .reset-btn {
+    width: 100%;
+  }
+}
