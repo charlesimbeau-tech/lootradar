@@ -68,14 +68,16 @@ function getTags(game) {
 }
 
 function scoreGame(game) {
-  const sale = Number(game.salePrice ?? game.price_usd ?? game.price ?? 9999);
+  const rawSale = game.salePrice ?? game.price_usd ?? game.price ?? null;
+  const sale = rawSale == null ? null : Number(rawSale);
   const savings = Number(game.savings ?? game.discount ?? 0);
   const rating = Number(game.steamRatingPercent ?? game.rating ?? game.userscore ?? 0);
+  const isOnSale = Number(game.savings || 0) > 0 || !!game.dealID;
 
-  if (sale > profile.budget) return -999;
+  if (sale != null && !Number.isNaN(sale) && sale > profile.budget) return -999;
   if (rating < profile.minRating) return -999;
-  if (savings < profile.minDiscount) return -999;
-  if (profile.mode === 'on-sale' && !(Number(game.savings || 0) > 0 || game.dealID)) return -999;
+  if (profile.mode === 'on-sale' && !isOnSale) return -999;
+  if (profile.mode === 'on-sale' && savings < profile.minDiscount) return -999;
 
   const genres = getGenres(game);
   const genreMatches = genres.filter(g => profile.genres.includes(g)).length;
@@ -85,7 +87,8 @@ function scoreGame(game) {
   score += Math.min(1, genreMatches / Math.max(1, profile.genres.length)) * 0.35;
   score += Math.min(1, savings / 100) * 0.25;
   score += Math.min(1, rating / 100) * 0.25;
-  score += Math.max(0, 1 - sale / Math.max(1, profile.budget)) * 0.15;
+  const effectivePrice = (sale == null || Number.isNaN(sale)) ? profile.budget : sale;
+  score += Math.max(0, 1 - effectivePrice / Math.max(1, profile.budget)) * 0.15;
 
   if (profile.likes[key]) score += 0.2;
   if (profile.dislikes[key]) score -= 1;
