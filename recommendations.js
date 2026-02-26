@@ -318,8 +318,6 @@ function bindControls() {
 
 async function initAuth() {
   const statusEl = document.getElementById('authStatus');
-  const emailEl = document.getElementById('authEmail');
-  const signInBtn = document.getElementById('authSignIn');
   const signOutBtn = document.getElementById('authSignOut');
 
   const setGuest = () => {
@@ -369,16 +367,7 @@ async function initAuth() {
     renderRecommendations();
   });
 
-  if (signInBtn) {
-    signInBtn.addEventListener('click', async () => {
-      const email = (emailEl?.value || '').trim();
-      if (!email) return alert('Enter your email first.');
-      const redirectTo = `${window.location.origin}/login.html?next=${encodeURIComponent('recommendations.html')}`;
-      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
-      if (error) return alert(error.message || 'Sign in failed.');
-      alert('Magic link sent. Check your email.');
-    });
-  }
+  // Quick inline email sign-in removed; use dedicated login page.
 
   if (signOutBtn) {
     signOutBtn.addEventListener('click', async () => {
