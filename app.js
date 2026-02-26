@@ -40,6 +40,7 @@ let sort = 'discount-high';
 let maxPrice = 60;
 let minDiscount = 0;
 let minRating = 0;
+let minPopularity = 0;
 
 // --- Deals Claimed counter (social proof) ---
 function getClaimedCount() {
@@ -418,6 +419,7 @@ function filterDeals(deals) {
         if (d.sale > maxPrice && maxPrice < 60) return false;
         if (d.savings < minDiscount) return false;
         if (minRating > 0 && d.steamRating < minRating && d.metacritic < minRating) return false;
+        if (minPopularity > 0 && (d.steamReviews || 0) < minPopularity) return false;
         // Genre filter
         if (selectedGenres.size > 0 && !d.genres.some(g => selectedGenres.has(g))) return false;
         return true;
@@ -463,7 +465,7 @@ function render() {
     noRes.style.display = 'none';
 
     // Featured section: free + 90%+ off (only on default view)
-    if (!q && sort === 'discount-high' && !minDiscount && !minRating) {
+    if (!q && sort === 'discount-high' && !minDiscount && !minRating && !minPopularity) {
         const feat = filtered.filter(d => d.sale === 0 || d.savings >= 90);
         const rest = filtered.filter(d => d.sale !== 0 && d.savings < 90);
 
@@ -513,6 +515,7 @@ document.getElementById('applyFilters').addEventListener('click', () => {
     maxPrice = parseInt(document.getElementById('priceRange').value) || 60;
     minDiscount = parseInt(document.getElementById('discountRange').value) || 0;
     minRating = parseInt(document.getElementById('ratingSelect').value) || 0;
+    minPopularity = parseInt(document.getElementById('popularitySelect').value) || 0;
     // Also update slider labels in case they got out of sync
     document.getElementById('priceVal').textContent = maxPrice >= 60 ? 'Any' : `$${maxPrice}`;
     document.getElementById('discountVal').textContent = minDiscount === 0 ? 'Any' : `${minDiscount}%+`;
@@ -531,6 +534,7 @@ document.getElementById('resetFilters').addEventListener('click', () => {
     document.getElementById('discountRange').value = 0;
     document.getElementById('discountVal').textContent = 'Any';
     document.getElementById('ratingSelect').value = '0';
+    document.getElementById('popularitySelect').value = '0';
     // Reset all store checkboxes
     document.getElementById('storeSelectAll').checked = true;
     document.querySelectorAll('#storeCheckboxes input[type="checkbox"]').forEach(cb => { cb.checked = true; });
@@ -547,6 +551,7 @@ document.getElementById('resetFilters').addEventListener('click', () => {
     maxPrice = 60;
     minDiscount = 0;
     minRating = 0;
+    minPopularity = 0;
     render();
 });
 
