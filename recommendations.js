@@ -26,7 +26,7 @@ const GENRE_KEYWORDS = {
 };
 
 const DEFAULT_PROFILE = {
-  budget: 30,
+  budget: 60,
   minRating: 70,
   minDiscount: 20,
   mode: 'all',
@@ -179,6 +179,7 @@ function buildGenrePills() {
       if (profile.genres.includes(genre)) profile.genres = profile.genres.filter(g => g !== genre);
       else profile.genres.push(genre);
       btn.classList.toggle('active');
+      saveProfile();
       renderRecommendations();
     });
     wrap.appendChild(btn);
@@ -258,10 +259,10 @@ function bindControls() {
   minDiscount.value = String(profile.minDiscount);
   recMode.value = profile.mode || 'all';
 
-  budgetRange.addEventListener('input', () => { profile.budget = parseInt(budgetRange.value, 10); budgetVal.textContent = `$${profile.budget}`; renderRecommendations(); });
-  minRating.addEventListener('change', () => { profile.minRating = parseInt(minRating.value, 10); renderRecommendations(); });
-  minDiscount.addEventListener('change', () => { profile.minDiscount = parseInt(minDiscount.value, 10); renderRecommendations(); });
-  recMode.addEventListener('change', () => { profile.mode = recMode.value; renderRecommendations(); });
+  budgetRange.addEventListener('input', () => { profile.budget = parseInt(budgetRange.value, 10); budgetVal.textContent = `$${profile.budget}`; saveProfile(); renderRecommendations(); });
+  minRating.addEventListener('change', () => { profile.minRating = parseInt(minRating.value, 10); saveProfile(); renderRecommendations(); });
+  minDiscount.addEventListener('change', () => { profile.minDiscount = parseInt(minDiscount.value, 10); saveProfile(); renderRecommendations(); });
+  recMode.addEventListener('change', () => { profile.mode = recMode.value; saveProfile(); renderRecommendations(); });
 
   document.getElementById('savePrefs').addEventListener('click', () => { saveProfile(); alert('Preferences saved.'); });
   document.getElementById('resetPrefs').addEventListener('click', () => {
