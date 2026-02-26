@@ -31,6 +31,7 @@ const GENRE_KEYWORDS = {
 
 const DEFAULT_PROFILE = {
   budget: 70, minRating: 0, minDiscount: 0, mode: 'all',
+  popularityMin: 0,
   genreMatchMode: 'any',
   preset: 'custom',
   genres: ['RPG','Action','Indie'], likes: {}, dislikes: {}
@@ -113,14 +114,14 @@ function getTags(game) {
 function applyPreset(preset) {
   profile.preset = preset || 'custom';
   if (profile.preset === 'trending') {
-    profile.minRating = 70; profile.minDiscount = 20; profile.mode = 'all';
+    profile.minRating = 70; profile.minDiscount = 20; profile.mode = 'all'; profile.popularityMin = 1000;
   } else if (profile.preset === 'new') {
-    profile.minRating = 65; profile.minDiscount = 0; profile.mode = 'all';
+    profile.minRating = 65; profile.minDiscount = 0; profile.mode = 'all'; profile.popularityMin = 0;
   } else if (profile.preset === 'aaa') {
-    profile.minRating = 80; profile.minDiscount = 10; profile.mode = 'all';
+    profile.minRating = 80; profile.minDiscount = 10; profile.mode = 'all'; profile.popularityMin = 5000;
     profile.genres = ['Action','Adventure','Open World','RPG','FPS'];
   } else if (profile.preset === 'indie') {
-    profile.minRating = 75; profile.minDiscount = 0; profile.mode = 'all';
+    profile.minRating = 75; profile.minDiscount = 0; profile.mode = 'all'; profile.popularityMin = 300;
     profile.genres = ['Indie','Roguelike','Metroidvania','Puzzle','Platformer'];
   }
 }
@@ -136,6 +137,19 @@ function titleFamilyKey(title) {
   return parts.slice(0, 2).join(' ');
 }
 
+function ownersUpperBound(owners) {
+  var s = String(owners || '0');
+  var parts = s.split('..').map(function(x){ return Number(String(x).trim()) || 0; });
+  return parts.length > 1 ? Math.max(parts[0], parts[1]) : (parts[0] || 0);
+}
+
+function popularitySignal(game) {
+  var reviews = Number(game.steamRatingCount || 0) + Number(game.positive || 0) + Number(game.negative || 0);
+  var owners = ownersUpperBound(game.owners);
+  var active = Number(game.avg_2weeks || 0);
+  return Math.max(reviews, owners / 1000, active * 10);
+}
+
 function scoreGame(game) {
   var saleRaw = game.salePrice != null ? game.salePrice : (game.price_usd != null ? game.price_usd : game.price);
   var sale = saleRaw != null ? Number(saleRaw) : null;
@@ -146,6 +160,7 @@ function scoreGame(game) {
   if (sale != null && !isNaN(sale) && sale > profile.budget) return -999;
   if (rating < profile.minRating) return -999;
   if (savings < profile.minDiscount) return -999;
+  if (popularitySignal(game) < Number(profile.popularityMin || 0)) return -999;
   if (profile.mode === 'on-sale' && !isOnSale) return -999;
 
   var genres = getGenres(game);
@@ -429,6 +444,7 @@ function bindControls() {
   var minRating = document.getElementById('minRating');
   var minDiscount = document.getElementById('minDiscount');
   var recMode = document.getElementById('recMode');
+  var popularityMin = document.getElementById('popularityMin');
   var presetMode = document.getElementById('presetMode');
   var genreMatchMode = document.getElementById('genreMatchMode');
   var selectAllGenres = document.getElementById('selectAllGenres');
@@ -439,6 +455,7 @@ function bindControls() {
   if (minRating) minRating.value = String(profile.minRating);
   if (minDiscount) minDiscount.value = String(profile.minDiscount);
   if (recMode) recMode.value = profile.mode || 'all';
+  if (popularityMin) popularityMin.value = String(profile.popularityMin || 0);
   if (presetMode) presetMode.value = profile.preset || 'custom';
   if (genreMatchMode) genreMatchMode.value = profile.genreMatchMode || 'any';
   updateGenreHint();
@@ -465,6 +482,11 @@ function bindControls() {
     if (presetMode) presetMode.value = 'custom';
     saveProfile(); renderRecommendations();
   });
+  if (popularityMin) popularityMin.addEventListener('change', function() {
+    profile.popularityMin = Number(popularityMin.value || 0);
+    profile.preset = 'custom'; if (presetMode) presetMode.value = 'custom';
+    saveProfile(); renderRecommendations();
+  });
   if (presetMode) presetMode.addEventListener('change', function() {
     applyPreset(presetMode.value);
     if (budgetRange) budgetRange.value = profile.budget;
@@ -472,6 +494,7 @@ function bindControls() {
     if (minRating) minRating.value = String(profile.minRating);
     if (minDiscount) minDiscount.value = String(profile.minDiscount);
     if (recMode) recMode.value = profile.mode;
+    if (popularityMin) popularityMin.value = String(profile.popularityMin || 0);
     saveProfile(); buildGenrePills(); updateGenreHint(); renderRecommendations();
   });
   if (genreMatchMode) genreMatchMode.addEventListener('change', function() {

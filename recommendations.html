@@ -92,6 +92,15 @@
                             <option value="on-sale">Only On Sale</option>
                         </select>
                     </div>
+                    <div class="select-wrap">
+                        <label for="popularityMin">Popularity</label>
+                        <select id="popularityMin">
+                            <option value="0">Any</option>
+                            <option value="1000">Popular (1k+ signals)</option>
+                            <option value="5000">Very Popular (5k+)</option>
+                            <option value="20000">Top Tier (20k+)</option>
+                        </select>
+                    </div>
                 </div>
 
                 <h3 style="margin:16px 0 8px 0;">Genres you like</h3>
@@ -167,7 +176,7 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <script src="recommendations.js?v=14"></script>
+    <script src="recommendations.js?v=15"></script>
 </body>
 </html>
 
