@@ -187,9 +187,9 @@ function confidenceLabel(game) {
   if (rating >= 85) pts += 2; else if (rating >= 75) pts += 1;
   if (reviews >= 1000) pts += 2; else if (reviews >= 250) pts += 1;
   if (discount >= 60) pts += 1;
-  if (pts >= 4) return 'High';
-  if (pts >= 2) return 'Medium';
-  return 'Low';
+  if (pts >= 4) return '🟢 High';
+  if (pts >= 2) return '🟡 Medium';
+  return '🔴 Low';
 }
 
 function whyChip(game, topGenres, topTags) {
