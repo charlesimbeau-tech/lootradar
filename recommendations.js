@@ -40,14 +40,32 @@ const STORAGE_KEY = 'lr_recommendation_profile_v2';
 let stores = {};
 let deals = [];
 let catalog = [];
+let supabase = null;
+let authedUserId = null;
 let profile = loadProfile();
 
 function loadProfile() {
   try { return { ...DEFAULT_PROFILE, ...(JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}) }; }
   catch { return { ...DEFAULT_PROFILE }; }
 }
-function saveProfile() { localStorage.setItem(STORAGE_KEY, JSON.stringify(profile)); }
+function saveProfile() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+  saveProfileToCloud();
+}
 function itemKey(x) { return x.dealID || `app-${x.steamAppID || x.appid || x.id}`; }
+
+async function saveProfileToCloud() {
+  if (!supabase || !authedUserId) return;
+  try {
+    await supabase.from('lr_profiles').upsert({
+      user_id: authedUserId,
+      data: profile,
+      updated_at: new Date().toISOString()
+    });
+  } catch (e) {
+    console.warn('Cloud profile save failed', e?.message || e);
+  }
+}
 
 function inferGenres(text = '') {
   const t = text.toLowerCase();
@@ -284,13 +302,72 @@ function bindControls() {
     if (type === 'like') { profile.likes[id] = true; delete profile.dislikes[id]; }
     else { profile.dislikes[id] = true; delete profile.likes[id]; }
 
+    if (supabase && authedUserId) {
+      supabase.from('lr_feedback').upsert({
+        user_id: authedUserId,
+        item_id: id,
+        action: type,
+        updated_at: new Date().toISOString()
+      }).then(() => {}).catch(() => {});
+    }
+
     saveProfile();
     renderRecommendations();
   });
 }
 
+async function initAuth() {
+  const statusEl = document.getElementById('authStatus');
+  const emailEl = document.getElementById('authEmail');
+  const signInBtn = document.getElementById('authSignIn');
+  const signOutBtn = document.getElementById('authSignOut');
+
+  if (!window.supabase || !window.LR_SUPABASE_URL || !window.LR_SUPABASE_ANON_KEY) {
+    if (statusEl) statusEl.textContent = 'Guest mode (local only)';
+    return;
+  }
+
+  supabase = window.supabase.createClient(window.LR_SUPABASE_URL, window.LR_SUPABASE_ANON_KEY);
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.user) {
+    authedUserId = session.user.id;
+    if (statusEl) statusEl.textContent = `Signed in: ${session.user.email || 'account'}`;
+    if (signOutBtn) signOutBtn.style.display = 'inline-block';
+
+    try {
+      const { data } = await supabase.from('lr_profiles').select('data').eq('user_id', authedUserId).single();
+      if (data?.data) {
+        profile = { ...DEFAULT_PROFILE, ...data.data };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+      }
+    } catch (_) {}
+  }
+
+  if (signInBtn) {
+    signInBtn.addEventListener('click', async () => {
+      const email = (emailEl?.value || '').trim();
+      if (!email) return alert('Enter your email first.');
+      const redirectTo = `${window.location.origin}${window.location.pathname}`;
+      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
+      if (error) return alert(error.message || 'Sign in failed.');
+      alert('Magic link sent. Check your email.');
+    });
+  }
+
+  if (signOutBtn) {
+    signOutBtn.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      authedUserId = null;
+      signOutBtn.style.display = 'none';
+      if (statusEl) statusEl.textContent = 'Guest mode (local only)';
+    });
+  }
+}
+
 async function init() {
   try {
+    await initAuth();
     const v = Math.floor(Date.now() / 3600000);
 
     let enriched = null;

@@ -49,3 +49,15 @@ Workflow runs `scripts/enrich-catalog-steam.js` after each deal sync and writes:
 `recommendations.html` automatically prefers `enriched-deals.json` and falls back to `deals.json`.
 
 For future server-side personalization, starter Postgres schema is in `db/schema.sql`.
+
+## Optional Accounts + Sync (Supabase)
+
+The recommendations page supports optional account sync.
+
+1. In Supabase SQL editor, run: `db/supabase-recommendations.sql`
+2. Edit `supabase-config.js` with your project values:
+   - `window.LR_SUPABASE_URL`
+   - `window.LR_SUPABASE_ANON_KEY`
+3. Use the sign-in box on `recommendations.html` (magic link auth)
+
+If config is blank, the site stays in guest/local-only mode.

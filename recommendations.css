@@ -37,6 +37,34 @@
   font-weight: 600;
 }
 
+.auth-bar {
+  margin-bottom: 14px;
+  border: 1px solid rgba(48,169,222,0.25);
+  background: rgba(10, 25, 35, 0.55);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.auth-actions input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #dce7ff;
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-width: 200px;
+}
+
 /* Recommendations page mobile layout fixes */
 html, body {
   overflow-x: hidden;
@@ -92,6 +120,17 @@ html, body {
 
   .controls-inner {
     padding: 0 0.85rem !important;
+  }
+
+  .auth-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .auth-actions input {
+    min-width: 0;
+    width: 100%;
   }
 
   .filter-bar {

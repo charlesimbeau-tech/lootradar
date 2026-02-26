@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=15">
-    <link rel="stylesheet" href="recommendations.css?v=3">
+    <link rel="stylesheet" href="recommendations.css?v=4">
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 </head>
 <body>
@@ -41,6 +41,14 @@
 
     <main>
         <section class="section" style="display:block;max-width:1150px;margin:0 auto;padding:0 16px;">
+            <div class="auth-bar" id="authBar">
+                <div id="authStatus">Guest mode (local only)</div>
+                <div class="auth-actions">
+                    <input id="authEmail" type="email" placeholder="you@email.com" />
+                    <button class="apply-btn" id="authSignIn">Sign In Link</button>
+                    <button class="reset-btn" id="authSignOut" style="display:none;">Sign Out</button>
+                </div>
+            </div>
             <div class="controls-inner" style="max-width:none;">
                 <div class="filter-bar" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
                     <div class="select-wrap">
@@ -120,6 +128,8 @@
         });
       })();
     </script>
-    <script src="recommendations.js?v=2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="recommendations.js?v=3"></script>
 </body>
 </html>
