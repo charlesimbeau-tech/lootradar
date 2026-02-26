@@ -70,7 +70,9 @@ function scoreDeal(deal) {
   const savings = parseFloat(deal.savings || 0);
   const rating = parseInt(deal.steamRatingPercent || 0, 10);
   const title = deal.title || '';
-  const genres = inferGenres(title + ' ' + (deal.steamRatingText || ''));
+  const genres = (deal.rawg?.genres && deal.rawg.genres.length)
+    ? deal.rawg.genres
+    : inferGenres(title + ' ' + (deal.steamRatingText || ''));
 
   if (sale > profile.budget) return -999;
   if (rating < profile.minRating) return -999;
@@ -230,9 +232,30 @@ function bindControls() {
 
 async function init() {
   try {
-    const data = await fetch('deals.json?v=' + Math.floor(Date.now() / 3600000)).then(r => r.json());
-    stores = data.stores || {};
-    deals = data.deals || [];
+    const v = Math.floor(Date.now() / 3600000);
+    let data = null;
+
+    try {
+      const enriched = await fetch('enriched-deals.json?v=' + v);
+      if (enriched.ok) {
+        const ej = await enriched.json();
+        stores = ej.stores || {};
+        deals = (ej.games || []).map(g => ({
+          ...g,
+          title: g.rawg?.name || g.title,
+          steamRatingPercent: g.steamRatingPercent,
+          steamRatingText: g.steamRatingText
+        }));
+        data = ej;
+      }
+    } catch (_) {}
+
+    if (!data) {
+      const fallback = await fetch('deals.json?v=' + v).then(r => r.json());
+      stores = fallback.stores || {};
+      deals = fallback.deals || [];
+    }
+
     bindControls();
     buildGenrePills();
     renderRecommendations();
