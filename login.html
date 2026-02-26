@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LootRadar — Sign In</title>
+  <meta name="description" content="Sign in to sync your LootRadar recommendations across devices.">
+  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="stylesheet" href="recommendations.css?v=4">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <style>
+    .login-wrap { max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    .login-card { background: rgba(10,25,35,.65); border: 1px solid rgba(48,169,222,.25); border-radius: 14px; padding: 1rem; }
+    .login-title { font-size: 1.6rem; font-weight: 800; margin-bottom: .4rem; }
+    .login-copy { color: var(--text2); margin-bottom: 1rem; }
+    .login-list { color: var(--text2); margin: .2rem 0 1rem 1rem; }
+    .login-list li { margin: .2rem 0; }
+    .login-row { display: grid; grid-template-columns: 1fr auto; gap: .6rem; }
+    .login-row input { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.2); color: #dce7ff; border-radius: 8px; padding: 10px 12px; }
+    .login-note { font-size: .85rem; color: var(--text3); margin-top: .8rem; }
+    .login-msg { margin-top: .8rem; color: #bfe9ff; }
+    @media (max-width: 680px) { .login-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a href="index.html" class="nav-brand">Loot<span>Radar</span></a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="recommendations.html">Recommendations</a>
+        <a href="login.html" class="active">Login</a>
+        <a href="blog.html">Blog</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="login-wrap">
+    <section class="login-card">
+      <h1 class="login-title">Sign in to LootRadar</h1>
+      <p class="login-copy">Create your free account with a secure magic link — no password needed.</p>
+      <ul class="login-list">
+        <li>Sync recommendations across phone + desktop</li>
+        <li>Save your likes/dislikes and improve suggestions</li>
+        <li>Keep your preferences backed up</li>
+      </ul>
+
+      <div class="login-row">
+        <input id="loginEmail" type="email" placeholder="you@email.com">
+        <button class="apply-btn" id="sendLogin">Send Magic Link</button>
+      </div>
+
+      <div class="login-msg" id="loginMsg"></div>
+      <p class="login-note">By continuing, you agree to receive a one-time login email. We do not store passwords.</p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script>
+    (async () => {
+      const msg = document.getElementById('loginMsg');
+      const emailEl = document.getElementById('loginEmail');
+      const btn = document.getElementById('sendLogin');
+      const params = new URLSearchParams(window.location.search);
+      const next = params.get('next') || 'recommendations.html';
+
+      if (!window.supabase || !window.LR_SUPABASE_URL || !window.LR_SUPABASE_ANON_KEY) {
+        msg.textContent = 'Login is not configured yet. Please try again in a minute.';
+        return;
+      }
+
+      const supabase = window.supabase.createClient(window.LR_SUPABASE_URL, window.LR_SUPABASE_ANON_KEY);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        msg.textContent = 'Signed in. Redirecting...';
+        setTimeout(() => window.location.href = next, 700);
+        return;
+      }
+
+      btn.addEventListener('click', async () => {
+        const email = (emailEl.value || '').trim();
+        if (!email) return alert('Enter your email first.');
+
+        const redirectTo = `${window.location.origin}/login.html?next=${encodeURIComponent(next)}`;
+        const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
+        if (error) {
+          msg.textContent = error.message || 'Could not send link.';
+          return;
+        }
+
+        msg.textContent = 'Magic link sent. Check your inbox and click the link to continue.';
+      });
+
+      supabase.auth.onAuthStateChange((evt, session2) => {
+        if ((evt === 'SIGNED_IN' || evt === 'INITIAL_SESSION') && session2?.user) {
+          window.location.href = next;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
