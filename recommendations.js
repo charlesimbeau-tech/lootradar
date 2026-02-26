@@ -115,7 +115,7 @@ function buildGenrePills() {
   });
 }
 
-function dealCardHtml(d) {
+function dealCardHtml(d, why = null) {
   const sale = parseFloat(d.salePrice || 0);
   const normal = parseFloat(d.normalPrice || 0);
   const savings = Math.round(parseFloat(d.savings || 0));
@@ -136,6 +136,7 @@ function dealCardHtml(d) {
         <div><span class="rating">⭐ ${rating || 'N/A'}%</span></div>
       </div>
       <div class="card-title">${d.title}</div>
+      ${why ? `<div class="why-chip">${why}</div>` : ''}
       <div class="pricing">
         <span class="price-old">$${normal.toFixed(2)}</span><span class="price-new">$${sale.toFixed(2)}</span>
       </div>
@@ -157,6 +158,22 @@ function getDealGenres(deal) {
 function getDealTags(deal) {
   if (deal.rawg?.tags && deal.rawg.tags.length) return deal.rawg.tags;
   return inferGenres((deal.title || '') + ' ' + (deal.steamRatingText || ''));
+}
+
+function buildWhyChip(deal, topGenres = [], topTags = []) {
+  const genres = getDealGenres(deal);
+  const tags = getDealTags(deal).map(v => String(v));
+  const savings = Math.round(parseFloat(deal.savings || 0));
+
+  const matchedGenre = genres.find(g => topGenres.includes(g));
+  const matchedTag = tags.find(t => topTags.map(z => z.toLowerCase()).includes(t.toLowerCase()));
+
+  const parts = [];
+  if (matchedGenre) parts.push(matchedGenre);
+  if (matchedTag) parts.push(matchedTag);
+  if (savings > 0) parts.push(`${savings}% off`);
+
+  return parts.length ? `Why: ${parts.join(' · ')}` : null;
 }
 
 function renderBecauseYouLiked(scoredDeals) {
@@ -205,7 +222,7 @@ function renderBecauseYouLiked(scoredDeals) {
 
   const reasonGenres = topGenres.length ? topGenres.join(', ') : 'your favorites';
   becauseReason.textContent = `Based on your likes in: ${reasonGenres}.`;
-  becauseGrid.innerHTML = blended.map(x => dealCardHtml(x.d)).join('');
+  becauseGrid.innerHTML = blended.map(x => dealCardHtml(x.d, buildWhyChip(x.d, topGenres, topTags))).join('');
 }
 
 function renderRecommendations() {
@@ -232,7 +249,7 @@ function renderRecommendations() {
 
   empty.style.display = 'none';
   count.textContent = `${filtered.length} personalized deals found`;
-  grid.innerHTML = filtered.map(x => dealCardHtml(x.d)).join('');
+  grid.innerHTML = filtered.map(x => dealCardHtml(x.d, buildWhyChip(x.d, profile.genres, profile.genres))).join('');
   renderBecauseYouLiked(scored);
 }
 
