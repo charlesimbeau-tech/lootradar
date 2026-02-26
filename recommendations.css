@@ -13,9 +13,21 @@
   background: rgba(48,169,222,0.12);
 }
 
-.why-chip {
+.confidence-chip {
   display: inline-block;
   margin: 0.35rem 0 0.15rem;
+  padding: 0.2rem 0.48rem;
+  border-radius: 999px;
+  border: 1px solid rgba(124, 252, 0, 0.35);
+  background: rgba(124, 252, 0, 0.10);
+  color: #d5ffb0;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.why-chip {
+  display: inline-block;
+  margin: 0.15rem 0 0.15rem;
   padding: 0.2rem 0.48rem;
   border-radius: 999px;
   border: 1px solid rgba(48,169,222,0.45);

@@ -115,6 +115,25 @@ function buildGenrePills() {
   });
 }
 
+function getConfidenceLabel(deal) {
+  const rating = parseInt(deal.steamRatingPercent || 0, 10);
+  const reviews = parseInt(deal.steamRatingCount || 0, 10);
+  const discount = parseFloat(deal.savings || 0);
+
+  let points = 0;
+  if (rating >= 85) points += 2;
+  else if (rating >= 75) points += 1;
+
+  if (reviews >= 1000) points += 2;
+  else if (reviews >= 250) points += 1;
+
+  if (discount >= 60) points += 1;
+
+  if (points >= 4) return 'High Confidence';
+  if (points >= 2) return 'Medium Confidence';
+  return 'Low Confidence';
+}
+
 function dealCardHtml(d, why = null) {
   const sale = parseFloat(d.salePrice || 0);
   const normal = parseFloat(d.normalPrice || 0);
@@ -123,6 +142,7 @@ function dealCardHtml(d, why = null) {
   const storeName = stores[d.storeID]?.name || `Store ${d.storeID}`;
   const storeIcon = stores[d.storeID]?.icon || STORE_ICONS[d.storeID] || '';
   const link = `https://www.cheapshark.com/redirect?dealID=${encodeURIComponent(d.dealID)}`;
+  const confidence = getConfidenceLabel(d);
 
   return `
   <div class="card">
@@ -136,6 +156,7 @@ function dealCardHtml(d, why = null) {
         <div><span class="rating">⭐ ${rating || 'N/A'}%</span></div>
       </div>
       <div class="card-title">${d.title}</div>
+      <div class="confidence-chip">${confidence}</div>
       ${why ? `<div class="why-chip">${why}</div>` : ''}
       <div class="pricing">
         <span class="price-old">$${normal.toFixed(2)}</span><span class="price-new">$${sale.toFixed(2)}</span>
