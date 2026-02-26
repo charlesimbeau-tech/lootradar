@@ -77,10 +77,23 @@ function inferGenres(text) {
   return out;
 }
 
+function normalizeLabel(v) {
+  return String(v || '').toLowerCase().trim();
+}
+
 function getGenres(game) {
   var g = (game.rawg && game.rawg.genres) || game.genres || [];
   if (g.length) return g;
   return inferGenres((game.title || '') + ' ' + (game.steamRatingText || ''));
+}
+
+function hasGenreMatch(gameGenres, selectedGenres) {
+  if (!selectedGenres || !selectedGenres.length) return true;
+  var gs = gameGenres.map(normalizeLabel);
+  for (var i = 0; i < selectedGenres.length; i++) {
+    if (gs.indexOf(normalizeLabel(selectedGenres[i])) !== -1) return true;
+  }
+  return false;
 }
 
 function getTags(game) {
@@ -100,9 +113,11 @@ function scoreGame(game) {
   if (profile.mode === 'on-sale' && !isOnSale) return -999;
 
   var genres = getGenres(game);
+  if (!hasGenreMatch(genres, profile.genres)) return -999;
+
   var genreMatches = 0;
   for (var i = 0; i < genres.length; i++) {
-    if (profile.genres.indexOf(genres[i]) !== -1) genreMatches++;
+    if (profile.genres.map(normalizeLabel).indexOf(normalizeLabel(genres[i])) !== -1) genreMatches++;
   }
   var key = itemKey(game);
 
