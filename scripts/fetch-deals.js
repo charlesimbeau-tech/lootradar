@@ -55,7 +55,7 @@ async function main() {
     try {
       for (let page = 0; page < PAGES_PER_STORE; page++) {
         const deals = await fetchJSON(
-          `${API}/deals?storeID=${store.storeID}&upperPrice=${MAX_PRICE}&pageSize=${PAGE_SIZE}&pageNumber=${page}&sortBy=Deal+Rating`
+          `${API}/deals?storeID=${store.storeID}&upperPrice=${MAX_PRICE}&pageSize=${PAGE_SIZE}&pageNumber=${page}&steamRating=80&sortBy=Deal+Rating`
         );
 
         if (Array.isArray(deals) && deals.length) {
