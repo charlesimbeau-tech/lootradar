@@ -1,7 +1,6 @@
 // Fetch deals from CheapShark API and save to deals.json
 // Run by GitHub Actions every hour
 
-const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
@@ -10,17 +9,22 @@ const MAX_PRICE = Number(process.env.MAX_PRICE || 70);
 const PAGE_SIZE = Number(process.env.PAGE_SIZE || 80);
 const PAGES_PER_STORE = Number(process.env.PAGES_PER_STORE || 3);
 
-function fetchJSON(url) {
-  return new Promise((resolve, reject) => {
-    https.get(url, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try { resolve(JSON.parse(data)); }
-        catch (e) { reject(new Error(`JSON parse error for ${url}: ${e.message}`)); }
-      });
-    }).on('error', reject);
+async function fetchJSON(url) {
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'LootRadar-Bot/1.0 (https://github.com/charlesimbeau-tech/lootradar)',
+      'Accept': 'application/json'
+    }
   });
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status} for ${url}`);
+  }
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    throw new Error(`JSON parse error for ${url}: ${e.message} \nResponse start: ${text.slice(0, 100)}`);
+  }
 }
 
 function sleep(ms) {
