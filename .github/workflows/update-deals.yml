@@ -44,6 +44,7 @@ jobs:
           git add deals.json
           [ -f enriched-deals.json ] && git add enriched-deals.json || true
           [ -f games-catalog.json ] && git add games-catalog.json || true
+          [ -f games-catalog-large.json ] && git add games-catalog-large.json || true
 
           if git diff --cached --quiet; then
             echo "No data changes to commit"
