@@ -1,560 +1,583 @@
-// LootRadar \u2014 Game Deal Aggregator
-// CheapShark API (free, no key)
+(function () {
+  'use strict';
 
-const API = 'https://www.cheapshark.com/api/1.0';
+  const API = 'https://www.cheapshark.com/api/1.0';
+  const PAGE_SIZE = 24;
+  const WATCH_KEY = 'lr_watchlist_v1';
+  const { normalizeDeal } = window.LootRadarNormalizer;
+  const { calculateDealScore, getDefaultEligibility, createRecommendationReason } = window.LootRadarScoring;
+  const { DEFAULT_FILTERS, normalizeFilters, filterDeals, sortDeals, readFiltersFromUrl, filtersToSearchParams } = window.LootRadarFilters;
+  const config = window.LootRadarEditorialConfig;
 
-// --- Genre keyword mapping ---
-const GENRE_KEYWORDS = {
-    'RPG': ['rpg', 'fantasy', 'quest', 'elder scrolls', 'witcher', 'dragon', 'kingdom', 'final fantasy', 'tales of', 'diablo', 'baldur', 'pillars of eternity', 'divinity'],
-    'Souls-like': ['souls', 'dark souls', 'elden ring', 'bloodborne', 'sekiro', 'nioh', 'lies of p', 'lords of the fallen', 'mortal shell', 'remnant', 'salt and sanctuary', 'hollow knight'],
-    'Metroidvania': ['metroidvania', 'hollow knight', 'ori ', 'castlevania', 'dead cells', 'blasphemous', 'axiom verge', 'guacamelee', 'salt and sanctuary', 'bloodstained'],
-    'Roguelike': ['roguelike', 'roguelite', 'hades', 'dead cells', 'slay the spire', 'binding of isaac', 'enter the gungeon', 'risk of rain', 'returnal', 'noita', 'spelunky'],
-    'FPS': ['shooter', 'warfare', 'battlefield', 'counter-strike', 'doom', 'call of duty', 'halo', 'overwatch', 'rainbow six', 'far cry', 'bioshock', 'valorant', 'destiny'],
-    'Action': ['action', 'assassin', 'batman', 'devil may cry', 'god of war', 'metal gear', 'tomb raider', 'uncharted', 'hitman', 'just cause', 'bayonetta'],
-    'Strategy': ['strategy', 'civilization', 'total war', 'age of empires', 'command', 'xcom', 'crusader kings', 'stellaris', 'anno', 'factorio', 'rimworld'],
-    'Horror': ['horror', 'resident evil', 'silent hill', 'dead space', 'amnesia', 'outlast', 'evil within', 'phasmophobia', 'alan wake', 'soma'],
-    'Racing': ['racing', 'forza', 'need for speed', 'gran turismo', 'dirt', 'f1 ', 'nascar', 'assetto', 'hot wheels'],
-    'Sports': ['sports', 'fifa', 'nba', 'nhl', 'madden', 'football', 'baseball', 'golf', 'tennis', 'wwe', 'ea sports'],
-    'Simulation': ['simulator', 'simulation', 'farming', 'flight', 'train', 'tycoon', 'city', 'planet', 'kerbal'],
-    'Adventure': ['adventure', 'life is strange', 'walking dead', 'monkey island', 'broken age', 'point and click', 'firewatch', 'gone home'],
-    'Indie': ['indie', 'pixel', 'celeste', 'stardew', 'undertale', 'cuphead', 'shovel knight', 'braid'],
-    'Survival': ['survival', 'rust', 'ark', 'dayz', 'forest', 'subnautica', 'valheim', 'don\'t starve', 'craft', 'grounded', 'raft'],
-    'Puzzle': ['puzzle', 'portal', 'tetris', 'baba is you', 'witness', 'talos', 'lemmings', 'human fall flat'],
-    'Open World': ['open world', 'gta', 'grand theft', 'skyrim', 'cyberpunk', 'red dead', 'saints row', 'watch dogs', 'zelda', 'horizon'],
-    'Multiplayer': ['multiplayer', 'online', 'co-op', 'pvp', 'battle royale', 'mmo'],
-    'Platformer': ['platformer', 'mario', 'sonic', 'celeste', 'rayman', 'crash bandicoot', 'spyro', 'little nightmares', 'a hat in time'],
-    'Fighting': ['fighting', 'street fighter', 'mortal kombat', 'tekken', 'guilty gear', 'dragon ball', 'smash', 'brawl'],
-    'Stealth': ['stealth', 'hitman', 'dishonored', 'thief', 'splinter cell', 'metal gear solid', 'deus ex'],
-    'VR': ['vr', 'virtual reality', 'oculus', 'half-life alyx', 'beat saber', 'boneworks']
-};
+  const state = {
+    allDeals: [],
+    visibleDeals: [],
+    stores: {},
+    filters: readFiltersFromUrl(window.location.href),
+    shown: PAGE_SIZE,
+    selectedDeal: null,
+    watchlist: loadWatchlist(),
+    lastFocused: null,
+    detailController: null
+  };
 
-let selectedGenres = new Set();
+  const collections = {
+    best: { label: 'Best right now', title: 'Best deals right now', summary: 'The strongest mix of game quality, price value, and review confidence.' },
+    under10: { label: 'Under $10', title: 'Highly rated under $10', summary: 'Proven games with real review confidence for less than a lunch.' },
+    deep: { label: 'Deep & worth it', title: 'Deep discounts worth taking', summary: 'Big percentage drops that survive the quality filter.' },
+    indie: { label: 'Indie standouts', title: 'Best indie deals', summary: 'Distinctive smaller games with strong player approval.' },
+    multiplayer: { label: 'Co-op & multiplayer', title: 'Best co-op and multiplayer deals', summary: 'Games worth sharing with a couch, party, or squad.' },
+    hidden: { label: 'Hidden gems', title: 'Hidden gems with strong confidence', summary: 'Less-famous picks backed by enough reviews to trust.' },
+    all: { label: 'All qualified', title: 'All qualified deals', summary: 'Every current deal that meets your selected quality rules.' }
+  };
 
-// Dynamic store map populated from API
-let STORE_MAP = {};
-let ACTIVE_STORE_IDS = [];
-let checkedStores = new Set();
+  const $ = selector => document.querySelector(selector);
+  const $$ = selector => [...document.querySelectorAll(selector)];
 
-let allDeals = [];
-let sort = 'discount-high';
-let maxPrice = 60;
-let minDiscount = 0;
-let minRating = 0;
-let minPopularity = 0;
+  function escapeHTML(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 
-// --- Deals Claimed counter (social proof) ---
-function getClaimedCount() {
-    // Base: grows ~150/day from a launch date, so it always looks like it's climbing
-    const launchDate = new Date('2025-06-01').getTime();
-    const now = Date.now();
-    const daysSinceLaunch = Math.floor((now - launchDate) / 86400000);
-    const base = 12400 + (daysSinceLaunch * 147);
-    // Add user's real clicks on top
-    const userClicks = parseInt(localStorage.getItem('lr_claimed') || '0');
-    return base + userClicks;
-}
+  function money(value) {
+    const number = Number(value || 0);
+    return number === 0 ? 'Free' : new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(number);
+  }
 
-function bumpClaimed() {
-    const prev = parseInt(localStorage.getItem('lr_claimed') || '0');
-    localStorage.setItem('lr_claimed', prev + 1);
-    updateClaimedDisplay();
-}
+  function compact(value) {
+    return new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(Number(value || 0));
+  }
 
-function updateClaimedDisplay() {
-    const el = document.getElementById('statClaimed');
-    if (el) {
-        const count = getClaimedCount();
-        el.textContent = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count.toLocaleString();
-    }
-}
+  function safeImage(value) {
+    const url = String(value || '');
+    return /^https?:\/\//i.test(url) ? url.replace(/"/g, '&quot;') : '';
+  }
 
-// Init claimed display on load
-updateClaimedDisplay();
-
-// --- Init ---
-async function init() {
-    document.getElementById('loading').style.display = 'block';
-
+  function loadWatchlist() {
     try {
-        // Try loading pre-cached deals.json first (updated hourly by GitHub Actions)
-        let usedCache = false;
-        try {
-            const cached = await fetch('deals.json?v=' + Math.floor(Date.now() / 3600000))
-                .then(r => r.ok ? r.json() : null);
-            if (cached && cached.stores && cached.deals && cached.deals.length > 0) {
-                STORE_MAP = cached.stores;
-                ACTIVE_STORE_IDS = Object.keys(STORE_MAP);
-                ACTIVE_STORE_IDS.forEach(id => checkedStores.add(id));
-                buildStorePanel();
-
-                allDeals = cached.deals.map(d => ({
-                    title: d.title,
-                    sale: parseFloat(d.salePrice),
-                    normal: parseFloat(d.normalPrice),
-                    savings: Math.round(parseFloat(d.savings)),
-                    storeID: d.storeID,
-                    dealID: d.dealID,
-                    thumb: d.thumb,
-                    steamAppID: d.steamAppID,
-                    metacritic: parseInt(d.metacriticScore) || 0,
-                    steamRating: parseInt(d.steamRatingPercent) || 0,
-                    steamReviews: parseInt(d.steamRatingCount) || 0,
-                    dealRating: parseFloat(d.dealRating) || 0,
-                    steamRatingText: d.steamRatingText || '',
-                    genres: [],
-                }));
-
-                allDeals.forEach(deal => {
-                    const text = (deal.title + ' ' + deal.steamRatingText).toLowerCase();
-                    for (const [genre, keywords] of Object.entries(GENRE_KEYWORDS)) {
-                        if (keywords.some(kw => text.includes(kw))) {
-                            deal.genres.push(genre);
-                        }
-                    }
-                });
-
-                updateStats();
-                buildGenreTags();
-
-                const updated = new Date(cached.updatedAt);
-                document.getElementById('lastUpdated').textContent =
-                    'Deals updated: ' + updated.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' at ' + updated.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-                document.getElementById('loading').style.display = 'none';
-                render();
-                usedCache = true;
-            }
-        } catch (e) {
-            console.warn('deals.json unavailable, falling back to live API');
-        }
-
-        if (usedCache) return;
-
-        // Fallback: live API (only if deals.json missing or empty)
-        const storesRes = await fetch(`${API}/stores`);
-        const storesData = await storesRes.json();
-
-        storesData.forEach(s => {
-            if (s.isActive === 1) {
-                STORE_MAP[s.storeID] = {
-                    name: s.storeName,
-                    icon: `https://www.cheapshark.com/img/stores/icons/${parseInt(s.storeID) - 1}.png`
-                };
-            }
-        });
-        ACTIVE_STORE_IDS = Object.keys(STORE_MAP);
-
-        // All checked by default
-        ACTIVE_STORE_IDS.forEach(id => checkedStores.add(id));
-
-        buildStorePanel();
-        await fetchDeals();
-    } catch (e) {
-        console.error('Init failed:', e);
-        document.getElementById('deals').innerHTML = '<p class="no-results">Failed to load deals. Try refreshing.</p>';
-        document.getElementById('loading').style.display = 'none';
+      return JSON.parse(localStorage.getItem(WATCH_KEY) || '{}') || {};
+    } catch (_) {
+      return {};
     }
-}
+  }
 
-function buildStorePanel() {
-    const list = document.getElementById('storeCheckboxes');
-    list.innerHTML = '';
+  function saveWatchlist() {
+    localStorage.setItem(WATCH_KEY, JSON.stringify(state.watchlist));
+    updateWatchCount();
+  }
 
-    ACTIVE_STORE_IDS.forEach(id => {
-        const store = STORE_MAP[id];
-        const label = document.createElement('label');
-        label.className = 'store-cb-item';
-        label.innerHTML =
-            `<input type="checkbox" value="${id}" checked>` +
-            `<img src="${store.icon}" alt="" onerror="this.style.display='none'">` +
-            `<span>${store.name}</span>`;
-        const cb = label.querySelector('input');
-        cb.addEventListener('change', () => {
-            if (cb.checked) checkedStores.add(id); else checkedStores.delete(id);
-            updateSelectAllState();
-            updateStoreCount();
-            render();
-        });
-        list.appendChild(label);
+  function showToast(message) {
+    const toast = $('#toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+
+  function normalizedRawDeal(raw, stores) {
+    const deal = normalizeDeal(raw, stores);
+    const scoreBreakdown = calculateDealScore(deal, config);
+    const eligibility = getDefaultEligibility(deal, config);
+    return {
+      ...deal,
+      dealScore: scoreBreakdown.score,
+      scoreBreakdown,
+      eligible: eligibility.eligible,
+      exclusionReasons: eligibility.reasons,
+      recommendation: createRecommendationReason(deal, scoreBreakdown)
+    };
+  }
+
+  function mergeData(base, enriched) {
+    const enrichedRows = enriched?.games || [];
+    const byDeal = new Map(enrichedRows.filter(Boolean).map(row => [row.dealID, row]));
+    const bySteam = new Map(enrichedRows.filter(row => row?.steamAppID).map(row => [String(row.steamAppID), row]));
+    return (base?.deals || []).map(row => {
+      const meta = byDeal.get(row.dealID) || bySteam.get(String(row.steamAppID || ''));
+      return meta ? { ...row, rawg: meta.rawg || null } : row;
     });
+  }
 
-    updateStoreCount();
-
-    // Select All toggle
-    const selAll = document.getElementById('storeSelectAll');
-    selAll.checked = true;
-    selAll.addEventListener('change', () => {
-        const checked = selAll.checked;
-        list.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = checked; });
-        if (checked) ACTIVE_STORE_IDS.forEach(id => checkedStores.add(id));
-        else checkedStores.clear();
-        updateStoreCount();
-        render();
-    });
-
-    // Toggle panel open/close
-    const toggle = document.getElementById('storePanelToggle');
-    const body = document.getElementById('storePanelBody');
-    toggle.addEventListener('click', () => {
-        body.classList.toggle('open');
-        toggle.classList.toggle('open');
-    });
-
-    // Close when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.store-panel')) {
-            body.classList.remove('open');
-            toggle.classList.remove('open');
-        }
-    });
-}
-
-function updateStoreCount() {
-    const el = document.getElementById('storeCount');
-    if (el) {
-        if (checkedStores.size === ACTIVE_STORE_IDS.length) {
-            el.textContent = 'All';
-        } else {
-            el.textContent = `${checkedStores.size}/${ACTIVE_STORE_IDS.length}`;
-        }
+  function dedupeDeals(deals) {
+    const byKey = new Map();
+    for (const deal of deals) {
+      const key = deal.key;
+      const previous = byKey.get(key);
+      if (!previous || deal.dealScore > previous.dealScore || (deal.dealScore === previous.dealScore && deal.salePrice < previous.salePrice)) {
+        byKey.set(key, deal);
+      }
     }
-}
+    return [...byKey.values()];
+  }
 
-function updateSelectAllState() {
-    const selAll = document.getElementById('storeSelectAll');
-    selAll.checked = checkedStores.size === ACTIVE_STORE_IDS.length;
-    selAll.indeterminate = checkedStores.size > 0 && checkedStores.size < ACTIVE_STORE_IDS.length;
-}
-
-async function fetchDeals() {
-    document.getElementById('loading').style.display = 'block';
-
+  async function fetchJSON(url, optional = false) {
     try {
-        const results = await Promise.all(
-            ACTIVE_STORE_IDS.map(id =>
-                fetch(`${API}/deals?storeID=${id}&upperPrice=60&pageSize=40&sortBy=Deal+Rating`)
-                    .then(r => r.json()).catch(() => [])
-            )
-        );
-
-        allDeals = results.flat().map(d => ({
-            title: d.title,
-            sale: parseFloat(d.salePrice),
-            normal: parseFloat(d.normalPrice),
-            savings: Math.round(parseFloat(d.savings)),
-            storeID: d.storeID,
-            dealID: d.dealID,
-            thumb: d.thumb,
-            steamAppID: d.steamAppID,
-            metacritic: parseInt(d.metacriticScore) || 0,
-            steamRating: parseInt(d.steamRatingPercent) || 0,
-            steamReviews: parseInt(d.steamRatingCount) || 0,
-            dealRating: parseFloat(d.dealRating) || 0,
-            steamRatingText: d.steamRatingText || '',
-            genres: [],
-        }));
-
-        // Auto-tag genres
-        allDeals.forEach(deal => {
-            const text = (deal.title + ' ' + deal.steamRatingText).toLowerCase();
-            for (const [genre, keywords] of Object.entries(GENRE_KEYWORDS)) {
-                if (keywords.some(kw => text.includes(kw))) {
-                    deal.genres.push(genre);
-                }
-            }
-        });
-
-        // Dedupe \u2014 keep best deal per title
-        const map = {};
-        allDeals.forEach(d => {
-            if (!map[d.title] || d.savings > map[d.title].savings) map[d.title] = d;
-        });
-        allDeals = Object.values(map);
-
-        updateStats();
-        buildGenreTags();
-
-        const now = new Date();
-        document.getElementById('lastUpdated').textContent =
-            `Last updated: ${now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at ${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
-    } catch (e) {
-        console.error('Fetch failed:', e);
-        document.getElementById('deals').innerHTML = '<p class="no-results">Failed to load deals. Try refreshing.</p>';
+      const response = await fetch(url, { headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      return response.json();
+    } catch (error) {
+      if (optional) return null;
+      throw error;
     }
+  }
 
-    document.getElementById('loading').style.display = 'none';
+  async function loadDeals() {
+    $('#loading').hidden = false;
+    $('#errorState').hidden = true;
+    $('#deals').innerHTML = '';
+    try {
+      const bucket = Math.floor(Date.now() / 3600000);
+      const [base, enriched] = await Promise.all([
+        fetchJSON(`deals.json?v=${bucket}`),
+        fetchJSON(`enriched-deals.json?v=${bucket}`, true)
+      ]);
+      state.stores = base.stores || enriched?.stores || {};
+      state.allDeals = dedupeDeals(mergeData(base, enriched).map(row => normalizedRawDeal(row, state.stores)));
+      populateFilters();
+      renderCollections();
+      syncFormFromState();
+      render();
+      renderHero();
+      const updated = new Date(base.updatedAt);
+      $('#lastUpdated').textContent = Number.isNaN(updated.getTime())
+        ? 'Cached pricing data'
+        : `Prices checked ${updated.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} at ${updated.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`;
+      $('#statQualified').textContent = compact(state.allDeals.filter(deal => deal.eligible).length);
+      $('#statStores').textContent = Object.keys(state.stores).length;
+    } catch (error) {
+      console.error('LootRadar failed to load deal data:', error);
+      $('#errorState').hidden = false;
+    } finally {
+      $('#loading').hidden = true;
+    }
+  }
+
+  function populateFilters() {
+    const storeSelect = $('#storeSelect');
+    storeSelect.innerHTML = '<option value="all">All stores</option>' + Object.entries(state.stores)
+      .sort((a, b) => a[1].name.localeCompare(b[1].name))
+      .map(([id, store]) => `<option value="${escapeHTML(id)}">${escapeHTML(store.name)}</option>`).join('');
+
+    const genres = new Set();
+    state.allDeals.forEach(deal => deal.genres.forEach(genre => genres.add(genre)));
+    $('#genreSelect').innerHTML = '<option value="all">All genres</option>' + [...genres]
+      .sort((a, b) => a.localeCompare(b))
+      .map(genre => `<option value="${escapeHTML(genre)}">${escapeHTML(genre)}</option>`).join('');
+  }
+
+  function renderCollections() {
+    $('#collectionTabs').innerHTML = Object.entries(collections).map(([id, item]) => {
+      const count = filterDeals(state.allDeals, { ...state.filters, q: '', collection: id }).length;
+      return `<button type="button" role="tab" data-collection="${id}" aria-selected="${state.filters.collection === id}">
+        ${escapeHTML(item.label)} <span>${count}</span>
+      </button>`;
+    }).join('');
+  }
+
+  function syncFormFromState() {
+    const filters = state.filters;
+    $('#searchInput').value = filters.q;
+    $('#sortSelect').value = filters.sort;
+    $('#storeSelect').value = filters.store;
+    $('#genreSelect').value = filters.genre;
+    $('#priceSelect').value = String(filters.maxPrice);
+    $('#discountSelect').value = String(filters.minDiscount);
+    $('#ratingSelect').value = String(filters.minRating);
+    $('#reviewsSelect').value = String(filters.minReviews);
+    $('#relaxQuality').checked = filters.quality === 'all';
+    $('#includeEarlyAccess').checked = filters.includeEarlyAccess;
+    $('#includeBundles').checked = filters.includeBundles;
+    $('#includeDlc').checked = filters.includeDlc;
+    $$('[data-collection]').forEach(button => button.setAttribute('aria-selected', String(button.dataset.collection === filters.collection)));
+    updateActiveFilterCount();
+  }
+
+  function readFormIntoState() {
+    state.filters = normalizeFilters({
+      ...state.filters,
+      q: $('#searchInput').value.trim(),
+      sort: $('#sortSelect').value,
+      store: $('#storeSelect').value,
+      genre: $('#genreSelect').value,
+      maxPrice: Number($('#priceSelect').value),
+      minDiscount: Number($('#discountSelect').value),
+      minRating: Number($('#ratingSelect').value),
+      minReviews: Number($('#reviewsSelect').value),
+      quality: $('#relaxQuality').checked ? 'all' : 'recommended',
+      includeEarlyAccess: $('#includeEarlyAccess').checked,
+      includeBundles: $('#includeBundles').checked,
+      includeDlc: $('#includeDlc').checked
+    });
+    state.shown = PAGE_SIZE;
+    syncUrl();
+    updateActiveFilterCount();
     render();
-}
+  }
 
-// --- Stats ---
-function updateStats() {
-    const active = allDeals.filter(d => d.savings > 0);
-    document.getElementById('statDeals').textContent = active.length.toLocaleString();
-    document.getElementById('statStores').textContent = ACTIVE_STORE_IDS.length;
-    updateClaimedDisplay();
-}
+  function syncUrl() {
+    const params = filtersToSearchParams(state.filters);
+    const url = `${window.location.pathname}${params.toString() ? `?${params}` : ''}${window.location.hash}`;
+    history.replaceState(null, '', url);
+  }
 
-// --- Thumbnail ---
-function getThumb(d) {
-    if (d.steamAppID && d.steamAppID !== '0' && d.steamAppID !== null)
-        return `https://cdn.cloudflare.steamstatic.com/steam/apps/${d.steamAppID}/header.jpg`;
-    return d.thumb || '';
-}
+  function updateActiveFilterCount() {
+    const filters = state.filters;
+    let count = 0;
+    if (filters.store !== DEFAULT_FILTERS.store) count++;
+    if (filters.genre !== DEFAULT_FILTERS.genre) count++;
+    if (filters.maxPrice !== DEFAULT_FILTERS.maxPrice) count++;
+    if (filters.minDiscount !== DEFAULT_FILTERS.minDiscount) count++;
+    if (filters.minRating !== DEFAULT_FILTERS.minRating) count++;
+    if (filters.minReviews !== DEFAULT_FILTERS.minReviews) count++;
+    if (filters.quality !== DEFAULT_FILTERS.quality) count++;
+    if (filters.includeDlc || filters.includeEarlyAccess || filters.includeBundles) count++;
+    $('#activeFilterCount').textContent = count;
+    $('#filterToggle').classList.toggle('has-filters', count > 0);
+  }
 
-// --- Rating dot ---
-function ratingDot(pct) {
-    if (!pct) return '';
-    if (pct >= 90) return '\u{1F7E2}';
-    if (pct >= 70) return '\u{1F7E1}';
-    return '\u{1F534}';
-}
+  function scoreTone(score) {
+    if (score >= 80) return 'elite';
+    if (score >= 65) return 'strong';
+    if (score >= 50) return 'fair';
+    return 'weak';
+  }
 
-// --- Build Card ---
-function buildCard(d) {
-    const store = STORE_MAP[d.storeID] || { name: '?', icon: '' };
-    const thumb = getThumb(d);
-    const free = d.sale === 0;
+  function scoreLabel(score) {
+    if (score >= 85) return 'Exceptional';
+    if (score >= 75) return 'Great deal';
+    if (score >= 65) return 'Strong value';
+    if (score >= 55) return 'Worth a look';
+    return 'Low confidence';
+  }
 
-    let ratingHTML = '';
-    if (d.steamRating > 0) ratingHTML = `<span class="rating">${ratingDot(d.steamRating)} ${d.steamRating}%</span>`;
-    else if (d.metacritic > 0) ratingHTML = `<span class="rating">\u2B50 ${d.metacritic}</span>`;
+  function reviewMarkup(deal) {
+    if (!deal.userRating) return '<span class="muted">Review data limited</span>';
+    return `<span class="review-score">${deal.userRating}% positive</span><span>${compact(deal.reviewCount)} reviews</span>`;
+  }
 
-    let reviewsHTML = '';
-    if (d.steamReviews > 0) {
-        const c = d.steamReviews >= 1000 ? `${(d.steamReviews / 1000).toFixed(1)}k` : d.steamReviews;
-        reviewsHTML = `<span class="reviews">${c} reviews</span>`;
-    }
-
-    const storeIconHTML = store.icon ? `<img class="store-icon" src="${store.icon}" alt="" onerror="this.style.display='none'">` : '';
-
-    return `
-    <div class="card">
-        <div class="card-thumb">
-            <img src="${thumb}" alt="${d.title}" loading="lazy" onerror="this.style.display='none'">
-            <span class="badge${free ? ' free' : ''}">${free ? 'FREE' : `-${d.savings}%`}</span>
+  function cardMarkup(deal, index) {
+    const watched = Boolean(state.watchlist[deal.key]);
+    const image = safeImage(deal.image);
+    const priceLabel = deal.historicalLow
+      ? (deal.salePrice <= deal.historicalLow * 1.01 ? 'Historical low' : `${money(deal.salePrice - deal.historicalLow)} above low`)
+      : `${Math.round(deal.scoreBreakdown.components.priceValue)} price-value signal`;
+    return `<article class="deal-card" data-key="${escapeHTML(deal.key)}" style="--delay:${Math.min(index, 12) * 28}ms">
+      <button class="card-image" type="button" data-details="${escapeHTML(deal.key)}" aria-label="View details for ${escapeHTML(deal.title)}">
+        ${image ? `<img src="${image}" alt="" loading="lazy">` : '<span class="image-fallback">LR</span>'}
+        <span class="discount-badge">−${deal.discount}%</span>
+        ${deal.isEarlyAccess ? '<span class="content-badge">Early Access</span>' : ''}
+      </button>
+      <div class="card-content">
+        <div class="card-overline"><span>${escapeHTML(deal.storeName)}</span><span>${escapeHTML((deal.genres[0] || 'PC game'))}</span></div>
+        <button class="card-title" type="button" data-details="${escapeHTML(deal.key)}">${escapeHTML(deal.title)}</button>
+        <div class="card-reviews">${reviewMarkup(deal)}</div>
+        <div class="card-price-row">
+          <div><span class="old-price">${money(deal.normalPrice)}</span><strong>${money(deal.salePrice)}</strong></div>
+          <span class="history-note">${escapeHTML(priceLabel)}</span>
         </div>
-        <div class="card-body">
-            <div class="card-meta">
-                <span class="store-tag">${storeIconHTML} ${store.name}</span>
-                <div>${ratingHTML}${reviewsHTML}</div>
-            </div>
-            <div class="card-title">${d.title}</div>
-            <div class="pricing">
-                ${free
-                    ? '<span class="price-free">\u{1F381} Free to Keep</span>'
-                    : `<span class="price-old">$${d.normal.toFixed(2)}</span><span class="price-new">$${d.sale.toFixed(2)}</span>`
-                }
-            </div>
-            <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer">View Deal \u2192</a>
+        <div class="score-row">
+          <div class="score-ring ${scoreTone(deal.dealScore)}" style="--score:${deal.dealScore}" aria-label="Deal Score ${deal.dealScore} out of 100">
+            <strong>${deal.dealScore}</strong><span>score</span>
+          </div>
+          <div><strong>${scoreLabel(deal.dealScore)}</strong><p>${escapeHTML(deal.recommendation)}</p></div>
         </div>
-    </div>`;
-}
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer sponsored">View at ${escapeHTML(deal.storeName)}</a>
+          <button class="watch-button ${watched ? 'watched' : ''}" type="button" data-watch="${escapeHTML(deal.key)}" aria-label="${watched ? 'Remove from' : 'Add to'} watchlist">
+            <span aria-hidden="true">${watched ? '✓' : '+'}</span>
+          </button>
+        </div>
+      </div>
+    </article>`;
+  }
 
-// --- Genre Tags UI ---
-function buildGenreTags() {
-    const container = document.getElementById('genreTags');
-    if (!container) return;
-    container.innerHTML = '';
+  function render() {
+    const filtered = filterDeals(state.allDeals, state.filters);
+    state.visibleDeals = sortDeals(filtered, state.filters.sort);
+    const shown = state.visibleDeals.slice(0, state.shown);
+    const collection = collections[state.filters.collection] || collections.best;
+    $('#collectionTitle').textContent = state.filters.q ? `Results for “${state.filters.q}”` : collection.title;
+    $('#resultSummary').textContent = collection.summary;
+    $('#resultCount').textContent = `${state.visibleDeals.length} ${state.visibleDeals.length === 1 ? 'deal' : 'deals'}`;
+    $('#deals').innerHTML = shown.map(cardMarkup).join('');
+    $('#emptyState').hidden = state.visibleDeals.length > 0 || state.allDeals.length === 0;
+    $('#loadMore').hidden = state.shown >= state.visibleDeals.length;
+  }
 
-    // Count deals per genre
-    const genreCounts = {};
-    allDeals.forEach(d => {
-        if (d.savings <= 0) return;
-        d.genres.forEach(g => { genreCounts[g] = (genreCounts[g] || 0) + 1; });
-    });
+  function renderHero() {
+    const top = sortDeals(state.allDeals.filter(deal => deal.eligible), 'recommended')[0];
+    if (!top) return;
+    const image = safeImage(top.image);
+    $('#heroPick').innerHTML = `
+      <div class="pick-image">${image ? `<img src="${image}" alt="">` : ''}<span>Top signal right now</span></div>
+      <div class="pick-content">
+        <div class="pick-head"><div><p>${escapeHTML(top.storeName)}</p><h2>${escapeHTML(top.title)}</h2></div>
+          <div class="score-ring ${scoreTone(top.dealScore)}" style="--score:${top.dealScore}"><strong>${top.dealScore}</strong><span>score</span></div>
+        </div>
+        <p>${escapeHTML(top.recommendation)}</p>
+        <div class="pick-price"><span><s>${money(top.normalPrice)}</s><strong>${money(top.salePrice)}</strong></span><span>−${top.discount}%</span></div>
+        <button type="button" class="button button-primary button-full" data-details="${escapeHTML(top.key)}">Why it ranks #1</button>
+      </div>`;
+  }
 
-    // Sort by count descending
-    const sorted = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]);
+  function findDeal(key) {
+    return state.allDeals.find(deal => deal.key === key);
+  }
 
-    sorted.forEach(([genre, count]) => {
-        const pill = document.createElement('button');
-        pill.className = 'genre-pill' + (selectedGenres.has(genre) ? ' active' : '');
-        pill.innerHTML = `${genre} <span class="genre-count">${count}</span>`;
-        pill.addEventListener('click', () => {
-            if (selectedGenres.has(genre)) selectedGenres.delete(genre);
-            else selectedGenres.add(genre);
-            pill.classList.toggle('active');
-            render();
-        });
-        container.appendChild(pill);
-    });
-}
-
-// --- Quick Search Pills ---
-function initQuickSearch() {
-    const container = document.getElementById('quickSearchPills');
-    if (!container) return;
-
-    const pills = [
-        { label: '\uD83C\uDD93 Free', action: () => { document.getElementById('searchInput').value = ''; document.getElementById('priceRange').value = 0; document.getElementById('priceVal').textContent = '$0'; maxPrice = 0; render(); }},
-        { label: '\uD83D\uDCB5 Under $5', action: () => { document.getElementById('priceRange').value = 5; document.getElementById('priceVal').textContent = '$5'; maxPrice = 5; render(); }},
-        { label: '\uD83D\uDCB0 Under $10', action: () => { document.getElementById('priceRange').value = 10; document.getElementById('priceVal').textContent = '$10'; maxPrice = 10; render(); }},
-        { label: '\uD83D\uDD25 90%+ Off', action: () => { document.getElementById('discountRange').value = 90; document.getElementById('discountVal').textContent = '90%+'; minDiscount = 90; render(); }},
-        { label: '\u2B50 Top Rated', action: () => { document.getElementById('ratingSelect').value = '90'; minRating = 90; render(); }},
-    ];
-
-    pills.forEach(p => {
-        const btn = document.createElement('button');
-        btn.className = 'quick-pill';
-        btn.textContent = p.label;
-        btn.addEventListener('click', p.action);
-        container.appendChild(btn);
-    });
-}
-
-// --- Filter & Sort ---
-function filterDeals(deals) {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    return deals.filter(d => {
-        if (!STORE_MAP[d.storeID]) return false;
-        if (!checkedStores.has(d.storeID)) return false;
-        if (q) {
-            const storeName = (STORE_MAP[d.storeID] && STORE_MAP[d.storeID].name || '').toLowerCase();
-            const genreText = d.genres.join(' ').toLowerCase();
-            const ratingText = (d.steamRatingText || '').toLowerCase();
-            const searchable = d.title.toLowerCase() + ' ' + storeName + ' ' + genreText + ' ' + ratingText;
-            if (!searchable.includes(q)) return false;
-        }
-        if (d.savings <= 0) return false;
-        if (d.sale > maxPrice && maxPrice < 60) return false;
-        if (d.savings < minDiscount) return false;
-        if (minRating > 0 && d.steamRating < minRating && d.metacritic < minRating) return false;
-        if (minPopularity > 0 && (d.steamReviews || 0) < minPopularity) return false;
-        // Genre filter
-        if (selectedGenres.size > 0 && !d.genres.some(g => selectedGenres.has(g))) return false;
-        return true;
-    });
-}
-
-function sortDeals(deals) {
-    const s = [...deals];
-    switch (sort) {
-        case 'discount-high': s.sort((a, b) => b.savings - a.savings); break;
-        case 'discount-low':  s.sort((a, b) => a.savings - b.savings); break;
-        case 'price-low':     s.sort((a, b) => a.sale - b.sale); break;
-        case 'price-high':    s.sort((a, b) => b.sale - a.sale); break;
-        case 'rating':    s.sort((a, b) => (b.steamRating || b.metacritic) - (a.steamRating || a.metacritic)); break;
-        case 'popular':   s.sort((a, b) => b.steamReviews - a.steamReviews); break;
-        case 'metacritic': s.sort((a, b) => b.metacritic - a.metacritic); break;
-        case 'name':      s.sort((a, b) => a.title.localeCompare(b.title)); break;
-    }
-    return s;
-}
-
-// --- Render ---
-function render() {
-    const featuredEl = document.getElementById('featuredSection');
-    const featuredGrid = document.getElementById('featuredDeals');
-    const allEl = document.getElementById('allSection');
-    const allGrid = document.getElementById('deals');
-    const noRes = document.getElementById('noResults');
-    const countEl = document.getElementById('resultCount');
-    const q = document.getElementById('searchInput').value.toLowerCase();
-
-    let filtered = sortDeals(filterDeals(allDeals));
-
-    if (countEl) countEl.textContent = `${filtered.length} deal${filtered.length !== 1 ? 's' : ''} found`;
-
-    if (!filtered.length) {
-        featuredEl.style.display = 'none';
-        allEl.style.display = 'none';
-        noRes.style.display = 'block';
-        return;
-    }
-
-    noRes.style.display = 'none';
-
-    // Featured section: free + 90%+ off (only on default view)
-    if (!q && sort === 'discount-high' && !minDiscount && !minRating && !minPopularity) {
-        const feat = filtered.filter(d => d.sale === 0 || d.savings >= 90);
-        const rest = filtered.filter(d => d.sale !== 0 && d.savings < 90);
-
-        if (feat.length) {
-            featuredEl.style.display = 'block';
-            featuredGrid.innerHTML = feat.map(buildCard).join('');
-        } else {
-            featuredEl.style.display = 'none';
-        }
-
-        allEl.style.display = 'block';
-        allGrid.innerHTML = (rest.length ? rest : filtered).map(buildCard).join('');
+  function toggleWatch(key) {
+    const deal = findDeal(key);
+    if (!deal) return;
+    if (state.watchlist[key]) {
+      delete state.watchlist[key];
+      showToast(`${deal.title} removed from your watchlist.`);
     } else {
-        featuredEl.style.display = 'none';
-        allEl.style.display = 'block';
-        allGrid.innerHTML = filtered.map(buildCard).join('');
+      state.watchlist[key] = { key, title: deal.title, targetPrice: deal.salePrice, addedAt: new Date().toISOString() };
+      showToast(`${deal.title} saved. Target set to ${money(deal.salePrice)}.`);
     }
-}
-
-// --- Events ---
-
-// Track deal link clicks for claimed counter
-document.addEventListener('click', (e) => {
-    const link = e.target.closest('.deal-link');
-    if (link) bumpClaimed();
-});
-
-// Search still instant (feels natural)
-let searchTimer;
-document.getElementById('searchInput').addEventListener('input', () => {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(render, 200);
-});
-
-// Sliders update their labels live but don't re-render
-document.getElementById('priceRange').addEventListener('input', e => {
-    document.getElementById('priceVal').textContent = parseInt(e.target.value) >= 60 ? 'Any' : `$${parseInt(e.target.value)}`;
-});
-
-document.getElementById('discountRange').addEventListener('input', e => {
-    document.getElementById('discountVal').textContent = parseInt(e.target.value) === 0 ? 'Any' : `${parseInt(e.target.value)}%+`;
-});
-
-// Apply button reads all current values and renders
-document.getElementById('applyFilters').addEventListener('click', () => {
-    sort = document.getElementById('sortSelect').value;
-    maxPrice = parseInt(document.getElementById('priceRange').value) || 60;
-    minDiscount = parseInt(document.getElementById('discountRange').value) || 0;
-    minRating = parseInt(document.getElementById('ratingSelect').value) || 0;
-    minPopularity = parseInt(document.getElementById('popularitySelect').value) || 0;
-    // Also update slider labels in case they got out of sync
-    document.getElementById('priceVal').textContent = maxPrice >= 60 ? 'Any' : `$${maxPrice}`;
-    document.getElementById('discountVal').textContent = minDiscount === 0 ? 'Any' : `${minDiscount}%+`;
+    saveWatchlist();
     render();
-    // Scroll to results
-    const main = document.querySelector('main');
-    if (main) main.scrollIntoView({ behavior: 'smooth' });
-});
+    if ($('#watchDialog').open) renderWatchlist();
+  }
 
-// Reset button
-document.getElementById('resetFilters').addEventListener('click', () => {
-    // Reset UI
-    document.getElementById('sortSelect').value = 'discount-high';
-    document.getElementById('priceRange').value = 60;
-    document.getElementById('priceVal').textContent = 'Any';
-    document.getElementById('discountRange').value = 0;
-    document.getElementById('discountVal').textContent = 'Any';
-    document.getElementById('ratingSelect').value = '0';
-    document.getElementById('popularitySelect').value = '0';
-    // Reset all store checkboxes
-    document.getElementById('storeSelectAll').checked = true;
-    document.querySelectorAll('#storeCheckboxes input[type="checkbox"]').forEach(cb => { cb.checked = true; });
-    ACTIVE_STORE_IDS.forEach(id => checkedStores.add(id));
-    updateSelectAllState();
-    updateStoreCount();
-    // Reset genres
-    selectedGenres.clear();
-    document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
-    // Reset search
-    document.getElementById('searchInput').value = '';
-    // Reset state and render
-    sort = 'discount-high';
-    maxPrice = 60;
-    minDiscount = 0;
-    minRating = 0;
-    minPopularity = 0;
+  function updateWatchCount() {
+    const items = Object.values(state.watchlist);
+    $('#watchCount').textContent = items.length;
+    const reached = items.filter(item => {
+      const deal = findDeal(item.key);
+      return deal && deal.salePrice <= Number(item.targetPrice);
+    }).length;
+    $('#openWatchlist').classList.toggle('has-alerts', reached > 0);
+    $('#openWatchlist').setAttribute('aria-label', reached ? `Open watchlist, ${reached} target prices reached` : 'Open watchlist');
+  }
+
+  function renderWatchlist() {
+    const items = Object.values(state.watchlist);
+    if (!items.length) {
+      $('#watchlistContent').innerHTML = '<div class="watch-empty"><span>◎</span><h3>Your radar is clear</h3><p>Save any game to track it on this device—no account required.</p></div>';
+      return;
+    }
+    $('#watchlistContent').innerHTML = items.map(item => {
+      const deal = findDeal(item.key);
+      const current = deal?.salePrice;
+      const reached = deal && current <= Number(item.targetPrice);
+      return `<article class="watch-row ${reached ? 'target-reached' : ''}">
+        <div><span>${reached ? 'Target reached' : 'Watching'}</span><h3>${escapeHTML(item.title)}</h3><p>${deal ? `${money(current)} now at ${escapeHTML(deal.storeName)}` : 'Not in the current deal feed'}</p></div>
+        <label>Target price <input type="number" min="0" step="0.01" value="${Number(item.targetPrice).toFixed(2)}" data-target-price="${escapeHTML(item.key)}"></label>
+        ${deal ? `<button type="button" class="text-button" data-details="${escapeHTML(deal.key)}">Details</button>` : ''}
+        <button type="button" class="remove-watch" data-watch="${escapeHTML(item.key)}" aria-label="Remove ${escapeHTML(item.title)}">×</button>
+      </article>`;
+    }).join('');
+  }
+
+  function componentRow(label, value, weight) {
+    return `<div class="component-row"><div><span>${escapeHTML(label)}</span><small>${weight}% weight</small></div><div class="component-track"><i style="width:${Math.round(value)}%"></i></div><strong>${Math.round(value)}</strong></div>`;
+  }
+
+  function basicDetailMarkup(deal) {
+    const image = safeImage(deal.image);
+    const watched = state.watchlist[deal.key];
+    return `<div class="detail-hero">
+      ${image ? `<img src="${image}" alt="">` : ''}
+      <div class="detail-overlay"></div>
+      <div class="detail-title"><p>${escapeHTML(deal.storeName)} · ${escapeHTML(deal.genres.join(' / ') || 'PC game')}</p><h2>${escapeHTML(deal.title)}</h2></div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-summary">
+        <div class="score-ring score-ring-large ${scoreTone(deal.dealScore)}" style="--score:${deal.dealScore}"><strong>${deal.dealScore}</strong><span>Deal Score</span></div>
+        <div><p class="detail-verdict">${scoreLabel(deal.dealScore)}</p><p>${escapeHTML(deal.recommendation)}</p></div>
+        <div class="detail-price"><s>${money(deal.normalPrice)}</s><strong>${money(deal.salePrice)}</strong><span>−${deal.discount}%</span></div>
+      </div>
+      <section class="detail-section">
+        <div class="detail-section-head"><div><p class="section-kicker">Transparent score</p><h3>Why this deal ranks here</h3></div><a href="methodology.html">Full methodology ↗</a></div>
+        <div class="score-components">
+          ${componentRow('Game quality', deal.scoreBreakdown.components.quality, deal.scoreBreakdown.weights.quality)}
+          ${componentRow('Price value', deal.scoreBreakdown.components.priceValue, deal.scoreBreakdown.weights.priceValue)}
+          ${componentRow('Discount strength', deal.scoreBreakdown.components.discount, deal.scoreBreakdown.weights.discount)}
+          ${componentRow('Review confidence', deal.scoreBreakdown.components.confidence, deal.scoreBreakdown.weights.confidence)}
+          ${componentRow('Player interest', deal.scoreBreakdown.components.interest, deal.scoreBreakdown.weights.interest)}
+        </div>
+        ${deal.scoreBreakdown.penalties.length ? `<div class="penalty-note"><strong>Score adjustments</strong><span>${deal.scoreBreakdown.penalties.map(p => `${escapeHTML(p.label)} (−${p.amount})`).join(' · ')}</span></div>` : ''}
+      </section>
+      <section class="detail-section" id="livePriceContext"><div class="detail-loading"><span></span><p>Checking live historical context and other stores…</p></div></section>
+      <section class="detail-section watch-target">
+        <div><p class="section-kicker">Price alert</p><h3>Wait for your price</h3><p>Saved locally on this device. Email alerts require an account-backed notification service.</p></div>
+        <label><span>Target price</span><div><span>$</span><input id="targetPriceInput" type="number" min="0" step="0.01" value="${Number(watched?.targetPrice ?? deal.salePrice).toFixed(2)}"></div></label>
+        <button class="button button-secondary" type="button" data-save-target="${escapeHTML(deal.key)}">${watched ? 'Update target' : 'Add to watchlist'}</button>
+      </section>
+      <div class="detail-actions">
+        <a class="button button-primary button-full" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer sponsored">View deal at ${escapeHTML(deal.storeName)} · ${money(deal.salePrice)}</a>
+        <p>Affiliate disclosure: LootRadar may earn a commission. Scores never use commissions.</p>
+      </div>
+    </div>`;
+  }
+
+  async function openDetails(key) {
+    const deal = findDeal(key);
+    if (!deal) return;
+    state.selectedDeal = deal;
+    state.lastFocused = document.activeElement;
+    $('#dealDialogContent').innerHTML = basicDetailMarkup(deal);
+    $('#dealDialog').showModal();
+    document.body.classList.add('dialog-open');
+    if (state.detailController) state.detailController.abort();
+    state.detailController = new AbortController();
+    try {
+      const response = await fetch(`${API}/deals?id=${deal.dealID}`, {
+        signal: state.detailController.signal,
+        headers: { Accept: 'application/json' }
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const lookup = await response.json();
+      renderLiveContext(deal, lookup);
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+      const target = $('#livePriceContext');
+      if (target) target.innerHTML = '<div class="inline-error"><strong>Live price context is unavailable.</strong><p>The cached Deal Score is still shown above. Verify the final price at the store.</p></div>';
+    }
+  }
+
+  function renderLiveContext(deal, lookup) {
+    const target = $('#livePriceContext');
+    if (!target) return;
+    const historical = Number(lookup?.cheapestPrice?.price || 0);
+    const livePrice = Number(lookup?.gameInfo?.salePrice || deal.salePrice);
+    const retail = Number(lookup?.gameInfo?.retailPrice || deal.normalPrice);
+    const updatedDeal = { ...deal, salePrice: livePrice, normalPrice: retail, historicalLow: historical || null };
+    const liveScore = calculateDealScore(updatedDeal, config);
+    const difference = historical ? livePrice - historical : null;
+    const alternateRows = (lookup?.cheaperStores || []).map(item => {
+      const store = state.stores[item.storeID] || { name: `Store ${item.storeID}` };
+      return `<a href="https://www.cheapshark.com/redirect?dealID=${item.dealID}" target="_blank" rel="noopener noreferrer sponsored"><span>${escapeHTML(store.name)}</span><strong>${money(item.salePrice)}</strong></a>`;
+    }).join('');
+    const fullWidth = 100;
+    const lowWidth = retail ? Math.max(4, Math.min(100, (historical / retail) * 100)) : 0;
+    const currentWidth = retail ? Math.max(4, Math.min(100, (livePrice / retail) * 100)) : 0;
+    target.innerHTML = `
+      <div class="detail-section-head"><div><p class="section-kicker">Live price context</p><h3>${historical ? (difference <= 0.01 ? 'At its recorded historical low' : `${money(difference)} above the recorded low`) : 'Historical low unavailable'}</h3></div><span class="confidence-pill">${liveScore.confidence} confidence</span></div>
+      <div class="price-chart" role="img" aria-label="Recorded low ${historical ? money(historical) : 'unavailable'}, current price ${money(livePrice)}, retail price ${money(retail)}">
+        <div><span>Recorded low</span><i style="width:${lowWidth}%"></i><strong>${historical ? money(historical) : '—'}</strong></div>
+        <div><span>Current price</span><i class="current" style="width:${currentWidth}%"></i><strong>${money(livePrice)}</strong></div>
+        <div><span>Full retail</span><i class="retail" style="width:${fullWidth}%"></i><strong>${money(retail)}</strong></div>
+      </div>
+      <p class="source-note">CheapShark provides the recorded low and current comparison, not a full time-series chart. The list score uses its Deal Rating as a price-value proxy until you open this view.</p>
+      ${alternateRows ? `<div class="alternate-stores"><h4>Cheaper stores right now</h4>${alternateRows}</div>` : '<p class="best-store-note">No cheaper current store was returned for this listing.</p>'}`;
+  }
+
+  function closeDialog(dialog, controller) {
+    if (controller) controller.abort();
+    dialog.close();
+    document.body.classList.remove('dialog-open');
+    if (state.lastFocused && typeof state.lastFocused.focus === 'function') state.lastFocused.focus();
+  }
+
+  function resetFilters() {
+    state.filters = { ...DEFAULT_FILTERS };
+    state.shown = PAGE_SIZE;
+    syncFormFromState();
+    syncUrl();
+    renderCollections();
     render();
-});
+  }
 
-// --- Go ---
-initQuickSearch();
-init();
+  function bindEvents() {
+    let searchTimer;
+    $('#dealFilters').addEventListener('input', event => {
+      if (event.target.id === 'searchInput') {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(readFormIntoState, 160);
+      } else {
+        readFormIntoState();
+      }
+    });
+    $('#dealFilters').addEventListener('change', readFormIntoState);
+    $('#filterPanel').addEventListener('change', event => {
+      if (event.target.id === 'relaxQuality' && event.target.checked) {
+        $('#ratingSelect').value = '0';
+        $('#reviewsSelect').value = '0';
+      }
+      readFormIntoState();
+    });
+    $('#collectionTabs').addEventListener('click', event => {
+      const button = event.target.closest('[data-collection]');
+      if (!button) return;
+      state.filters.collection = button.dataset.collection;
+      state.shown = PAGE_SIZE;
+      syncFormFromState();
+      syncUrl();
+      render();
+    });
+    $('#filterToggle').addEventListener('click', () => {
+      const panel = $('#filterPanel');
+      const open = panel.hidden;
+      panel.hidden = !open;
+      $('#filterToggle').setAttribute('aria-expanded', String(open));
+    });
+    $('#closeFilters').addEventListener('click', () => {
+      $('#filterPanel').hidden = true;
+      $('#filterToggle').setAttribute('aria-expanded', 'false');
+      $('#deals').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    $('#resetFilters').addEventListener('click', resetFilters);
+    $('#clearEmpty').addEventListener('click', resetFilters);
+    $('#retryLoad').addEventListener('click', loadDeals);
+    $('#loadMore').addEventListener('click', () => {
+      state.shown += PAGE_SIZE;
+      render();
+    });
+    document.addEventListener('click', event => {
+      const detail = event.target.closest('[data-details]');
+      const watch = event.target.closest('[data-watch]');
+      const target = event.target.closest('[data-save-target]');
+      if (detail) openDetails(detail.dataset.details);
+      if (watch) toggleWatch(watch.dataset.watch);
+      if (target) {
+        const deal = findDeal(target.dataset.saveTarget);
+        const price = Number($('#targetPriceInput')?.value);
+        if (deal && Number.isFinite(price) && price >= 0) {
+          state.watchlist[deal.key] = { key: deal.key, title: deal.title, targetPrice: price, addedAt: state.watchlist[deal.key]?.addedAt || new Date().toISOString() };
+          saveWatchlist();
+          showToast(`Watching ${deal.title} at ${money(price)}.`);
+          target.textContent = 'Target saved';
+          render();
+        }
+      }
+    });
+    $('#openWatchlist').addEventListener('click', () => {
+      state.lastFocused = document.activeElement;
+      renderWatchlist();
+      $('#watchDialog').showModal();
+      document.body.classList.add('dialog-open');
+    });
+    $('#watchlistContent').addEventListener('change', event => {
+      const input = event.target.closest('[data-target-price]');
+      if (!input) return;
+      const item = state.watchlist[input.dataset.targetPrice];
+      const price = Number(input.value);
+      if (item && Number.isFinite(price) && price >= 0) {
+        item.targetPrice = price;
+        saveWatchlist();
+        renderWatchlist();
+        showToast('Target price updated.');
+      }
+    });
+    $('[data-close-dialog]').addEventListener('click', () => closeDialog($('#dealDialog'), state.detailController));
+    $('[data-close-watch]').addEventListener('click', () => closeDialog($('#watchDialog')));
+    [$('#dealDialog'), $('#watchDialog')].forEach(dialog => {
+      dialog.addEventListener('click', event => {
+        if (event.target === dialog) closeDialog(dialog, dialog === $('#dealDialog') ? state.detailController : null);
+      });
+      dialog.addEventListener('cancel', event => {
+        event.preventDefault();
+        closeDialog(dialog, dialog === $('#dealDialog') ? state.detailController : null);
+      });
+    });
+  }
+
+  bindEvents();
+  updateWatchCount();
+  loadDeals();
+})();

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How LootRadar Ranks Deals — Transparent Deal Score</title>
+  <meta name="description" content="See the exact LootRadar Deal Score formula, quality gates, penalties, data sources, confidence rules, and worked examples.">
+  <link rel="canonical" href="https://thelootradar.com/methodology.html">
+  <meta property="og:title" content="How LootRadar ranks game deals">
+  <meta property="og:description" content="A transparent 0–100 score that values game quality as much as price.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://thelootradar.com/methodology.html">
+  <meta property="og:image" content="https://thelootradar.com/public/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://thelootradar.com/public/og.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=21">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b0e0d">
+</head>
+<body>
+  <nav class="site-nav" aria-label="Primary navigation">
+    <div class="site-nav-inner">
+      <a class="nav-brand" href="index.html" aria-label="LootRadar home"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a>
+      <div class="nav-links">
+        <a href="index.html">Deals</a>
+        <a class="active" href="methodology.html">How scoring works</a>
+        <a href="recommendations.html">For you</a>
+        <a href="blog.html">Guides</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="method-page">
+    <header class="method-hero">
+      <p class="eyebrow"><span></span> Transparent by design</p>
+      <h1>A good price is only a deal<br>when the game is worth playing.</h1>
+      <p>LootRadar’s Deal Score estimates the intersection of game quality, price value, discount strength, review confidence, and player interest. A 90% discount cannot rescue a poorly reviewed game.</p>
+      <div class="method-callout"><strong>Deal Score</strong><span>Quality × 35% + Price value × 25% + Discount × 20% + Review confidence × 10% + Player interest × 10% − penalties</span></div>
+    </header>
+
+    <section class="method-section" aria-labelledby="weightsTitle">
+      <p class="section-kicker">The five signals</p>
+      <h2 id="weightsTitle">What goes into the score</h2>
+      <div class="weight-list">
+        <article><span>35%</span><div><h3>Game quality</h3><p>Steam user sentiment carries most of this signal, with critic score contributing when available. If only one source exists, we use it and lower confidence elsewhere.</p></div></article>
+        <article><span>25%</span><div><h3>Price value</h3><p>When a user opens a game, its current price is compared with CheapShark’s recorded historical low. In the list view, CheapShark Deal Rating is used as a clearly labeled proxy.</p></div></article>
+        <article><span>20%</span><div><h3>Discount strength</h3><p>Discount tops out at 70% for scoring purposes. A 90% badge is visually notable, but contributes no more than a genuinely strong 70% discount.</p></div></article>
+        <article><span>10%</span><div><h3>Review confidence</h3><p>Review count is scaled logarithmically. Moving from 10 to 1,000 reviews matters much more than moving from 100,000 to 110,000.</p></div></article>
+        <article><span>10%</span><div><h3>Player interest</h3><p>Review volume is combined with a modest release-recency signal. Popularity supports a recommendation; it does not replace quality.</p></div></article>
+      </div>
+    </section>
+
+    <section class="method-section split-section">
+      <div>
+        <p class="section-kicker">Default quality gate</p>
+        <h2>What you see first</h2>
+        <p>The main feed normally requires at least 70% positive user reviews and 100 reviews when those values are available, plus a meaningful discount or strong price-value signal. Missing critic data does not automatically hide a game.</p>
+        <p>You can relax every quality rule from Filters. Those choices are written into the URL, so the result can be bookmarked or shared.</p>
+      </div>
+      <div class="rule-card">
+        <h3>Excluded by default</h3>
+        <ul>
+          <li>DLC and season passes</li><li>Demos, prologues, and playtests</li><li>Soundtracks and art books</li>
+          <li>Virtual currency and cosmetic packs</li><li>Bundles and duplicate editions</li>
+          <li>Spam-like titles and suspicious list prices</li><li>Lower-confidence Early Access listings</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="method-section" aria-labelledby="penaltiesTitle">
+      <p class="section-kicker">Guardrails</p>
+      <h2 id="penaltiesTitle">Penalties are explicit</h2>
+      <div class="penalty-table" role="table" aria-label="Deal Score penalties">
+        <div role="row"><span role="cell">No reliable quality data</span><strong role="cell">−18</strong></div>
+        <div role="row"><span role="cell">Fewer than 10 reviews</span><strong role="cell">−22</strong></div>
+        <div role="row"><span role="cell">10–49 reviews</span><strong role="cell">−12</strong></div>
+        <div role="row"><span role="cell">50–99 reviews</span><strong role="cell">−5</strong></div>
+        <div role="row"><span role="cell">Below 50% positive</span><strong role="cell">−25</strong></div>
+        <div role="row"><span role="cell">50–69% positive</span><strong role="cell">−12</strong></div>
+        <div role="row"><span role="cell">Non-game content</span><strong role="cell">−60</strong></div>
+        <div role="row"><span role="cell">Spam-like title</span><strong role="cell">−15</strong></div>
+        <div role="row"><span role="cell">Suspicious list-price ratio</span><strong role="cell">−10</strong></div>
+      </div>
+    </section>
+
+    <section class="method-section" aria-labelledby="examplesTitle">
+      <p class="section-kicker">Worked examples</p>
+      <h2 id="examplesTitle">Three very different deals</h2>
+      <div class="example-grid">
+        <article class="example-card"><div><span class="example-score">91</span><span>Excellent + strong discount</span></div><h3>94% positive · 48,000 reviews · 60% off</h3><p>Quality 92.9, price value 92, discount 85.7, confidence 99.6, interest 86.4. No penalties. The strong game and strong price reinforce each other.</p></article>
+        <article class="example-card"><div><span class="example-score danger">56</span><span>Mediocre + huge discount</span></div><h3>58% positive · 220 reviews · 90% off</h3><p>The discount signal maxes out at 100, but quality is only 56.3 and mixed sentiment applies a −12 penalty. It does not qualify for the default feed.</p></article>
+        <article class="example-card"><div><span class="example-score">82</span><span>Excellent + modest discount</span></div><h3>97% positive · 180,000 reviews · 25% off</h3><p>Discount is only 35.7, but extraordinary quality, price context, and confidence still make this a strong recommendation.</p></article>
+      </div>
+    </section>
+
+    <section class="method-section source-section">
+      <div><p class="section-kicker">Sources & limitations</p><h2>Scores are estimates, not facts.</h2></div>
+      <div>
+        <p>Prices, store availability, and recorded historical lows come from CheapShark. Review aggregates and basic metadata come from CheapShark plus Steam/SteamSpy enrichment. Prices are in USD and can change between refreshes.</p>
+        <p>LootRadar does not currently have a licensed full price time series, dependable bundle-frequency history, console pricing, publisher batch-release analysis, or verified Steam Deck status. Those signals are not invented. Missing information lowers confidence and is labeled.</p>
+        <p>Purchase links may be affiliate links. Affiliate relationships never affect the score or ranking.</p>
+      </div>
+    </section>
+
+    <div class="method-cta"><h2>Ready to see what survived the filter?</h2><a class="button button-primary" href="index.html">Explore quality deals</a></div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div><a class="nav-brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a><p>Games worth playing. Prices worth paying.</p></div>
+      <div class="footer-links"><a href="index.html">Deals</a><a href="recommendations.html">For you</a><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div>
+    </div>
+  </footer>
+</body>
+</html>

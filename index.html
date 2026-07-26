@@ -1,268 +1,230 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LootRadar &mdash; Best PC Game Deals, Updated Daily</title>
-    <meta name="description" content="Find the best PC game deals across Steam, Epic Games Store, GOG, and Humble Bundle. Updated daily with price tracking. Never overpay for games again.">
-    <meta name="keywords" content="game deals, steam sales, epic free games, gog deals, humble bundle, pc game discounts, cheap games">
-    <link rel="canonical" href="https://thelootradar.com/">
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="LootRadar &mdash; Best PC Game Deals, Updated Daily">
-    <meta property="og:description" content="Live game deal aggregator. Compare prices across Steam, Epic, GOG, Humble Bundle and more.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://thelootradar.com/">
-    <meta property="og:site_name" content="LootRadar">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="LootRadar &mdash; Best PC Game Deals">
-    <meta name="twitter:description" content="Find the best PC game deals across Steam, Epic, GOG, and Humble Bundle. Updated daily.">
-
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "LootRadar",
-        "url": "https://thelootradar.com",
-        "description": "Find the best PC game deals across Steam, Epic Games Store, GOG, and Humble Bundle.",
-        "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://thelootradar.com/?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-        }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LootRadar — Games worth playing. Prices worth paying.</title>
+  <meta name="description" content="LootRadar ranks PC game deals by quality, price history, review confidence, and discount strength—not discount percentage alone.">
+  <link rel="canonical" href="https://thelootradar.com/">
+  <meta property="og:title" content="LootRadar — Games worth playing. Prices worth paying.">
+  <meta property="og:description" content="Quality-first PC game deals with transparent Deal Scores.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://thelootradar.com/">
+  <meta property="og:site_name" content="LootRadar">
+  <meta property="og:image" content="https://thelootradar.com/public/og.png">
+  <meta property="og:image:width" content="1733">
+  <meta property="og:image:height" content="909">
+  <meta property="og:image:alt" content="LootRadar — Games worth playing. Prices worth paying.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LootRadar — Quality-first game deals">
+  <meta name="twitter:description" content="Find genuinely good games at genuinely good prices.">
+  <meta name="twitter:image" content="https://thelootradar.com/public/og.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "LootRadar",
+    "url": "https://thelootradar.com/",
+    "description": "A quality-first PC game deal finder with transparent rankings.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://thelootradar.com/?q={search_term_string}&collection=all",
+      "query-input": "required name=search_term_string"
     }
-    </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=16">
-    <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="icons/icon.png">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#30a9de">
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=21">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b0e0d">
 </head>
-<body>
+<body class="home-page">
+  <a class="skip-link" href="#dealsMain">Skip to deals</a>
 
-    <!-- Navigation -->
-    <nav class="site-nav">
-        <div class="site-nav-inner">
-            <a href="index.html" class="nav-brand">Loot<span>Radar</span></a>
-            <div class="nav-links">
-                <a href="index.html" class="active">Home</a>
-                <a href="recommendations.html">Recommendations</a>
-                <a href="login.html">Login</a>
-                <a href="blog.html">Blog</a>
-                <a href="about.html">About</a>
-                <a href="privacy.html">Privacy</a>
-                <a href="terms.html">Terms</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero -->
-    <header class="hero">
-        <div class="hero-inner">
-            <div class="hero-brand">
-                <div class="hero-logo"><img src="icons/icon.svg" alt="LootRadar" width="48" height="48" style="border-radius:10px"></div>
-                <div class="hero-name">Loot<span>Radar</span></div>
-            </div>
-            <p class="hero-tagline">Compare game prices across 15+ stores. Never overpay.</p>
-            <div class="hero-stats">
-                <div class="hero-stat"><span class="hero-stat-val" id="statDeals">&mdash;</span><span class="hero-stat-lbl">deals</span></div>
-                <div class="hero-stat"><span class="hero-stat-val" id="statStores">&mdash;</span><span class="hero-stat-lbl">stores</span></div>
-                <div class="hero-stat"><span class="hero-stat-val" id="statClaimed">&mdash;</span><span class="hero-stat-lbl">claimed</span></div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Ad Zone: Top -->
-    <div class="ad-zone ad-zone-top">
-        <span class="ad-label">Advertisement</span>
-        <div class="ad-zone-inner"></div>
+  <nav class="site-nav" aria-label="Primary navigation">
+    <div class="site-nav-inner">
+      <a class="nav-brand" href="index.html" aria-label="LootRadar home">
+        <span class="brand-mark" aria-hidden="true"><i></i></span>
+        <span>Loot<span>Radar</span></span>
+      </a>
+      <div class="nav-links">
+        <a class="active" href="index.html">Deals</a>
+        <a href="methodology.html">How scoring works</a>
+        <a href="recommendations.html">For you</a>
+        <a href="blog.html">Guides</a>
+      </div>
+      <button class="nav-watch" id="openWatchlist" type="button" aria-label="Open watchlist">
+        Watchlist <span id="watchCount">0</span>
+      </button>
     </div>
+  </nav>
 
-    <!-- Controls -->
-    <div class="controls">
-        <div class="controls-inner">
-            <!-- Search -->
-            <div class="search-box">
-                <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                <input type="text" id="searchInput" placeholder="Search by game, store, genre, rating...">
-            </div>
-
-            <!-- Quick Search Pills -->
-            <div class="quick-search-row" id="quickSearchPills"></div>
-
-            <!-- Genre Tags -->
-            <div class="genre-tags-row" id="genreTags"></div>
-
-            <!-- Filter Bar: 3 dropdowns side-by-side -->
-            <div class="filter-bar">
-                <div class="store-panel">
-                    <button class="store-panel-toggle" id="storePanelToggle">Stores <span class="store-count" id="storeCount"></span> <span class="chevron">&#9660;</span></button>
-                    <div class="store-panel-body" id="storePanelBody">
-                        <label class="store-select-all">
-                            <input type="checkbox" id="storeSelectAll" checked> <strong>Select All</strong>
-                        </label>
-                        <div class="store-checkboxes" id="storeCheckboxes"></div>
-                    </div>
-                </div>
-
-                <div class="select-wrap">
-                    <select id="sortSelect">
-                        <option value="discount-high">Discount: High &rarr; Low</option>
-                        <option value="discount-low">Discount: Low &rarr; High</option>
-                        <option value="price-low">Price: Low &rarr; High</option>
-                        <option value="price-high">Price: High &rarr; Low</option>
-                        <option value="popular">Most Popular</option>
-                        <option value="rating">Highest Rated</option>
-                        <option value="metacritic">Metacritic</option>
-                        <option value="name">A &mdash; Z</option>
-                    </select>
-                </div>
-
-                <div class="select-wrap">
-                    <select id="ratingSelect">
-                        <option value="0">Any Rating</option>
-                        <option value="50">50%+ Positive</option>
-                        <option value="70">70%+ Positive</option>
-                        <option value="80">80%+ Positive</option>
-                        <option value="90">90%+ Overwhelmingly</option>
-                    </select>
-                </div>
-
-                <div class="select-wrap">
-                    <select id="popularitySelect">
-                        <option value="0">Any Popularity</option>
-                        <option value="500">Popular (500+ reviews)</option>
-                        <option value="2000">Very Popular (2k+ reviews)</option>
-                        <option value="10000">Top Sellers (10k+ reviews)</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Sliders + count -->
-            <div class="adv-filters">
-                <div class="range-wrap">
-                    <label>Max Price: <strong id="priceVal">Any</strong></label>
-                    <input type="range" id="priceRange" min="0" max="60" value="60" step="5">
-                </div>
-                <div class="range-wrap">
-                    <label>Min Discount: <strong id="discountVal">Any</strong></label>
-                    <input type="range" id="discountRange" min="0" max="90" value="0" step="10">
-                </div>
-                <div class="result-count" id="resultCount"></div>
-            </div>
-
-            <!-- Apply Button -->
-            <div class="apply-wrap">
-                <button class="apply-btn" id="applyFilters">Apply Filters</button>
-                <button class="reset-btn" id="resetFilters">Reset</button>
-            </div>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> Curated by quality, not just percentage off</p>
+        <h1>Games worth playing.<br><em>Prices worth paying.</em></h1>
+        <p class="hero-lede">LootRadar filters out the noise and ranks deals using reviews, price value, discount strength, and player interest.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#discover">Explore the best deals</a>
+          <a class="text-link" href="methodology.html">See the formula <span aria-hidden="true">↗</span></a>
         </div>
+        <dl class="trust-row">
+          <div><dt id="statQualified">—</dt><dd>quality picks</dd></div>
+          <div><dt id="statStores">—</dt><dd>stores checked</dd></div>
+          <div><dt>Hourly</dt><dd>price refresh</dd></div>
+        </dl>
+      </div>
+
+      <aside class="hero-pick" id="heroPick" aria-label="Top deal right now">
+        <div class="hero-pick-skeleton">
+          <span></span><span></span><span></span>
+        </div>
+      </aside>
     </div>
+  </header>
 
-    <!-- Main Content -->
-    <main>
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <p>Scanning stores for the best deals...</p>
+  <main id="dealsMain">
+    <section class="discovery-shell" id="discover" aria-labelledby="discoverTitle">
+      <div class="discovery-top">
+        <div>
+          <p class="section-kicker">Today’s radar</p>
+          <h2 id="discoverTitle">Find your next great game</h2>
         </div>
+        <p class="data-note"><span class="live-dot" aria-hidden="true"></span><span id="lastUpdated">Loading the latest cached prices…</span></p>
+      </div>
 
-        <div id="featuredSection" class="section" style="display:none">
-            <div class="section-title">Featured Deals</div>
-            <div id="featuredDeals" class="grid"></div>
+      <form class="search-row" id="dealFilters" role="search">
+        <label class="search-box" for="searchInput">
+          <span class="search-glyph" aria-hidden="true"></span>
+          <span class="sr-only">Search games</span>
+          <input id="searchInput" name="q" type="search" autocomplete="off" placeholder="Search by game, genre, store…">
+        </label>
+        <label class="select-field">
+          <span class="sr-only">Sort deals</span>
+          <select id="sortSelect" name="sort">
+            <option value="recommended">Recommended</option>
+            <option value="score">Highest Deal Score</option>
+            <option value="reviewed">Best reviewed</option>
+            <option value="price">Lowest price</option>
+            <option value="discount">Largest discount</option>
+            <option value="history">Closest to historical low</option>
+            <option value="release">Newest release</option>
+            <option value="popular">Most popular</option>
+            <option value="added">Recently added</option>
+          </select>
+        </label>
+        <button class="filter-toggle" id="filterToggle" type="button" aria-expanded="false" aria-controls="filterPanel">
+          Filters <span id="activeFilterCount">0</span>
+        </button>
+      </form>
+
+      <div class="collection-tabs" id="collectionTabs" role="tablist" aria-label="Curated collections"></div>
+
+      <div class="filter-panel" id="filterPanel" hidden>
+        <div class="filter-grid">
+          <label>Store<select id="storeSelect" name="store"><option value="all">All stores</option></select></label>
+          <label>Genre<select id="genreSelect" name="genre"><option value="all">All genres</option></select></label>
+          <label>Maximum price<select id="priceSelect" name="maxPrice">
+            <option value="70">Any price</option><option value="5">Under $5</option><option value="10">Under $10</option>
+            <option value="20">Under $20</option><option value="30">Under $30</option><option value="50">Under $50</option>
+          </select></label>
+          <label>Minimum discount<select id="discountSelect" name="minDiscount">
+            <option value="0">Any discount</option><option value="20">20% or more</option><option value="40">40% or more</option>
+            <option value="60">60% or more</option><option value="80">80% or more</option>
+          </select></label>
+          <label>User rating<select id="ratingSelect" name="minRating">
+            <option value="0">Any rating</option><option value="70">70% or better</option><option value="80">80% or better</option>
+            <option value="90">90% or better</option>
+          </select></label>
+          <label>Review confidence<select id="reviewsSelect" name="minReviews">
+            <option value="0">Any review count</option><option value="100">100+ reviews</option><option value="1000">1,000+ reviews</option>
+            <option value="10000">10,000+ reviews</option>
+          </select></label>
         </div>
-
-        <!-- Ad Zone: Mid -->
-        <div class="ad-zone ad-zone-mid">
-            <span class="ad-label">Advertisement</span>
-            <div class="ad-zone-inner"></div>
+        <div class="filter-checks">
+          <label><input id="relaxQuality" type="checkbox"> Show lower-confidence deals</label>
+          <label><input id="includeEarlyAccess" type="checkbox"> Include Early Access</label>
+          <label><input id="includeBundles" type="checkbox"> Include bundles</label>
+          <label><input id="includeDlc" type="checkbox"> Include DLC & non-game content</label>
         </div>
-
-        <div id="allSection" class="section" style="display:none">
-            <div class="section-title">All Deals</div>
-            <div id="deals" class="grid"></div>
+        <div class="filter-actions">
+          <button class="text-button" id="resetFilters" type="button">Reset filters</button>
+          <button class="button button-small" id="closeFilters" type="button">Show results</button>
         </div>
+      </div>
 
-        <div id="noResults" class="no-results" style="display:none">
-            <p>No deals matched your search. Try different keywords or filters.</p>
+      <div class="result-bar">
+        <div>
+          <h3 id="collectionTitle">Best deals right now</h3>
+          <p id="resultSummary">Ranking strong games at meaningful prices.</p>
         </div>
+        <span id="resultCount" aria-live="polite"></span>
+      </div>
 
-        <div id="lastUpdated" class="last-updated"></div>
-    </main>
-
-    <!-- Ad Zone: Bottom -->
-    <div class="ad-zone ad-zone-bottom">
-        <span class="ad-label">Advertisement</span>
-        <div class="ad-zone-inner"></div>
-    </div>
-
-    <!-- SEO Content -->
-    <section class="seo">
-        <div class="seo-inner">
-            <h1>Find the Best PC Game Deals &mdash; Updated Daily</h1>
-            <p>LootRadar scans thousands of deals across <strong>Steam</strong>, <strong>Epic Games Store</strong>, <strong>GOG</strong>, and <strong>Humble Bundle</strong> to bring you the lowest prices on PC games every single day. Whether you're hunting for free games, massive discounts, or hidden indie gems &mdash; we've got you covered.</p>
-
-            <div class="seo-grid">
-                <div class="seo-card">
-                    <h2>How It Works</h2>
-                    <p>We aggregate deals from all major PC game stores in real-time. Filter by store, price, discount, and ratings. Every deal links directly to the store.</p>
-                </div>
-                <div class="seo-card">
-                    <h2>Stores We Track</h2>
-                    <p>Steam, Epic Games Store, GOG.com, Humble Bundle, Green Man Gaming, Fanatical, and dozens more. One search, every store.</p>
-                </div>
-                <div class="seo-card">
-                    <h2>Never Overpay</h2>
-                    <p>Compare prices across 30+ retailers instantly. Sort by discount, rating, or popularity to find deals worth your money.</p>
-                </div>
-                <div class="seo-card">
-                    <h2>Free Games</h2>
-                    <p>Epic, Steam, and others give away free games regularly. LootRadar highlights every freebie so you never miss one.</p>
-                </div>
-            </div>
-
-            <div class="faq">
-                <h2>Frequently Asked Questions</h2>
-                <details><summary>Is LootRadar free?</summary><p>Yes &mdash; completely free. We earn a small commission through affiliate links.</p></details>
-                <details><summary>How often are deals updated?</summary><p>Daily, via the CheapShark API which tracks thousands of deals across 30+ stores.</p></details>
-                <details><summary>Which stores are tracked?</summary><p>Steam, Epic, GOG, Humble Bundle, Green Man Gaming, Fanatical, GamersGate, and many more.</p></details>
-                <details><summary>Can I use this on my phone?</summary><p>Yes! LootRadar is a PWA &mdash; install it on Android or iOS like a native app.</p></details>
-            </div>
-        </div>
+      <div id="loading" class="loading-grid" aria-label="Loading deals">
+        <div></div><div></div><div></div><div></div><div></div><div></div>
+      </div>
+      <div id="errorState" class="state-card" hidden>
+        <span class="state-icon">!</span>
+        <h3>We lost the price signal</h3>
+        <p>Cached deal data could not be loaded. Try again in a moment.</p>
+        <button class="button button-small" id="retryLoad" type="button">Try again</button>
+      </div>
+      <div id="emptyState" class="state-card" hidden>
+        <span class="state-icon">0</span>
+        <h3>No quality matches yet</h3>
+        <p>Try a broader collection or relax one of your filters.</p>
+        <button class="button button-small" id="clearEmpty" type="button">Reset filters</button>
+      </div>
+      <div class="deal-grid" id="deals" aria-live="polite"></div>
+      <div class="load-more-wrap"><button class="button button-secondary" id="loadMore" type="button" hidden>Show more deals</button></div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>LootRadar &copy; 2025 &mdash; Prices sourced via CheapShark.</p>
-        <p class="footer-nav"><a href="index.html">Home</a> &middot; <a href="recommendations.html">Recommendations</a>
-                <a href="login.html">Login</a> &middot; <a href="blog.html">Blog</a> &middot; <a href="about.html">About</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a></p>
-        <p><small>Affiliate links help keep the site free.</small></p>
-    </footer>
+    <section class="principles" aria-labelledby="principlesTitle">
+      <div>
+        <p class="section-kicker">The difference</p>
+        <h2 id="principlesTitle">A big discount is not always a good deal.</h2>
+      </div>
+      <div class="principle-grid">
+        <article><span>01</span><h3>Quality first</h3><p>Acclaimed games outrank low-rated titles even when the cheaper game has a louder discount.</p></article>
+        <article><span>02</span><h3>Context matters</h3><p>Price history and repeat-sale signals tell you whether “buy now” is actually meaningful.</p></article>
+        <article><span>03</span><h3>Confidence shown</h3><p>Ten reviews are not treated like ten thousand. Missing data lowers confidence, not visibility to zero.</p></article>
+      </div>
+      <a class="text-link" href="methodology.html">Read the full ranking methodology <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
 
-    <script>
-    // Nuke all service workers and caches, then load app
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(regs => {
-            regs.forEach(r => r.unregister());
-        });
-        if ('caches' in window) {
-            caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
-        }
-    }
-    </script>
-    <!-- GoatCounter Analytics (free, no cookies, privacy-friendly) -->
-    <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <footer>
+    <div class="footer-inner">
+      <div><a class="nav-brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a><p>Games worth playing. Prices worth paying.</p></div>
+      <div class="footer-links"><a href="methodology.html">Scoring</a><a href="recommendations.html">For you</a><a href="blog.html">Guides</a><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div>
+    </div>
+    <p class="footer-disclosure">Prices sourced from CheapShark and may change. Purchase links may be affiliate links; this never changes Deal Scores.</p>
+  </footer>
 
-    <script src="app.js?v=14"></script>
+  <dialog class="deal-dialog" id="dealDialog">
+    <button class="dialog-close" type="button" data-close-dialog aria-label="Close game details">×</button>
+    <div id="dealDialogContent"></div>
+  </dialog>
+
+  <dialog class="watch-dialog" id="watchDialog">
+    <button class="dialog-close" type="button" data-close-watch aria-label="Close watchlist">×</button>
+    <div class="dialog-heading"><p class="section-kicker">Saved on this device</p><h2>Your watchlist</h2><p>Set a target price and LootRadar will flag matches whenever you return.</p></div>
+    <div id="watchlistContent"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="config/editorial-config.js?v=1"></script>
+  <script src="lib/deal-normalizer.js?v=1"></script>
+  <script src="lib/deal-score.js?v=1"></script>
+  <script src="lib/deal-filters.js?v=1"></script>
+  <script src="app.js?v=21"></script>
+  <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
-
-
-
-

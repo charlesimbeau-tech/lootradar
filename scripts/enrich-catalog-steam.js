@@ -4,13 +4,18 @@
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const MAX_NEW_STEAM_LOOKUPS = Number(process.env.MAX_NEW_STEAM_LOOKUPS || 60);
 
 function fetchJSON(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, { headers: { 'User-Agent': 'LootRadar/1.0' } }, (res) => {
+    https.get(url, { headers: { 'User-Agent': 'LootRadar/1.1 (contact@thelootradar.com)' } }, (res) => {
       let data = '';
       res.on('data', chunk => (data += chunk));
       res.on('end', () => {
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          reject(new Error(`HTTP ${res.statusCode} for ${url}`));
+          return;
+        }
         try {
           resolve(JSON.parse(data));
         } catch (e) {
@@ -73,12 +78,27 @@ async function fetchSteamMeta(appId) {
 
 async function main() {
   const dealsPath = path.join(__dirname, '..', 'deals.json');
+  const existingPath = path.join(__dirname, '..', 'enriched-deals.json');
   const dealsData = JSON.parse(fs.readFileSync(dealsPath, 'utf8'));
   const deals = dealsData.deals || [];
 
   const cache = new Map();
+  if (fs.existsSync(existingPath)) {
+    try {
+      const existing = JSON.parse(fs.readFileSync(existingPath, 'utf8'));
+      for (const row of existing.games || []) {
+        const appId = row?.steamAppID && String(row.steamAppID).trim();
+        if (appId && row.rawg) cache.set(appId, row.rawg);
+      }
+      console.log(`Reusing ${cache.size} cached Steam metadata records.`);
+    } catch (error) {
+      console.warn(`Existing metadata cache could not be read: ${error.message}`);
+    }
+  }
+
   const enriched = [];
   let hits = 0;
+  let newLookups = 0;
 
   for (let i = 0; i < deals.length; i++) {
     const d = deals[i];
@@ -87,8 +107,9 @@ async function main() {
 
     if (appId) {
       try {
-        if (!cache.has(appId)) {
+        if (!cache.has(appId) && newLookups < MAX_NEW_STEAM_LOOKUPS) {
           cache.set(appId, await fetchSteamMeta(appId));
+          newLookups++;
           await sleep(180);
         }
         const meta = cache.get(appId);
@@ -121,7 +142,7 @@ async function main() {
   };
 
   fs.writeFileSync(path.join(__dirname, '..', 'enriched-deals.json'), JSON.stringify(out));
-  console.log(`Saved enriched-deals.json (${hits}/${deals.length} metadata matches)`);
+  console.log(`Saved enriched-deals.json (${hits}/${deals.length} metadata matches, ${newLookups} new lookups)`);
 }
 
 main().catch(e => {

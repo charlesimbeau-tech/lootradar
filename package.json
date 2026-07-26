@@ -1,0 +1,14 @@
+{
+  "name": "lootradar",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Quality-first PC game deal finder",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "build": "node scripts/build-static.js",
+    "verify": "node scripts/verify-site.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

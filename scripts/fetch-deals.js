@@ -6,13 +6,13 @@ const path = require('path');
 
 const API = 'https://www.cheapshark.com/api/1.0';
 const MAX_PRICE = Number(process.env.MAX_PRICE || 70);
-const PAGE_SIZE = Number(process.env.PAGE_SIZE || 80);
+const PAGE_SIZE = Math.min(60, Number(process.env.PAGE_SIZE || 60));
 const PAGES_PER_STORE = Number(process.env.PAGES_PER_STORE || 3);
 
 async function fetchJSON(url) {
   const res = await fetch(url, {
     headers: {
-      'User-Agent': 'LootRadar-Bot/1.0 (https://github.com/charlesimbeau-tech/lootradar)',
+      'User-Agent': 'LootRadar-Bot/1.1 (contact@thelootradar.com; https://thelootradar.com)',
       'Accept': 'application/json'
     }
   });
@@ -55,7 +55,7 @@ async function main() {
     try {
       for (let page = 0; page < PAGES_PER_STORE; page++) {
         const deals = await fetchJSON(
-          `${API}/deals?storeID=${store.storeID}&upperPrice=${MAX_PRICE}&pageSize=${PAGE_SIZE}&pageNumber=${page}&steamRating=80&sortBy=Deal+Rating`
+          `${API}/deals?storeID=${store.storeID}&upperPrice=${MAX_PRICE}&pageSize=${PAGE_SIZE}&pageNumber=${page}&steamRating=70&minimumReviewCount=100&onSale=1&sortBy=DealRating`
         );
 
         if (Array.isArray(deals) && deals.length) {
