@@ -202,9 +202,9 @@ function confidenceLabel(game) {
   if (rating >= 85) pts += 2; else if (rating >= 75) pts += 1;
   if (reviews >= 1000) pts += 2; else if (reviews >= 250) pts += 1;
   if (discount >= 60) pts += 1;
-  if (pts >= 4) return '🟢 High';
-  if (pts >= 2) return '🟡 Medium';
-  return '🔴 Low';
+  if (pts >= 4) return 'High confidence';
+  if (pts >= 2) return 'Moderate confidence';
+  return 'Limited confidence';
 }
 
 function whyChip(game, topGenres, topTags) {
@@ -240,15 +240,15 @@ function cardHtml(game, why) {
   var rating = Number(game.steamRatingPercent || game.rating || game.userscore || 0);
   var key = itemKey(game);
   var conf = confidenceLabel(game);
-  var title = game.title || (game.rawg && game.rawg.name) || 'Untitled';
+  var title = game.title || (game.rawg && game.rawg.name) || 'Title unavailable';
   var thumb = game.thumb || (game.rawg && game.rawg.backgroundImage) || 'icons/icon.png';
   var onSale = !!game.dealID || savings > 0;
-  var badge = onSale ? ('-' + savings + '%') : 'REC';
-  var storeLabel = onSale ? 'On Sale' : 'Catalog';
-  var linkText = onSale ? 'View Deal \u2192' : 'View on Steam \u2192';
+  var badge = onSale ? ('-' + savings + '%') : 'PICK';
+  var storeLabel = onSale ? 'On sale' : 'Catalog';
+  var linkText = onSale ? 'See current deal \u2192' : 'View on Steam \u2192';
   var priceHtml = onSale
-    ? '<span class="price-old">$' + normal.toFixed(2) + '</span><span class="price-new">$' + sale.toFixed(2) + '</span>'
-    : '<span class="price-new">' + (sale > 0 ? '$' + sale.toFixed(2) : 'Free / N/A') + '</span>';
+    ? '<span class="price-old">$' + normal.toFixed(2) + '</span><span class="price-new">' + (sale === 0 ? 'Free' : '$' + sale.toFixed(2)) + '</span>'
+    : '<span class="price-new">' + (sale > 0 ? '$' + sale.toFixed(2) : 'Price unavailable') + '</span>';
   var whyHtml = why ? '<div class="why-chip">' + why + '</div>' : '';
 
   return '<div class="card">'
@@ -264,8 +264,8 @@ function cardHtml(game, why) {
     + '<div class="pricing">' + priceHtml + '</div>'
     + '<a class="deal-link" href="' + gameLink(game) + '" target="_blank" rel="noopener noreferrer">' + linkText + '</a>'
     + '<div class="card-actions" style="margin-top:8px;display:flex;gap:8px;">'
-    + '<button class="feedback-btn" data-fb="like" data-id="' + key + '">\uD83D\uDC4D Like</button>'
-    + '<button class="feedback-btn" data-fb="dislike" data-id="' + key + '">\uD83D\uDC4E Skip</button>'
+    + '<button class="feedback-btn" data-fb="like" data-id="' + key + '">More like this</button>'
+    + '<button class="feedback-btn" data-fb="dislike" data-id="' + key + '">Not for me</button>'
     + '</div></div></div>';
 }
 
@@ -273,14 +273,16 @@ function updateGenreHint() {
   var hint = document.getElementById('genreHint');
   if (!hint) return;
   if (!profile.genres.length) {
-    hint.textContent = 'No genres selected = broad results (all genres).';
+    hint.textContent = 'No genres selected. Showing matches from every genre.';
     return;
   }
   if (profile.genres.length === GENRES.length) {
-    hint.textContent = 'All genres selected = widest results.';
+    hint.textContent = 'All genres selected.';
     return;
   }
-  hint.textContent = 'Selected ' + profile.genres.length + ' genre(s).';
+  hint.textContent = profile.genres.length === 1
+    ? '1 genre selected.'
+    : profile.genres.length + ' genres selected.';
 }
 
 function buildGenrePills() {
@@ -316,7 +318,7 @@ function renderBecause(scored) {
   if (!grid || !reason) return;
   var likedIds = Object.keys(profile.likes || {});
   if (!likedIds.length) {
-    reason.textContent = 'Like a few games and this section will learn your taste.';
+    reason.textContent = 'Like a few games to make these recommendations more relevant.';
     grid.innerHTML = '';
     return;
   }
@@ -340,7 +342,9 @@ function renderBecause(scored) {
     .sort(function(a,b){return b.blend - a.blend;})
     .slice(0, 8);
 
-  reason.textContent = 'Based on your likes in: ' + (topG.join(', ') || 'your favorites') + '.';
+  reason.textContent = topG.length
+    ? 'Your likes point to ' + topG.join(', ') + '.'
+    : 'These games are related to your recent likes.';
   grid.innerHTML = picks.map(function(x) { return cardHtml(x.g, whyChip(x.g, topG, topT)); }).join('');
 }
 
@@ -378,8 +382,8 @@ function renderRecommendations() {
   }
 
   if (empty) empty.style.display = 'none';
-  var label = profile.mode === 'on-sale' ? 'on-sale deals' : 'recommendations';
-  if (count) count.textContent = 'Showing ' + filtered.length + ' of ' + matched.length + ' ' + label;
+  var label = profile.mode === 'on-sale' ? 'current deals' : 'matches';
+  if (count) count.textContent = filtered.length + ' of ' + matched.length + ' ' + label + ' shown';
   if (grid) grid.innerHTML = filtered.map(function(x) {
     return cardHtml(x.g, whyChip(x.g, profile.genres, profile.genres));
   }).join('');
@@ -514,11 +518,14 @@ function bindControls() {
   if (launchQuiz) launchQuiz.addEventListener('click', function() { openQuiz(); });
 
   var saveBtn = document.getElementById('savePrefs');
-  if (saveBtn) saveBtn.addEventListener('click', function() { saveProfile(); alert('Preferences saved.'); });
+  if (saveBtn) saveBtn.addEventListener('click', function() {
+    saveProfile();
+    alert(authedUserId ? 'Preferences synced.' : 'Preferences saved on this device.');
+  });
 
   var resetBtn = document.getElementById('resetPrefs');
   if (resetBtn) resetBtn.addEventListener('click', function() {
-    if (!confirm('Reset your recommendation profile?')) return;
+    if (!confirm('Reset your saved preferences?')) return;
     profile = Object.assign({}, DEFAULT_PROFILE);
     saveProfile(); bindControls(); buildGenrePills(); renderRecommendations();
   });
@@ -547,14 +554,14 @@ function initAuth() {
 
   function setGuest() {
     authedUserId = null;
-    if (statusEl) statusEl.textContent = 'Guest mode (local only)';
+    if (statusEl) statusEl.textContent = 'Saved on this device';
     if (signOutBtn) signOutBtn.style.display = 'none';
     if (loginBtn) loginBtn.style.display = '';
   }
 
   function setSignedIn(user) {
     authedUserId = user.id;
-    if (statusEl) statusEl.textContent = 'Signed in: ' + (user.email || 'account');
+    if (statusEl) statusEl.textContent = user.email ? 'Synced as ' + user.email : 'Synced to your account';
     if (signOutBtn) signOutBtn.style.display = 'inline-block';
     if (loginBtn) loginBtn.style.display = 'none';
   }
@@ -674,7 +681,7 @@ function init() {
       var empty = document.getElementById('emptyState');
       if (empty) {
         empty.style.display = 'block';
-        empty.innerHTML = '<p>Could not load recommendations. Please refresh.</p>';
+        empty.innerHTML = '<p>Recommendations could not be loaded. Please refresh the page.</p>';
       }
     });
   });
