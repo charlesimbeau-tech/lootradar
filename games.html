@@ -78,8 +78,14 @@
         <a href="https://thelootradar.com/">Home</a> &middot; <a href="https://thelootradar.com/games.html">Games</a> &middot; <a href="https://thelootradar.com/blog.html">Blog</a></p>
     </footer>
 
+    <script src="lib/cheapshark-client.js?v=1"></script>
     <script>
     const API = 'https://www.cheapshark.com/api/1.0';
+    const cheapShark = window.LootRadarCheapShark.createCheapSharkClient({
+        baseUrl: API,
+        maxRetries: 2,
+        baseDelayMs: 750
+    });
     const STORES = {
         '1': 'Steam', '25': 'Epic Games Store', '7': 'GOG', '11': 'Humble Bundle',
         '2': 'GamersGate', '3': 'GreenManGaming', '8': 'Origin', '13': 'Uplay',
@@ -89,6 +95,8 @@
     };
 
     let searchTimeout;
+    let searchController;
+    let detailController;
     const searchInput = document.getElementById('gameSearch');
     const gameResults = document.getElementById('gameResults');
     const gameList = document.getElementById('gameList');
@@ -104,50 +112,71 @@
     // Search games
     searchInput.addEventListener('input', () => {
         clearTimeout(searchTimeout);
+        if (searchController) searchController.abort();
         searchTimeout = setTimeout(async () => {
             const q = searchInput.value.trim();
             if (q.length < 2) { gameResults.style.display = 'none'; return; }
+            searchController = new AbortController();
 
-            const res = await fetch(`${API}/games?title=${encodeURIComponent(q)}&limit=20`);
-            const games = await res.json();
+            try {
+                const games = await cheapShark.get(`/games?title=${encodeURIComponent(q)}&limit=20`, {
+                    signal: searchController.signal,
+                    cacheKey: `search:${q.toLowerCase()}`,
+                    cacheTtlMs: 5 * 60 * 1000
+                });
+                if (searchInput.value.trim() !== q) return;
 
-            if (!games.length) {
+                if (!games.length) {
+                    gameResults.style.display = 'block';
+                    gameList.innerHTML = '<p style="padding:1rem;color:#8a94a6">No games found. Try a different search term.</p>';
+                    return;
+                }
+
                 gameResults.style.display = 'block';
-                gameList.innerHTML = '<p style="padding:1rem;color:#8a94a6">No games found. Try a different search term.</p>';
-                return;
-            }
-
-            gameResults.style.display = 'block';
-            gameList.innerHTML = '<div class="deals-grid">' + games.map(g => {
-                const cheapest = parseFloat(g.cheapest);
-                return `
-                    <div class="deal-card" style="cursor:pointer" onclick="showGameDetail('${g.gameID}')">
-                        <div class="thumb-wrapper">
-                            <img class="thumb" src="${g.thumb}" alt="${g.external} best price" loading="lazy"
-                                onerror="this.parentElement.style.background='linear-gradient(135deg,#111720,#0c1015)'">
-                        </div>
-                        <div class="card-body">
-                            <div class="title">${g.external}</div>
-                            <div class="pricing">
-                                <span class="sale-price">${cheapest === 0 ? 'ðŸŽ FREE' : '$' + cheapest.toFixed(2)}</span>
-                                <span class="rating" style="font-size:0.8rem">cheapest ever</span>
+                gameList.innerHTML = '<div class="deals-grid">' + games.map(g => {
+                    const cheapest = parseFloat(g.cheapest);
+                    return `
+                        <div class="deal-card" style="cursor:pointer" onclick="showGameDetail('${g.gameID}')">
+                            <div class="thumb-wrapper">
+                                <img class="thumb" src="${g.thumb}" alt="${g.external} best price" loading="lazy"
+                                    onerror="this.parentElement.style.background='linear-gradient(135deg,#111720,#0c1015)'">
                             </div>
-                        </div>
-                    </div>`;
-            }).join('') + '</div>';
-        }, 300);
+                            <div class="card-body">
+                                <div class="title">${g.external}</div>
+                                <div class="pricing">
+                                    <span class="sale-price">${cheapest === 0 ? 'ðŸŽ FREE' : '$' + cheapest.toFixed(2)}</span>
+                                    <span class="rating" style="font-size:0.8rem">cheapest ever</span>
+                                </div>
+                            </div>
+                        </div>`;
+                }).join('') + '</div>';
+            } catch (error) {
+                if (error.name === 'AbortError') return;
+                gameResults.style.display = 'block';
+                gameList.innerHTML = '<p style="padding:1rem;color:#ff9d9d">Search is temporarily unavailable. Please try again.</p>';
+            }
+        }, 500);
     });
 
     // Show game detail with all deals
     async function showGameDetail(gameID) {
-        window.location.hash = `game-${gameID}`;
+        const targetHash = `#game-${gameID}`;
+        if (window.location.hash !== targetHash) {
+            window.location.hash = targetHash;
+            return;
+        }
         gameDetail.style.display = 'block';
         gameDetail.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading game details...</p></div>';
         gameDetail.scrollIntoView({ behavior: 'smooth' });
 
+        if (detailController) detailController.abort();
+        detailController = new AbortController();
         try {
-            const res = await fetch(`${API}/games?id=${gameID}`);
-            const data = await res.json();
+            const data = await cheapShark.get(`/games?id=${encodeURIComponent(gameID)}`, {
+                signal: detailController.signal,
+                cacheKey: `game:${gameID}`,
+                cacheTtlMs: 5 * 60 * 1000
+            });
             const info = data.info;
             const deals = data.deals || [];
 
@@ -229,6 +258,7 @@
                 </div>
             `;
         } catch (err) {
+            if (err.name === 'AbortError') return;
             gameDetail.innerHTML = '<p style="padding:2rem;color:#ff6b6b;text-align:center">Failed to load game details. Please try again.</p>';
         }
     }
@@ -236,8 +266,10 @@
     // Load top deals on page load
     async function loadTopDeals() {
         try {
-            const res = await fetch(`${API}/deals?sortBy=Deal+Rating&upperPrice=60&pageSize=24`);
-            const deals = await res.json();
+            const deals = await cheapShark.get('/deals?sortBy=Deal+Rating&upperPrice=60&pageSize=24', {
+                cacheKey: 'top-deals',
+                cacheTtlMs: 5 * 60 * 1000
+            });
             document.getElementById('topDealsList').innerHTML = deals.map(d => {
                 const savings = Math.round(parseFloat(d.savings));
                 const sale = parseFloat(d.salePrice);
@@ -262,7 +294,11 @@
                         </div>
                     </div>`;
             }).join('');
-        } catch(e) { console.error(e); }
+        } catch(error) {
+            console.error(error);
+            document.getElementById('topDealsList').innerHTML =
+                '<p style="padding:1rem;color:#8a94a6">Featured deals are temporarily unavailable. Search for a game above or try again shortly.</p>';
+        }
     }
 
     // Init

@@ -4,6 +4,11 @@
   const API = 'https://www.cheapshark.com/api/1.0';
   const PAGE_SIZE = 24;
   const WATCH_KEY = 'lr_watchlist_v1';
+  const cheapShark = window.LootRadarCheapShark.createCheapSharkClient({
+    baseUrl: API,
+    maxRetries: 2,
+    baseDelayMs: 750
+  });
   const { normalizeDeal } = window.LootRadarNormalizer;
   const { calculateDealScore, getDefaultEligibility, createRecommendationReason } = window.LootRadarScoring;
   const { DEFAULT_FILTERS, normalizeFilters, filterDeals, sortDeals, readFiltersFromUrl, filtersToSearchParams } = window.LootRadarFilters;
@@ -426,12 +431,10 @@
     if (state.detailController) state.detailController.abort();
     state.detailController = new AbortController();
     try {
-      const response = await fetch(`${API}/deals?id=${deal.dealID}`, {
+      const lookup = await cheapShark.get(`/deals?id=${encodeURIComponent(deal.dealID)}`, {
         signal: state.detailController.signal,
-        headers: { Accept: 'application/json' }
+        cacheTtlMs: 5 * 60 * 1000
       });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const lookup = await response.json();
       renderLiveContext(deal, lookup);
     } catch (error) {
       if (error.name === 'AbortError') return;

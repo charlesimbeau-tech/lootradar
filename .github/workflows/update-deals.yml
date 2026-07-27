@@ -2,8 +2,8 @@ name: Update Deals Data
 
 on:
   schedule:
-    # Every hour
-    - cron: '0 * * * *'
+    # Every three hours, offset from the busiest scheduler boundary.
+    - cron: '17 */3 * * *'
   workflow_dispatch: # Manual trigger
 
 permissions:

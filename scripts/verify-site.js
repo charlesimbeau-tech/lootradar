@@ -5,9 +5,13 @@ const root = path.resolve(__dirname, '..');
 const requiredSource = [
   'index.html', 'methodology.html', 'app.js', 'style.css', 'manifest.json',
   'deals.json', 'enriched-deals.json', 'config/editorial-config.js',
-  'lib/deal-normalizer.js', 'lib/deal-score.js', 'lib/deal-filters.js', 'public/og.png'
+  'lib/deal-normalizer.js', 'lib/deal-score.js', 'lib/deal-filters.js',
+  'lib/cheapshark-client.js', 'lib/deal-snapshot-validator.js', 'public/og.png'
 ];
-const requiredBuild = ['dist/server/index.js', 'dist/static/index.html', 'dist/static/app.js', 'dist/static/deals.json'];
+const requiredBuild = [
+  'dist/server/index.js', 'dist/static/index.html', 'dist/static/app.js',
+  'dist/static/deals.json', 'dist/static/lib/cheapshark-client.js'
+];
 const adsensePublisher = 'ca-pub-3845680227675655';
 const adsensePages = [
   'index.html', 'games.html', 'recommendations.html', 'methodology.html',
@@ -34,6 +38,14 @@ for (const file of ['manifest.json', 'deals.json', 'enriched-deals.json']) {
 const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 for (const token of ['lib/deal-score.js', 'id="deals"', 'id="dealDialog"', 'methodology.html']) {
   if (!homepage.includes(token)) failures.push(`index.html missing ${token}`);
+}
+if (!homepage.includes('lib/cheapshark-client.js')) {
+  failures.push('index.html missing the shared CheapShark client');
+}
+
+const gamesPage = fs.readFileSync(path.join(root, 'games.html'), 'utf8');
+for (const token of ['lib/cheapshark-client.js', 'cacheTtlMs', 'AbortController']) {
+  if (!gamesPage.includes(token)) failures.push(`games.html missing ${token}`);
 }
 
 for (const file of adsensePages) {

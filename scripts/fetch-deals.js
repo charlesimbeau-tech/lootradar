@@ -3,27 +3,35 @@
 
 const fs = require('fs');
 const path = require('path');
+const { createCheapSharkClient } = require('../lib/cheapshark-client.js');
+const { validateSnapshot } = require('../lib/deal-snapshot-validator.js');
 
 const API = 'https://www.cheapshark.com/api/1.0';
 const MAX_PRICE = Number(process.env.MAX_PRICE || 70);
 const PAGE_SIZE = Math.min(60, Number(process.env.PAGE_SIZE || 60));
 const PAGES_PER_STORE = Number(process.env.PAGES_PER_STORE || 3);
+const outPath = path.join(__dirname, '..', 'deals.json');
 
-async function fetchJSON(url) {
-  const res = await fetch(url, {
-    headers: {
-      'User-Agent': 'LootRadar-Bot/1.1 (contact@thelootradar.com; https://thelootradar.com)',
-      'Accept': 'application/json'
-    }
-  });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status} for ${url}`);
+const cheapShark = createCheapSharkClient({
+  baseUrl: API,
+  maxRetries: 4,
+  baseDelayMs: 1000,
+  headers: {
+    'User-Agent': 'LootRadar-Bot/1.2 (contact@thelootradar.com; https://thelootradar.com)',
+    Accept: 'application/json'
   }
-  const text = await res.text();
+});
+
+async function fetchJSON(pathname) {
+  return cheapShark.get(pathname);
+}
+
+function loadPreviousSnapshot() {
   try {
-    return JSON.parse(text);
-  } catch (e) {
-    throw new Error(`JSON parse error for ${url}: ${e.message} \nResponse start: ${text.slice(0, 100)}`);
+    return JSON.parse(fs.readFileSync(outPath, 'utf8'));
+  } catch (error) {
+    console.warn(`Existing deal snapshot is unavailable: ${error.message}`);
+    return null;
   }
 }
 
@@ -32,8 +40,9 @@ function sleep(ms) {
 }
 
 async function main() {
+  const previousSnapshot = loadPreviousSnapshot();
   console.log('Fetching store list...');
-  const stores = await fetchJSON(`${API}/stores`);
+  const stores = await fetchJSON('/stores');
   const activeStores = stores.filter(s => s.isActive === 1);
 
   const storeMap = {};
@@ -48,14 +57,15 @@ async function main() {
   console.log(`Config: upperPrice=${MAX_PRICE}, pageSize=${PAGE_SIZE}, pagesPerStore=${PAGES_PER_STORE}`);
 
   const allDeals = [];
+  const failedStores = [];
 
-  // Fetch deals from each store with pagination + small delay to be polite
+  // Fetch deals sequentially so one refresh does not create a request burst.
   for (const store of activeStores) {
     let storeCount = 0;
     try {
       for (let page = 0; page < PAGES_PER_STORE; page++) {
         const deals = await fetchJSON(
-          `${API}/deals?storeID=${store.storeID}&upperPrice=${MAX_PRICE}&pageSize=${PAGE_SIZE}&pageNumber=${page}&steamRating=70&minimumReviewCount=100&onSale=1&sortBy=DealRating`
+          `/deals?storeID=${store.storeID}&upperPrice=${MAX_PRICE}&pageSize=${PAGE_SIZE}&pageNumber=${page}&steamRating=70&minimumReviewCount=100&onSale=1&sortBy=DealRating`
         );
 
         if (Array.isArray(deals) && deals.length) {
@@ -72,28 +82,27 @@ async function main() {
             steamRatingPercent: d.steamRatingPercent,
             steamRatingCount: d.steamRatingCount,
             steamRatingText: d.steamRatingText,
-            dealRating: d.dealRating,
+            dealRating: d.dealRating
           })));
           storeCount += deals.length;
         }
 
-        // if a page is sparse/empty, likely no more high-quality deals for this store
         if (!Array.isArray(deals) || deals.length < Math.floor(PAGE_SIZE * 0.25)) break;
-        await sleep(120);
+        await sleep(250);
       }
       console.log(`  ${store.storeName}: ${storeCount} deals`);
-    } catch (e) {
-      console.warn(`  ${store.storeName}: FAILED - ${e.message}`);
+    } catch (error) {
+      failedStores.push(store.storeName);
+      console.warn(`  ${store.storeName}: FAILED - ${error.message}`);
     }
-    await sleep(180);
+    await sleep(350);
   }
 
-  // Dedupe - keep best deal per title
   const deduped = {};
-  allDeals.forEach(d => {
-    const savings = parseFloat(d.savings) || 0;
-    if (!deduped[d.title] || savings > parseFloat(deduped[d.title].savings)) {
-      deduped[d.title] = d;
+  allDeals.forEach(deal => {
+    const savings = parseFloat(deal.savings) || 0;
+    if (!deduped[deal.title] || savings > parseFloat(deduped[deal.title].savings)) {
+      deduped[deal.title] = deal;
     }
   });
 
@@ -102,16 +111,23 @@ async function main() {
     deals: Object.values(deduped),
     updatedAt: new Date().toISOString(),
     dealCount: Object.keys(deduped).length,
-    storeCount: activeStores.length,
+    storeCount: activeStores.length
   };
 
-  const outPath = path.join(__dirname, '..', 'deals.json');
+  validateSnapshot(output, previousSnapshot, failedStores);
   fs.writeFileSync(outPath, JSON.stringify(output));
   console.log(`\nSaved ${output.dealCount} deals from ${output.storeCount} stores to deals.json`);
   console.log(`Updated at: ${output.updatedAt}`);
 }
 
-main().catch(e => {
-  console.error('Fatal error:', e);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch(error => {
+    console.error('Fatal error:', error);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  loadPreviousSnapshot,
+  main
+};
