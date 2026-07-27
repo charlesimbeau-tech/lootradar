@@ -31,6 +31,25 @@ The rewrite covers:
 - About, methodology, games, recommendations, login, privacy, and terms pages.
 - Repeated sitewide navigation and promotional copy.
 
+The approved traffic-foundation extension also covers:
+
+- A crawlable `/deals/` hub.
+- Six permanent, automatically refreshed landing pages for collections the current dataset can support honestly:
+  - Best PC game deals today.
+  - Steam deals under $10.
+  - Co-op game deals.
+  - Indie game deals.
+  - Deep discounts worth considering.
+  - Hidden-gem deals.
+- Server-rendered deal cards, unique editorial context, exact selection criteria, visible snapshot time, canonical metadata, breadcrumbs, and page-specific caveats on every landing page.
+- Crawlable links from the homepage and relevant guides to the new deal pages.
+- GoatCounter event measurement for anonymous deal clicks, search use, watchlist actions, recommendation feedback, and authentication requests.
+- An automatically refreshed RSS feed of quality-qualified deals.
+- A tested same-site redirect guard for post-authentication navigation.
+- A campaign-tagging playbook for off-site promotion.
+- A sitemap that contains only canonical, indexable pages and excludes the login page.
+- Search Console and Bing sitemap submission after publication when the necessary verified browser sessions are available.
+
 The rewrite does not change:
 
 - Page URLs or navigation architecture.
@@ -38,6 +57,10 @@ The rewrite does not change:
 - AdSense publisher identifiers, affiliate routing, or required disclosures.
 - Visual styling except for a small text-fit or accessibility adjustment that becomes necessary because of revised copy.
 - Legal meaning or user obligations in the privacy policy and terms.
+- Email/newsletter delivery, Discord automation, server-side price alerts, or purchase-level affiliate conversion reporting.
+- A "free games to claim now" landing page until a dependable giveaway source returns current offers and expiry metadata.
+- A historical-low landing page until historical-low values exist in the bulk dataset.
+- Mass-generated individual game pages until LootRadar retains multiple current offers per game and can provide unique comparison value.
 
 ## Editorial Principles
 
@@ -262,8 +285,73 @@ The rewrite should strengthen, not hollow out, indexable content.
 - Advertising and affiliate relationships must be visible and plainly disclosed.
 - Do not write content primarily to repeat search keywords.
 - Do not promise outcomes, savings, or coverage the product cannot guarantee.
+- Do not publish a collection page with fewer than 6 qualified listings; omit it from the sitemap and show a useful non-indexed fallback instead.
+- Every deal landing page must include 150–300 words of page-specific editorial context, exact inclusion criteria, a source/cadence caveat, and a reason each featured listing made the cut.
+- Collection pages must use `CollectionPage` and `BreadcrumbList` semantics rather than unsupported Product claims.
+- Login must be `noindex`; legal pages need self-referencing canonicals.
+- Sitemap `lastmod` values must reflect material rendered-content changes rather than merely the scheduled job running.
 
 These changes improve clarity and perceived editorial quality, but they do not guarantee Google search ranking, AdSense approval, traffic, or advertising revenue.
+
+## Traffic Measurement and Return Loop
+
+### Anonymous event measurement
+
+Use the existing GoatCounter integration rather than adding another analytics vendor.
+
+Measure:
+
+- Deal clicks by page surface and retailer.
+- Searches by surface and result-count bucket.
+- Watchlist add, remove, open, and target-price update actions.
+- Recommendation like and skip actions.
+- Magic-link or sign-in requests.
+
+Never transmit:
+
+- Raw search text.
+- Email addresses.
+- User IDs.
+- Game-library or preference profiles.
+
+Downstream purchases are not observable from the current site. Reports and copy must call the measured action an outbound deal click, not a conversion or sale.
+
+### RSS
+
+Publish a standards-compliant RSS 2.0 feed containing 10–20 current, quality-qualified deals from the cached snapshot. Items must use HTTPS LootRadar links, XML-safe text, stable GUIDs, visible prices, and the snapshot timestamp. The feed is a return channel, not a promise of real-time price alerts.
+
+### Campaign links
+
+Document a consistent `utm_source`, `utm_medium`, and `utm_campaign` naming scheme for Reddit, Discord, newsletters, and social posts. Do not append campaign parameters to CheapShark retailer redirects.
+
+### Authentication safety
+
+Before promoting account sync, post-login redirect handling must accept only same-site relative paths. Reject absolute URLs, protocol-relative URLs, non-HTTP schemes, and encoded variants that could leave LootRadar.
+
+## Search Landing Page Architecture
+
+Generated routes:
+
+- `/deals/index.html`
+- `/deals/best-pc-game-deals.html`
+- `/deals/steam-deals-under-10.html`
+- `/deals/co-op-game-deals.html`
+- `/deals/indie-game-deals.html`
+- `/deals/deep-discounts.html`
+- `/deals/hidden-gems.html`
+
+Every page must contain useful HTML before JavaScript runs. Shared generation code may render the shell, but each page needs distinct copy and selection logic.
+
+Page-specific boundaries:
+
+- **Best deals:** Default eligibility and Deal Score threshold; never claim total market coverage.
+- **Steam under $10:** Steam storefront listings only. State that other sellers of Steam keys may have different prices.
+- **Co-op:** Require explicit co-op tags when metadata exists; do not treat every multiplayer game as co-op.
+- **Indie:** Use available Steam genre/tag metadata and disclose incomplete metadata coverage.
+- **Deep discounts:** Require both a large discount and the normal quality threshold.
+- **Hidden gems:** Explain the positive-rating floor, review-confidence floor, and review-count ceiling.
+
+The hub must provide a browseable hierarchy, explain the differences among collections, and link to methodology. Homepage collection controls may remain interactive, but conventional anchors must also expose the permanent pages to readers and crawlers.
 
 ## Implementation Method
 
@@ -275,7 +363,9 @@ These changes improve clarity and perceived editorial quality, but they do not g
 6. Update titles, descriptions, schema, and repeated navigation/footer copy.
 7. Search the source tree for prohibited phrases, stale cadence claims, old store counts, and inaccurate real-time language.
 8. Run syntax, test, build, and site-verification checks.
-9. Inspect every built public page in a browser at desktop and narrow widths.
+9. Generate and validate the deal hub, six landing pages, RSS feed, and sitemap.
+10. Inspect every built public page in a browser at desktop and narrow widths.
+11. Publish and, when authenticated verified sessions are available, submit the sitemap to Google Search Console and Bing Webmaster Tools.
 
 ## Acceptance Criteria
 
@@ -286,6 +376,12 @@ The rewrite is complete when:
 - Refresh cadence, source descriptions, advertising disclosures, and account behavior match the implementation.
 - No evergreen copy hard-codes a changing store count.
 - All six blog articles retain useful topic coverage and read in the same editorial voice.
+- The deals hub and all six supported collection pages contain unique, server-rendered value and at least 6 qualified listings.
+- Unsupported free, historical-low, and individual-game pages are not generated or included in the sitemap.
+- Anonymous analytics events never contain search terms, email addresses, user IDs, or preference data.
+- The RSS feed validates, contains only qualified current deals, and uses stable GUIDs.
+- Post-login redirects cannot navigate away from LootRadar.
+- The sitemap excludes login and includes every canonical indexable landing page.
 - Legal meaning remains intact.
 - Titles and descriptions are unique, accurate, and natural.
 - Existing automated tests pass.

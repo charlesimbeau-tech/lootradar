@@ -28,6 +28,18 @@
 ### New file
 
 - `tests/editorial-copy.test.js`: Defines the public-copy inventory and regression checks for stale claims, bot-like phrases, metadata coverage, and unique titles/descriptions.
+- `lib/deal-dataset.js`: Reusable merge, normalize, score, dedupe, and collection-selection pipeline shared by the browser and static landing-page generator.
+- `scripts/templates/deal-landing.js`: Accessible HTML renderer for the deals hub and collection pages.
+- `scripts/build-search-pages.js`: Generates the crawlable deals hierarchy from the current cached snapshot.
+- `tests/search-pages.test.js`: Verifies selector boundaries, minimum inventory, metadata uniqueness, canonical routes, and generated-page content.
+- `lib/analytics.js`: Privacy-bounded GoatCounter event helper that sanitizes event names and properties.
+- `tests/analytics.test.js`: Verifies safe event payloads and no-op behavior.
+- `lib/safe-redirect.js`: Accepts only same-site relative post-authentication targets.
+- `tests/safe-redirect.test.js`: Rejects absolute, protocol-relative, script-scheme, and encoded external targets.
+- `lib/rss-feed.js`: Creates valid RSS 2.0 XML from current qualified deals.
+- `scripts/generate-rss.js`: Loads cached deal data and writes `feed.xml`.
+- `tests/rss-feed.test.js`: Verifies XML escaping, stable GUIDs, HTTPS links, qualification, and item limits.
+- `docs/traffic-measurement.md`: Defines campaign-tag conventions and the difference between outbound clicks and purchases.
 
 ### Core product and trust
 
@@ -58,9 +70,11 @@
 - `privacy.html`: Clear advertising, cookie, account, and third-party-service disclosure.
 - `terms.html`: Clear price, availability, source, affiliate, and responsibility terms.
 - `manifest.json`: Concise product description aligned with the final positioning.
-- `sitemap.xml`: Retain current public routes and accurate modification dates when source pages change.
+- `sitemap.xml`: Include canonical indexable routes, remove login, and use accurate material-change dates.
 - `scripts/verify-site.js`: Require every public page, every blog article, and editorial regression coverage in the validated build.
 - `public/og.png`: One updated social preview that matches the final headline and established visual identity.
+- `feed.xml`: Automatically refreshed RSS feed of quality-qualified deals.
+- `deals/*.html`: Generated hub and six permanent search landing pages.
 
 ---
 
@@ -787,7 +801,6 @@ Expected: one commit for the remaining three articles.
 - Modify: `privacy.html`
 - Modify: `terms.html`
 - Modify: `manifest.json`
-- Modify: `sitemap.xml`
 - Modify: any HTML or JavaScript file still identified by the inventory review
 
 **Interfaces:**
@@ -856,15 +869,13 @@ State that:
 - Deal Scores and recommendations are informational, not guarantees or personal financial advice.
 - LootRadar is not the seller and does not process game purchases.
 
-- [ ] **Step 4: Align manifest and sitemap**
+- [ ] **Step 4: Align the web-app manifest**
 
 Set `manifest.json` description to:
 
 ```json
 "description": "PC game deals ranked by quality, value, and review confidence"
 ```
-
-Update `<lastmod>` in `sitemap.xml` to `2026-07-27` for every public page changed in this rewrite. Do not add or remove routes.
 
 - [ ] **Step 5: Perform the complete visible-string inventory**
 
@@ -900,7 +911,7 @@ Expected: all tests PASS, both syntax checks exit 0, and `git diff --check` prin
 - [ ] **Step 7: Commit the legal and consistency pass**
 
 ```powershell
-git add -- privacy.html terms.html manifest.json sitemap.xml index.html games.html recommendations.html login.html about.html methodology.html blog.html blog app.js recommendations.js
+git add -- privacy.html terms.html manifest.json index.html games.html recommendations.html login.html about.html methodology.html blog.html blog app.js recommendations.js
 git commit -m "copy: align LootRadar trust and sitewide language"
 ```
 
@@ -908,7 +919,518 @@ Expected: one commit containing legal, metadata, and any final sitewide consiste
 
 ---
 
-### Task 7: Build, inspect, create the social preview, and publish
+### Task 7: Generate the crawlable deals hierarchy
+
+**Files:**
+- Create: `lib/deal-dataset.js`
+- Create: `scripts/templates/deal-landing.js`
+- Create: `scripts/build-search-pages.js`
+- Create: `tests/search-pages.test.js`
+- Generate: `deals/index.html`
+- Generate: `deals/best-pc-game-deals.html`
+- Generate: `deals/steam-deals-under-10.html`
+- Generate: `deals/co-op-game-deals.html`
+- Generate: `deals/indie-game-deals.html`
+- Generate: `deals/deep-discounts.html`
+- Generate: `deals/hidden-gems.html`
+- Modify: `app.js`
+- Modify: `index.html`
+- Modify: `scripts/build-static.js`
+- Modify: `.github/workflows/update-deals.yml`
+
+**Interfaces:**
+- Produces: `buildDealDataset(base, enriched, config) -> Deal[]`.
+- Produces: `selectLandingDeals(deals, pageId) -> Deal[]`.
+- Produces: `renderLandingPage(definition, deals, snapshot) -> string`.
+- Produces: `buildSearchPages(options) -> { routes: string[], counts: Record<string, number> }`.
+- Consumes: existing `normalizeDeal`, `calculateDealScore`, `getDefaultEligibility`, and current cached JSON snapshots.
+
+- [ ] **Step 1: Write failing dataset and page-generation tests**
+
+Create `tests/search-pages.test.js` with fixtures that assert:
+
+```js
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { selectLandingDeals } = require('../scripts/build-search-pages.js');
+
+const fixtures = [
+  { title: 'Great Co-op', storeID: '1', storeName: 'Steam', salePrice: 8, userRating: 91, reviewCount: 8000, discount: 60, dealScore: 84, eligible: true, tags: ['Online Co-op'], genres: ['Indie'] },
+  { title: 'Multiplayer Only', storeID: '1', storeName: 'Steam', salePrice: 7, userRating: 90, reviewCount: 9000, discount: 70, dealScore: 82, eligible: true, tags: ['Multiplayer'], genres: ['Action'] },
+  { title: 'Weak Deep Cut', storeID: '1', storeName: 'Steam', salePrice: 2, userRating: 55, reviewCount: 150, discount: 90, dealScore: 50, eligible: false, tags: [], genres: [] },
+  { title: 'Small Favorite', storeID: '15', storeName: 'Fanatical', salePrice: 4, userRating: 92, reviewCount: 1200, discount: 75, dealScore: 86, eligible: true, tags: ['Indie'], genres: ['Indie'] }
+];
+
+test('co-op pages require an explicit co-op tag', () => {
+  assert.deepEqual(selectLandingDeals(fixtures, 'coop').map(item => item.title), ['Great Co-op']);
+});
+
+test('Steam under $10 requires Steam, price, and eligibility', () => {
+  assert.deepEqual(
+    selectLandingDeals(fixtures, 'steam-under-10').map(item => item.title),
+    ['Great Co-op', 'Multiplayer Only']
+  );
+});
+
+test('deep discounts still require quality eligibility', () => {
+  assert.equal(selectLandingDeals(fixtures, 'deep').some(item => item.title === 'Weak Deep Cut'), false);
+});
+```
+
+Also assert that generated pages contain:
+
+```text
+<!doctype html>
+<link rel="canonical"
+<meta name="description"
+<h1
+Prices checked
+How these deals qualify
+methodology.html
+application/ld+json
+```
+
+- [ ] **Step 2: Run the tests and confirm missing-module failures**
+
+Run:
+
+```powershell
+node --test tests/search-pages.test.js
+```
+
+Expected: FAIL because `scripts/build-search-pages.js` does not exist.
+
+- [ ] **Step 3: Extract the shared deal-dataset pipeline**
+
+Move the pure merge, normalize, score, eligibility, and dedupe behavior from `app.js` into `lib/deal-dataset.js` using a browser/Node universal wrapper. Export:
+
+```js
+function buildDealDataset(base, enriched, config) {
+  const enrichedRows = enriched?.games || [];
+  const byDeal = new Map(enrichedRows.filter(Boolean).map(row => [row.dealID, row]));
+  const bySteam = new Map(
+    enrichedRows.filter(row => row?.steamAppID).map(row => [String(row.steamAppID), row])
+  );
+  const rows = (base?.deals || []).map(row => {
+    const metadata = byDeal.get(row.dealID) || bySteam.get(String(row.steamAppID || ''));
+    return metadata ? { ...row, rawg: metadata.rawg || null } : row;
+  });
+  return dedupeDeals(rows.map(row => scoreNormalizedDeal(row, base?.stores || {}, config)));
+}
+```
+
+Keep `scoreNormalizedDeal` and `dedupeDeals` private or exported for tests. Load this file before `app.js` and replace the duplicated browser pipeline with `window.LootRadarDataset.buildDealDataset(...)`.
+
+- [ ] **Step 4: Implement exact collection selectors**
+
+In `scripts/build-search-pages.js`, export:
+
+```js
+const PAGE_DEFINITIONS = {
+  best: { route: 'best-pc-game-deals.html', limit: 24 },
+  'steam-under-10': { route: 'steam-deals-under-10.html', limit: 24 },
+  coop: { route: 'co-op-game-deals.html', limit: 24 },
+  indie: { route: 'indie-game-deals.html', limit: 24 },
+  deep: { route: 'deep-discounts.html', limit: 24 },
+  hidden: { route: 'hidden-gems.html', limit: 24 }
+};
+
+function selectLandingDeals(deals, pageId) {
+  const selected = deals.filter(deal => {
+    if (!deal.eligible) return false;
+    if (pageId === 'best') return deal.dealScore >= 55;
+    if (pageId === 'steam-under-10') return deal.storeID === '1' && deal.salePrice <= 10;
+    if (pageId === 'coop') return (deal.tags || []).some(tag => /\b(?:online|local|shared\/split screen)?\s*co-op\b/i.test(tag));
+    if (pageId === 'indie') return deal.isIndie;
+    if (pageId === 'deep') return deal.discount >= 70 && deal.dealScore >= 65;
+    if (pageId === 'hidden') return deal.userRating >= 85 && deal.reviewCount >= 100 && deal.reviewCount < 5000 && deal.dealScore >= 60;
+    return false;
+  });
+  return selected.sort((a, b) => b.dealScore - a.dealScore || b.reviewCount - a.reviewCount);
+}
+```
+
+- [ ] **Step 5: Implement the shared renderer with unique page definitions**
+
+In `scripts/templates/deal-landing.js`, render a complete HTML document. Each definition must provide:
+
+```js
+{
+  id,
+  title,
+  description,
+  heading,
+  introduction,
+  criteria,
+  caveat,
+  canonicalPath,
+  relatedGuide
+}
+```
+
+Use these routes and H1s:
+
+```text
+/deals/index.html — Browse quality-first PC game deals
+/deals/best-pc-game-deals.html — Best PC game deals today
+/deals/steam-deals-under-10.html — Steam deals under $10
+/deals/co-op-game-deals.html — Co-op game deals worth sharing
+/deals/indie-game-deals.html — Indie game deals worth discovering
+/deals/deep-discounts.html — Deep discounts that clear the quality bar
+/deals/hidden-gems.html — Hidden-gem deals with strong player reviews
+```
+
+Render:
+
+- 150–300 words of page-specific introduction and criteria.
+- 12–24 static deal cards containing title, price, store, Deal Score, review confidence, and a concrete recommendation reason.
+- A visible `Prices checked <time>` value from `deals.json.updatedAt`.
+- Page-specific caveat, methodology link, relevant guide link, deals-hub link, sibling links, and breadcrumbs.
+- `CollectionPage` and `BreadcrumbList` JSON-LD representing visible content.
+- `rel="sponsored noopener"` on CheapShark redirect links.
+
+If a collection contains fewer than 6 eligible rows, render `noindex,follow`, omit it from the sitemap output, and show:
+
+```text
+This collection is unusually quiet in the current snapshot. Browse today’s best deals while the next refresh is on its way.
+```
+
+- [ ] **Step 6: Generate and link the pages**
+
+Run:
+
+```powershell
+node scripts/build-search-pages.js
+```
+
+Expected: the deals hub plus six collection files are created and each qualifying page contains at least 6 static cards.
+
+Add conventional deal-page anchors to the homepage near the collection controls. Keep existing filter buttons functional.
+
+- [ ] **Step 7: Add generation to build and refresh workflows**
+
+Add `deals` to `publicDirectories` in `scripts/build-static.js`.
+
+In `.github/workflows/update-deals.yml`, after enrichment, add:
+
+```yaml
+      - name: Build search landing pages
+        run: node scripts/build-search-pages.js
+```
+
+Add generated files before the workflow commit:
+
+```bash
+[ -d deals ] && git add deals || true
+```
+
+- [ ] **Step 8: Run landing-page and functional tests**
+
+Run:
+
+```powershell
+node --test tests/search-pages.test.js
+npm test
+node --check app.js
+```
+
+Expected: all tests PASS and browser JavaScript syntax is valid.
+
+- [ ] **Step 9: Commit the generated search foundation**
+
+```powershell
+git add -- lib/deal-dataset.js scripts/templates/deal-landing.js scripts/build-search-pages.js tests/search-pages.test.js deals index.html app.js scripts/build-static.js .github/workflows/update-deals.yml
+git commit -m "feat: add quality-first deal landing pages"
+```
+
+---
+
+### Task 8: Add privacy-bounded measurement and safe redirects
+
+**Files:**
+- Create: `lib/analytics.js`
+- Create: `tests/analytics.test.js`
+- Create: `lib/safe-redirect.js`
+- Create: `tests/safe-redirect.test.js`
+- Modify: `app.js`
+- Modify: `games.html`
+- Modify: `recommendations.js`
+- Modify: `login.html`
+- Modify: `methodology.html`
+- Modify: `recommendations.html`
+- Modify: `scripts/verify-site.js`
+- Create: `docs/traffic-measurement.md`
+
+**Interfaces:**
+- Produces: `track(eventName, properties) -> boolean`.
+- Produces: `safeRedirect(value, fallback) -> string`.
+- Consumes: the existing GoatCounter script and user interactions; never consumes or transmits raw search terms, emails, IDs, or preference profiles.
+
+- [ ] **Step 1: Write failing analytics and redirect tests**
+
+Create `tests/analytics.test.js` asserting:
+
+```js
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { sanitizeEvent, sanitizeProperties } = require('../lib/analytics.js');
+
+test('allows known event names and safe scalar properties', () => {
+  assert.equal(sanitizeEvent('deal_click'), 'deal_click');
+  assert.deepEqual(
+    sanitizeProperties({ surface: 'homepage_card', store: 'Steam', resultBucket: '10-24' }),
+    { surface: 'homepage_card', store: 'Steam', resultBucket: '10-24' }
+  );
+});
+
+test('drops sensitive and unknown properties', () => {
+  assert.deepEqual(
+    sanitizeProperties({ email: 'person@example.com', query: 'private title', userId: '7', surface: 'games' }),
+    { surface: 'games' }
+  );
+});
+```
+
+Create `tests/safe-redirect.test.js` asserting:
+
+```js
+const { safeRedirect } = require('../lib/safe-redirect.js');
+assert.equal(safeRedirect('/recommendations.html', '/'), '/recommendations.html');
+for (const unsafe of ['https://evil.test', '//evil.test', 'javascript:alert(1)', '%2F%2Fevil.test']) {
+  assert.equal(safeRedirect(unsafe, '/'), '/');
+}
+```
+
+- [ ] **Step 2: Run tests and confirm missing-module failures**
+
+Run:
+
+```powershell
+node --test tests/analytics.test.js tests/safe-redirect.test.js
+```
+
+Expected: FAIL because both modules are absent.
+
+- [ ] **Step 3: Implement a fixed analytics allowlist**
+
+In `lib/analytics.js`, allow only:
+
+```js
+const EVENTS = new Set([
+  'deal_click', 'search_used', 'watchlist_add', 'watchlist_remove',
+  'watchlist_open', 'watchlist_target_update', 'recommendation_like',
+  'recommendation_skip', 'auth_request'
+]);
+const PROPERTIES = new Set([
+  'surface', 'store', 'priceBucket', 'resultBucket', 'action', 'signedIn'
+]);
+```
+
+`track()` must sanitize values to 80 printable characters, call GoatCounter's event API asynchronously when available, and otherwise return `false` without throwing. It must not inspect DOM form values itself.
+
+- [ ] **Step 4: Instrument high-value interactions**
+
+Add event calls for:
+
+```text
+Homepage/card/detail/alternate-store outbound deal clicks
+Homepage and game-search submissions using only result-count buckets
+Watchlist add, remove, open, and target update
+Recommendation like and skip
+Magic-link or sign-in request without email
+```
+
+Use result buckets `0`, `1-9`, `10-24`, and `25+`; use price buckets `free`, `under-5`, `under-10`, `under-25`, and `25-plus`.
+
+Load `lib/analytics.js` on every interactive page and ensure the existing GoatCounter pageview loader is present on all 15 public HTML pages. Do not add a second analytics vendor.
+
+- [ ] **Step 5: Implement and use same-site redirect validation**
+
+In `lib/safe-redirect.js`, decode once inside a try/catch, require the result to start with exactly one `/`, reject backslashes and control characters, and return the fallback for any URL with an origin or scheme.
+
+Load the module before the login script and replace direct use of `?next=` with:
+
+```js
+const next = window.LootRadarRedirect.safeRedirect(
+  new URLSearchParams(window.location.search).get('next'),
+  '/recommendations.html'
+);
+```
+
+- [ ] **Step 6: Document campaign tagging**
+
+Create `docs/traffic-measurement.md` with:
+
+```text
+Reddit:    utm_source=reddit&utm_medium=community&utm_campaign=<topic>
+Discord:   utm_source=discord&utm_medium=community&utm_campaign=<server-or-topic>
+Newsletter: utm_source=newsletter&utm_medium=email&utm_campaign=<issue>
+Social:    utm_source=<network>&utm_medium=social&utm_campaign=<post-series>
+```
+
+State that GoatCounter measures anonymous visits and outbound actions, that raw queries/emails are forbidden, and that outbound clicks are not purchases.
+
+- [ ] **Step 7: Run tests and verification**
+
+Run:
+
+```powershell
+node --test tests/analytics.test.js tests/safe-redirect.test.js
+npm test
+npm run build
+npm run verify
+```
+
+Expected: all tests and verification PASS.
+
+- [ ] **Step 8: Commit measurement and redirect safety**
+
+```powershell
+git add -- lib/analytics.js lib/safe-redirect.js tests/analytics.test.js tests/safe-redirect.test.js app.js games.html recommendations.js login.html methodology.html recommendations.html scripts/verify-site.js docs/traffic-measurement.md
+git commit -m "feat: measure deal engagement safely"
+```
+
+---
+
+### Task 9: Generate RSS and the canonical sitemap
+
+**Files:**
+- Create: `lib/rss-feed.js`
+- Create: `scripts/generate-rss.js`
+- Create: `tests/rss-feed.test.js`
+- Generate: `feed.xml`
+- Modify: `sitemap.xml`
+- Modify: `robots.txt`
+- Modify: `scripts/build-static.js`
+- Modify: `scripts/verify-site.js`
+- Modify: `.github/workflows/update-deals.yml`
+- Modify: public HTML heads and relevant footer/navigation links
+
+**Interfaces:**
+- Produces: `createRssFeed(deals, options) -> string`.
+- Produces: `feed.xml` with 10–20 qualified items, HTTPS links, XML-safe text, stable GUIDs, and snapshot timestamps.
+- Produces: a sitemap containing every canonical indexable public page, the deals hub, and qualifying collection pages while excluding login.
+
+- [ ] **Step 1: Write failing RSS tests**
+
+Create `tests/rss-feed.test.js` asserting:
+
+```js
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { createRssFeed } = require('../lib/rss-feed.js');
+
+test('creates escaped RSS with stable LootRadar links and qualified items only', () => {
+  const xml = createRssFeed([
+    { key: 'steam:1', title: 'Good & Cheap', salePrice: 4.99, storeName: 'Steam', dealScore: 82, eligible: true, recommendation: 'Strong reviews.' },
+    { key: 'steam:2', title: 'Excluded', salePrice: 1, storeName: 'Steam', dealScore: 40, eligible: false }
+  ], { updatedAt: '2026-07-27T18:00:00Z', origin: 'https://thelootradar.com' });
+  assert.match(xml, /<rss version="2.0">/);
+  assert.match(xml, /Good &amp; Cheap/);
+  assert.doesNotMatch(xml, /Excluded/);
+  assert.match(xml, /https:\/\/thelootradar\.com\//);
+  assert.match(xml, /urn:lootradar:steam:1:4\.99/);
+});
+```
+
+- [ ] **Step 2: Run the RSS test and confirm the module is missing**
+
+Run:
+
+```powershell
+node --test tests/rss-feed.test.js
+```
+
+Expected: FAIL because `lib/rss-feed.js` does not exist.
+
+- [ ] **Step 3: Implement RSS generation from the shared dataset**
+
+Generate at most 20 eligible deals sorted by Deal Score. Use GUID:
+
+```js
+`urn:lootradar:${deal.key}:${Number(deal.salePrice).toFixed(2)}`
+```
+
+Link each item to an HTTPS LootRadar URL with a title filter, not directly to a retailer. Include price, store, Deal Score, recommendation, source note, and snapshot timestamp. Use XML escaping for every dynamic value.
+
+- [ ] **Step 4: Generate the feed and expose autodiscovery**
+
+Run:
+
+```powershell
+node scripts/generate-rss.js
+```
+
+Expected: `feed.xml` contains 10–20 current qualified entries.
+
+Add this to every indexable page head, including generated templates:
+
+```html
+<link rel="alternate" type="application/rss+xml" title="LootRadar deals worth attention" href="/feed.xml">
+```
+
+Add a visible `RSS` or `Deal feed` link in the deals hub, homepage, and blog.
+
+- [ ] **Step 5: Rebuild the sitemap with truthful indexability**
+
+Include:
+
+```text
+Homepage, games, recommendations, about, methodology, blog, privacy, terms
+All six rewritten guide URLs
+Deals hub
+Every collection page containing at least 6 qualified rows
+```
+
+Exclude `login.html`. Add `<meta name="robots" content="noindex,follow">` and a self-canonical to login. Add self-canonicals to privacy and terms.
+
+Remove sitemap `priority` and `changefreq`. Set `lastmod` to the substantive rewrite date for editorial pages and to the date a generated landing's selected content hash materially changes.
+
+- [ ] **Step 6: Add RSS/sitemap generation to workflows**
+
+Add `feed.xml` to `rootFiles` in `scripts/build-static.js`.
+
+In `.github/workflows/update-deals.yml`, after landing-page generation, add:
+
+```yaml
+      - name: Generate RSS feed
+        run: node scripts/generate-rss.js
+```
+
+Add:
+
+```bash
+[ -f feed.xml ] && git add feed.xml || true
+[ -f sitemap.xml ] && git add sitemap.xml || true
+```
+
+- [ ] **Step 7: Extend verification**
+
+Require source and built `feed.xml`, every sitemap route's source/build file, no login sitemap entry, RSS autodiscovery on indexable pages, and unique landing metadata/canonicals.
+
+- [ ] **Step 8: Run all tests and build verification**
+
+Run:
+
+```powershell
+node --test tests/rss-feed.test.js tests/search-pages.test.js
+npm test
+npm run build
+npm run verify
+```
+
+Expected: all commands PASS.
+
+- [ ] **Step 9: Commit the return and discovery foundation**
+
+```powershell
+git add -- lib/rss-feed.js scripts/generate-rss.js tests/rss-feed.test.js feed.xml sitemap.xml robots.txt scripts/build-static.js scripts/verify-site.js .github/workflows/update-deals.yml index.html games.html recommendations.html about.html methodology.html blog.html privacy.html terms.html blog deals
+git commit -m "feat: add RSS and indexable deal discovery"
+```
+
+---
+
+### Task 10: Build, inspect, create the social preview, and publish
 
 **Files:**
 - Modify: `public/og.png`
@@ -979,7 +1501,7 @@ Run:
 
 ```powershell
 git status --short
-git diff --stat HEAD~5
+git diff --stat origin/main...HEAD
 git diff --check
 ```
 
@@ -1021,10 +1543,28 @@ Check the production homepage and a representative route from each content group
 /recommendations.html
 /about.html
 /methodology.html
+/deals/index.html
+/deals/best-pc-game-deals.html
+/deals/steam-deals-under-10.html
+/deals/co-op-game-deals.html
+/deals/indie-game-deals.html
+/deals/deep-discounts.html
+/deals/hidden-gems.html
 /blog.html
 /blog/steam-sale-guide.html
 /privacy.html
 /terms.html
+/feed.xml
 ```
 
 Expected: HTTP 200, correct final titles/descriptions in page source, no old bot-like slogans, and the published homepage contains `Games worth playing. Prices worth paying.`
+
+- [ ] **Step 11: Submit discovery files when authenticated tools are available**
+
+In verified Google Search Console and Bing Webmaster Tools properties, submit:
+
+```text
+https://thelootradar.com/sitemap.xml
+```
+
+Request Google re-indexing for the homepage, deals hub, and no more than the six new collection pages. Do not repeatedly resubmit; sitemap submission is a discovery hint rather than a ranking or indexing guarantee.
