@@ -12,6 +12,13 @@ const requiredBuild = [
   'dist/server/index.js', 'dist/static/index.html', 'dist/static/app.js',
   'dist/static/deals.json', 'dist/static/lib/cheapshark-client.js'
 ];
+const editorialPages = [
+  'index.html', 'games.html', 'recommendations.html', 'login.html',
+  'about.html', 'methodology.html', 'blog.html', 'privacy.html', 'terms.html',
+  'blog/best-free-pc-games.html', 'blog/cheapest-steam-games.html',
+  'blog/game-price-comparison.html', 'blog/how-to-get-free-games.html',
+  'blog/indie-games-under-five.html', 'blog/steam-sale-guide.html'
+];
 const adsensePublisher = 'ca-pub-3845680227675655';
 const adsensePages = [
   'index.html', 'games.html', 'recommendations.html', 'methodology.html',
@@ -25,6 +32,15 @@ const failures = [];
 for (const file of [...requiredSource, ...requiredBuild]) {
   const target = path.join(root, file);
   if (!fs.existsSync(target) || fs.statSync(target).size === 0) failures.push(file);
+}
+
+for (const file of editorialPages) {
+  for (const base of [root, path.join(root, 'dist', 'static')]) {
+    const target = path.join(base, file);
+    if (!fs.existsSync(target) || fs.statSync(target).size === 0) {
+      failures.push(path.relative(root, target));
+    }
+  }
 }
 
 for (const file of ['manifest.json', 'deals.json', 'enriched-deals.json']) {
