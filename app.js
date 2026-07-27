@@ -27,13 +27,13 @@
   };
 
   const collections = {
-    best: { label: 'Best right now', title: 'Best deals right now', summary: 'The strongest mix of game quality, price value, and review confidence.' },
-    under10: { label: 'Under $10', title: 'Highly rated under $10', summary: 'Proven games with real review confidence for less than a lunch.' },
-    deep: { label: 'Deep & worth it', title: 'Deep discounts worth taking', summary: 'Big percentage drops that survive the quality filter.' },
-    indie: { label: 'Indie standouts', title: 'Best indie deals', summary: 'Distinctive smaller games with strong player approval.' },
-    multiplayer: { label: 'Co-op & multiplayer', title: 'Best co-op and multiplayer deals', summary: 'Games worth sharing with a couch, party, or squad.' },
-    hidden: { label: 'Hidden gems', title: 'Hidden gems with strong confidence', summary: 'Less-famous picks backed by enough reviews to trust.' },
-    all: { label: 'All qualified', title: 'All qualified deals', summary: 'Every current deal that meets your selected quality rules.' }
+    best: { label: 'Best right now', title: 'Best deals right now', summary: 'Well-reviewed games with prices that stand out in the current snapshot.' },
+    under10: { label: 'Under $10', title: 'Great games under $10', summary: 'Strong player reviews, credible review volume, and a single-digit price.' },
+    deep: { label: 'Deep discounts', title: 'Deep discounts worth a look', summary: 'Big price cuts that still clear LootRadar’s quality checks.' },
+    indie: { label: 'Indie standouts', title: 'Indie deals worth discovering', summary: 'Smaller games with strong player feedback and prices worth noticing.' },
+    multiplayer: { label: 'Co-op & multiplayer', title: 'Deals worth sharing', summary: 'Well-reviewed games built for a couch, party, or squad.' },
+    hidden: { label: 'Hidden gems', title: 'Less-famous games with strong reviews', summary: 'Smaller audiences, unusually positive feedback, and enough reviews to count.' },
+    all: { label: 'All deals', title: 'Browse every qualifying deal', summary: 'Every current listing that clears the selected quality and content filters.' }
   };
 
   const $ = selector => document.querySelector(selector);
@@ -149,7 +149,7 @@
       renderHero();
       const updated = new Date(base.updatedAt);
       $('#lastUpdated').textContent = Number.isNaN(updated.getTime())
-        ? 'Cached pricing data'
+        ? 'Saved price snapshot'
         : `Prices checked ${updated.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} at ${updated.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`;
       $('#statQualified').textContent = compact(state.allDeals.filter(deal => deal.eligible).length);
       $('#statStores').textContent = Object.keys(state.stores).length;
@@ -252,7 +252,7 @@
   }
 
   function scoreLabel(score) {
-    if (score >= 85) return 'Exceptional';
+    if (score >= 85) return 'Excellent value';
     if (score >= 75) return 'Great deal';
     if (score >= 65) return 'Strong value';
     if (score >= 55) return 'Worth a look';
@@ -260,7 +260,7 @@
   }
 
   function reviewMarkup(deal) {
-    if (!deal.userRating) return '<span class="muted">Review data limited</span>';
+    if (!deal.userRating) return '<span class="muted">Limited review data</span>';
     return `<span class="review-score">${deal.userRating}% positive</span><span>${compact(deal.reviewCount)} reviews</span>`;
   }
 
@@ -318,14 +318,14 @@
     if (!top) return;
     const image = safeImage(top.image);
     $('#heroPick').innerHTML = `
-      <div class="pick-image">${image ? `<img src="${image}" alt="">` : ''}<span>Top signal right now</span></div>
+      <div class="pick-image">${image ? `<img src="${image}" alt="">` : ''}<span>Top-ranked deal</span></div>
       <div class="pick-content">
         <div class="pick-head"><div><p>${escapeHTML(top.storeName)}</p><h2>${escapeHTML(top.title)}</h2></div>
           <div class="score-ring ${scoreTone(top.dealScore)}" style="--score:${top.dealScore}"><strong>${top.dealScore}</strong><span>score</span></div>
         </div>
         <p>${escapeHTML(top.recommendation)}</p>
         <div class="pick-price"><span><s>${money(top.normalPrice)}</s><strong>${money(top.salePrice)}</strong></span><span>−${top.discount}%</span></div>
-        <button type="button" class="button button-primary button-full" data-details="${escapeHTML(top.key)}">Why it ranks #1</button>
+        <button type="button" class="button button-primary button-full" data-details="${escapeHTML(top.key)}">See why it ranks first</button>
       </div>`;
   }
 
@@ -362,7 +362,7 @@
   function renderWatchlist() {
     const items = Object.values(state.watchlist);
     if (!items.length) {
-      $('#watchlistContent').innerHTML = '<div class="watch-empty"><span>◎</span><h3>Your radar is clear</h3><p>Save any game to track it on this device—no account required.</p></div>';
+      $('#watchlistContent').innerHTML = '<div class="watch-empty"><span>◎</span><h3>No saved games yet</h3><p>Add a game to compare its target price with the latest snapshot when you return.</p></div>';
       return;
     }
     $('#watchlistContent').innerHTML = items.map(item => {
@@ -370,7 +370,7 @@
       const current = deal?.salePrice;
       const reached = deal && current <= Number(item.targetPrice);
       return `<article class="watch-row ${reached ? 'target-reached' : ''}">
-        <div><span>${reached ? 'Target reached' : 'Watching'}</span><h3>${escapeHTML(item.title)}</h3><p>${deal ? `${money(current)} now at ${escapeHTML(deal.storeName)}` : 'Not in the current deal feed'}</p></div>
+        <div><span>${reached ? 'At or below target' : 'Watching'}</span><h3>${escapeHTML(item.title)}</h3><p>${deal ? `${money(current)} at ${escapeHTML(deal.storeName)} in this snapshot` : 'No qualifying listing in the current snapshot'}</p></div>
         <label>Target price <input type="number" min="0" step="0.01" value="${Number(item.targetPrice).toFixed(2)}" data-target-price="${escapeHTML(item.key)}"></label>
         ${deal ? `<button type="button" class="text-button" data-details="${escapeHTML(deal.key)}">Details</button>` : ''}
         <button type="button" class="remove-watch" data-watch="${escapeHTML(item.key)}" aria-label="Remove ${escapeHTML(item.title)}">×</button>
@@ -397,7 +397,7 @@
         <div class="detail-price"><s>${money(deal.normalPrice)}</s><strong>${money(deal.salePrice)}</strong><span>−${deal.discount}%</span></div>
       </div>
       <section class="detail-section">
-        <div class="detail-section-head"><div><p class="section-kicker">Transparent score</p><h3>Why this deal ranks here</h3></div><a href="methodology.html">Full methodology ↗</a></div>
+        <div class="detail-section-head"><div><p class="section-kicker">Deal Score</p><h3>Why this listing ranks here</h3></div><a href="methodology.html">Read the methodology ↗</a></div>
         <div class="score-components">
           ${componentRow('Game quality', deal.scoreBreakdown.components.quality, deal.scoreBreakdown.weights.quality)}
           ${componentRow('Price value', deal.scoreBreakdown.components.priceValue, deal.scoreBreakdown.weights.priceValue)}
@@ -407,15 +407,15 @@
         </div>
         ${deal.scoreBreakdown.penalties.length ? `<div class="penalty-note"><strong>Score adjustments</strong><span>${deal.scoreBreakdown.penalties.map(p => `${escapeHTML(p.label)} (−${p.amount})`).join(' · ')}</span></div>` : ''}
       </section>
-      <section class="detail-section" id="livePriceContext"><div class="detail-loading"><span></span><p>Checking live historical context and other stores…</p></div></section>
+      <section class="detail-section" id="livePriceContext"><div class="detail-loading"><span></span><p>Checking CheapShark for current price context&hellip;</p></div></section>
       <section class="detail-section watch-target">
-        <div><p class="section-kicker">Price alert</p><h3>Wait for your price</h3><p>Saved locally on this device. Email alerts require an account-backed notification service.</p></div>
+        <div><p class="section-kicker">Target price</p><h3>Save a price worth waiting for</h3><p>Saved on this device. LootRadar checks the target when you return; it does not send alerts yet.</p></div>
         <label><span>Target price</span><div><span>$</span><input id="targetPriceInput" type="number" min="0" step="0.01" value="${Number(watched?.targetPrice ?? deal.salePrice).toFixed(2)}"></div></label>
         <button class="button button-secondary" type="button" data-save-target="${escapeHTML(deal.key)}">${watched ? 'Update target' : 'Add to watchlist'}</button>
       </section>
       <div class="detail-actions">
         <a class="button button-primary button-full" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer sponsored">View deal at ${escapeHTML(deal.storeName)} · ${money(deal.salePrice)}</a>
-        <p>Affiliate disclosure: LootRadar may earn a commission. Scores never use commissions.</p>
+        <p>LootRadar may earn a commission from eligible links. Commissions never affect Deal Scores.</p>
       </div>
     </div>`;
   }
@@ -439,7 +439,7 @@
     } catch (error) {
       if (error.name === 'AbortError') return;
       const target = $('#livePriceContext');
-      if (target) target.innerHTML = '<div class="inline-error"><strong>Live price context is unavailable.</strong><p>The cached Deal Score is still shown above. Verify the final price at the store.</p></div>';
+      if (target) target.innerHTML = '<div class="inline-error"><strong>Current price details are unavailable.</strong><p>The saved listing is still shown above. Confirm the final price with the retailer.</p></div>';
     }
   }
 
@@ -460,14 +460,14 @@
     const lowWidth = retail ? Math.max(4, Math.min(100, (historical / retail) * 100)) : 0;
     const currentWidth = retail ? Math.max(4, Math.min(100, (livePrice / retail) * 100)) : 0;
     target.innerHTML = `
-      <div class="detail-section-head"><div><p class="section-kicker">Live price context</p><h3>${historical ? (difference <= 0.01 ? 'At its recorded historical low' : `${money(difference)} above the recorded low`) : 'Historical low unavailable'}</h3></div><span class="confidence-pill">${liveScore.confidence} confidence</span></div>
+      <div class="detail-section-head"><div><p class="section-kicker">Current price context</p><h3>${historical ? (difference <= 0.01 ? 'At its recorded historical low' : `${money(difference)} above the recorded low`) : 'No recorded historical low returned'}</h3></div><span class="confidence-pill">${liveScore.confidence} confidence</span></div>
       <div class="price-chart" role="img" aria-label="Recorded low ${historical ? money(historical) : 'unavailable'}, current price ${money(livePrice)}, retail price ${money(retail)}">
         <div><span>Recorded low</span><i style="width:${lowWidth}%"></i><strong>${historical ? money(historical) : '—'}</strong></div>
         <div><span>Current price</span><i class="current" style="width:${currentWidth}%"></i><strong>${money(livePrice)}</strong></div>
         <div><span>Full retail</span><i class="retail" style="width:${fullWidth}%"></i><strong>${money(retail)}</strong></div>
       </div>
-      <p class="source-note">CheapShark provides the recorded low and current comparison, not a full time-series chart. The list score uses its Deal Rating as a price-value proxy until you open this view.</p>
-      ${alternateRows ? `<div class="alternate-stores"><h4>Cheaper stores right now</h4>${alternateRows}</div>` : '<p class="best-store-note">No cheaper current store was returned for this listing.</p>'}`;
+      <p class="source-note">CheapShark provides the recorded low and current comparison, not a complete price-history chart. The list score uses CheapShark Deal Rating as a price-value signal until this view is opened.</p>
+      ${alternateRows ? `<div class="alternate-stores"><h4>Lower current listings</h4>${alternateRows}</div>` : '<p class="best-store-note">CheapShark didn’t return a lower current price for this game.</p>'}`;
   }
 
   function closeDialog(dialog, controller) {
