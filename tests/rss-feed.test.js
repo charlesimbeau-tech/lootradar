@@ -87,6 +87,28 @@ test('omits malformed eligible rows instead of emitting unstable items', () => {
   assert.doesNotMatch(xml, /<item>/);
 });
 
+test('matches default quality filters for content, bundles, and Early Access', () => {
+  const base = {
+    salePrice: 4.99,
+    storeName: 'Steam',
+    dealScore: 85,
+    eligible: true,
+    recommendation: 'Strong reviews.'
+  };
+  const xml = createRssFeed([
+    { ...base, key: 'steam:dlc', title: 'Excluded DLC', excludedContent: true },
+    { ...base, key: 'steam:bundle', title: 'Game Bundle', isBundle: true },
+    { ...base, key: 'steam:early', title: 'Early Access Game', isEarlyAccess: true },
+    { ...base, key: 'steam:full', title: 'Complete Released Game' }
+  ], options);
+
+  assert.doesNotMatch(xml, /Excluded DLC/);
+  assert.doesNotMatch(xml, /Game Bundle/);
+  assert.doesNotMatch(xml, /Early Access Game/);
+  assert.match(xml, /Complete Released Game/);
+  assert.equal((xml.match(/<item>/g) || []).length, 1);
+});
+
 test('rejects non-HTTPS origins and invalid snapshot timestamps', () => {
   assert.throws(
     () => createRssFeed([], { ...options, origin: 'http://thelootradar.com' }),
