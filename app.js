@@ -9,9 +9,9 @@
     maxRetries: 2,
     baseDelayMs: 750
   });
-  const { normalizeDeal } = window.LootRadarNormalizer;
-  const { calculateDealScore, getDefaultEligibility, createRecommendationReason } = window.LootRadarScoring;
+  const { calculateDealScore } = window.LootRadarScoring;
   const { DEFAULT_FILTERS, normalizeFilters, filterDeals, sortDeals, readFiltersFromUrl, filtersToSearchParams } = window.LootRadarFilters;
+  const { buildDealDataset } = window.LootRadarDataset;
   const config = window.LootRadarEditorialConfig;
 
   const state = {
@@ -83,42 +83,6 @@
     showToast.timer = setTimeout(() => toast.classList.remove('show'), 2400);
   }
 
-  function normalizedRawDeal(raw, stores) {
-    const deal = normalizeDeal(raw, stores);
-    const scoreBreakdown = calculateDealScore(deal, config);
-    const eligibility = getDefaultEligibility(deal, config);
-    return {
-      ...deal,
-      dealScore: scoreBreakdown.score,
-      scoreBreakdown,
-      eligible: eligibility.eligible,
-      exclusionReasons: eligibility.reasons,
-      recommendation: createRecommendationReason(deal, scoreBreakdown)
-    };
-  }
-
-  function mergeData(base, enriched) {
-    const enrichedRows = enriched?.games || [];
-    const byDeal = new Map(enrichedRows.filter(Boolean).map(row => [row.dealID, row]));
-    const bySteam = new Map(enrichedRows.filter(row => row?.steamAppID).map(row => [String(row.steamAppID), row]));
-    return (base?.deals || []).map(row => {
-      const meta = byDeal.get(row.dealID) || bySteam.get(String(row.steamAppID || ''));
-      return meta ? { ...row, rawg: meta.rawg || null } : row;
-    });
-  }
-
-  function dedupeDeals(deals) {
-    const byKey = new Map();
-    for (const deal of deals) {
-      const key = deal.key;
-      const previous = byKey.get(key);
-      if (!previous || deal.dealScore > previous.dealScore || (deal.dealScore === previous.dealScore && deal.salePrice < previous.salePrice)) {
-        byKey.set(key, deal);
-      }
-    }
-    return [...byKey.values()];
-  }
-
   async function fetchJSON(url, optional = false) {
     try {
       const response = await fetch(url, { headers: { Accept: 'application/json' } });
@@ -141,7 +105,7 @@
         fetchJSON(`enriched-deals.json?v=${bucket}`, true)
       ]);
       state.stores = base.stores || enriched?.stores || {};
-      state.allDeals = dedupeDeals(mergeData(base, enriched).map(row => normalizedRawDeal(row, state.stores)));
+      state.allDeals = buildDealDataset(base, enriched, config);
       populateFilters();
       renderCollections();
       syncFormFromState();

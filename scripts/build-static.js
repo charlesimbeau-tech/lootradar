@@ -13,7 +13,7 @@ const rootFiles = [
   'recommendations.css', 'recommendations.html', 'recommendations.js',
   'robots.txt', 'sitemap.xml', 'style.css', 'supabase-config.js', 'terms.html'
 ];
-const publicDirectories = ['blog', 'config', 'icons', 'lib', 'public'];
+const publicDirectories = ['blog', 'config', 'deals', 'icons', 'lib', 'public'];
 
 fs.rmSync(dist, { recursive: true, force: true });
 fs.mkdirSync(staticDir, { recursive: true });
