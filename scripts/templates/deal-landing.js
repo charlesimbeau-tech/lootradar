@@ -179,6 +179,7 @@ function renderLandingPage(definition, deals, snapshotInput) {
   <title>${escapeHTML(definition.title)}</title>
   <meta name="description" content="${escapeHTML(definition.description)}">
 ${indexable ? '' : '  <meta name="robots" content="noindex,follow">\n'}  <link rel="canonical" href="${canonical}">
+  <link rel="alternate" type="application/rss+xml" title="LootRadar deals worth attention" href="/feed.xml">
   <meta property="og:title" content="${escapeHTML(definition.title)}">
   <meta property="og:description" content="${escapeHTML(definition.description)}">
   <meta property="og:type" content="website">
@@ -247,7 +248,7 @@ ${indexable ? '' : '  <meta name="robots" content="noindex,follow">\n'}  <link r
       <div><h2>How these deals qualify</h2><p>${escapeHTML(definition.criteria)}</p><p class="landing-caveat">${escapeHTML(definition.caveat)}</p></div>
     </section>
 ${quietNotice ? `    ${quietNotice}\n` : ''}    ${mainContent}
-    <nav class="landing-links" aria-label="Related reading"><a href="index.html">Browse the deals hub</a><a href="../methodology.html">Read the scoring methodology</a>${relatedGuide}</nav>
+    <nav class="landing-links" aria-label="Related reading"><a href="index.html">Browse the deals hub</a><a href="../methodology.html">Read the scoring methodology</a>${relatedGuide}<a href="../feed.xml">Deal feed</a></nav>
   </main>
   <footer>
     <div class="footer-inner"><div><a class="nav-brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a><p>Games worth playing. Prices worth paying.</p></div><div class="footer-links"><a href="../methodology.html">Scoring</a><a href="../blog.html">Guides</a><a href="../about.html">About</a><a href="../privacy.html">Privacy</a><a href="../terms.html">Terms</a></div></div>

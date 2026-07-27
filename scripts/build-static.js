@@ -9,7 +9,7 @@ const serverDir = path.join(dist, 'server');
 const rootFiles = [
   'about.html', 'ads.txt', 'app.js', 'blog.html', 'CNAME', 'deals.json',
   'enriched-deals.json', 'games-catalog.json', 'games.html', 'index.html',
-  'login.html', 'manifest.json', 'methodology.html', 'privacy.html',
+  'feed.xml', 'login.html', 'manifest.json', 'methodology.html', 'privacy.html',
   'recommendations.css', 'recommendations.html', 'recommendations.js',
   'robots.txt', 'sitemap.xml', 'style.css', 'supabase-config.js', 'terms.html'
 ];

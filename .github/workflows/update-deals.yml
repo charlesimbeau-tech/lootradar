@@ -34,6 +34,12 @@ jobs:
       - name: Build search landing pages
         run: node scripts/build-search-pages.js
 
+      - name: Generate RSS feed
+        run: node scripts/generate-rss.js
+
+      - name: Generate canonical sitemap
+        run: node scripts/generate-sitemap.js
+
       - name: Build large umbrella games catalog (no key)
         env:
           MAX_GAMES: 5000
@@ -49,6 +55,8 @@ jobs:
           [ -f games-catalog.json ] && git add games-catalog.json || true
           [ -f games-catalog-large.json ] && git add games-catalog-large.json || true
           [ -d deals ] && git add deals || true
+          [ -f feed.xml ] && git add feed.xml || true
+          [ -f sitemap.xml ] && git add sitemap.xml || true
 
           if git diff --cached --quiet; then
             echo "No data changes to commit"
