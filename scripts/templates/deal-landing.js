@@ -192,7 +192,11 @@ ${indexable ? '' : '  <meta name="robots" content="noindex,follow">\n'}  <link r
   <meta property="og:site_name" content="LootRadar">
   <meta property="og:image" content="${SITE_ORIGIN}/public/og.png">
   <link rel="stylesheet" href="../style.css?v=21">
-  <link rel="icon" href="../icons/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="../icons/icon.svg?v=2" type="image/svg+xml">
+  <link rel="icon" href="../icons/favicon-32.png?v=2" sizes="32x32" type="image/png">
+  <link rel="icon" href="../icons/favicon.ico?v=2" sizes="any">
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png?v=2">
+  <link rel="manifest" href="../manifest.json">
   <meta name="theme-color" content="#0b0e0d">
   <meta name="google-adsense-account" content="ca-pub-3845680227675655">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3845680227675655" crossorigin="anonymous"></script>

@@ -2,6 +2,12 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
+const brandIconFiles = [
+  'icons/icon.svg', 'icons/logo.svg', 'icons/icon.png',
+  'icons/favicon-16.png', 'icons/favicon-32.png', 'icons/favicon-48.png',
+  'icons/favicon.ico', 'icons/apple-touch-icon.png',
+  'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png'
+];
 const requiredSource = [
   'index.html', 'methodology.html', 'app.js', 'style.css', 'manifest.json',
   'alert-deals.json', 'deals.json', 'enriched-deals.json', 'config/editorial-config.js',
@@ -9,7 +15,8 @@ const requiredSource = [
   'lib/cheapshark-client.js', 'lib/deal-snapshot-validator.js',
   'lib/alert-snapshot.js',
   'lib/analytics.js', 'lib/safe-redirect.js', 'lib/rss-feed.js',
-  'feed.xml', 'sitemap.xml', 'public/og.png'
+  'feed.xml', 'sitemap.xml', 'public/og.png',
+  ...brandIconFiles
 ];
 const requiredBuild = [
   'dist/server/index.js', 'dist/static/index.html', 'dist/static/app.js',
@@ -17,7 +24,8 @@ const requiredBuild = [
   'dist/static/lib/alert-snapshot.js', 'dist/static/lib/cheapshark-client.js',
   'dist/static/lib/analytics.js', 'dist/static/lib/safe-redirect.js',
   'dist/static/lib/rss-feed.js', 'dist/static/recommendations.js',
-  'dist/static/feed.xml', 'dist/static/sitemap.xml'
+  'dist/static/feed.xml', 'dist/static/sitemap.xml', 'dist/static/public/og.png',
+  ...brandIconFiles.map(file => path.join('dist', 'static', file))
 ];
 const editorialPages = [
   'index.html', 'games.html', 'recommendations.html', 'login.html',
@@ -43,6 +51,7 @@ const generatedDealPages = [
   'deals/deep-discounts.html',
   'deals/hidden-gems.html'
 ];
+const publicPages = [...editorialPages, ...generatedDealPages];
 const adsensePages = [...adsenseEditorialPages, ...generatedDealPages];
 const analyticsPages = [
   'index.html', 'games.html', 'recommendations.html', 'login.html',
@@ -70,6 +79,44 @@ for (const file of generatedDealPages) {
     const target = path.join(base, file);
     if (!fs.existsSync(target) || fs.statSync(target).size === 0) {
       failures.push(path.relative(root, target));
+    }
+  }
+}
+
+for (const file of publicPages) {
+  const prefix = file.includes('/') ? '../' : '';
+  const requiredBrandTokens = [
+    `href="${prefix}icons/icon.svg?v=2"`,
+    `href="${prefix}icons/favicon-32.png?v=2"`,
+    `href="${prefix}icons/favicon.ico?v=2"`,
+    `href="${prefix}icons/apple-touch-icon.png?v=2"`,
+    `href="${prefix}manifest.json"`,
+    'name="theme-color" content="#0b0e0d"'
+  ];
+  for (const base of [root, path.join(root, 'dist', 'static')]) {
+    const target = path.join(base, file);
+    const source = fs.readFileSync(target, 'utf8');
+    for (const token of requiredBrandTokens) {
+      if (!source.includes(token)) {
+        failures.push(`${path.relative(root, target)} missing ${token}`);
+      }
+    }
+  }
+}
+
+const retiredBrandColor = /#30a9de|#30e5ff/i;
+const brandTextFiles = [
+  ...fs.readdirSync(path.join(root, 'icons'))
+    .filter(file => file.endsWith('.svg'))
+    .map(file => path.join('icons', file)),
+  'manifest.json', 'login.html', 'recommendations.css'
+];
+for (const file of brandTextFiles) {
+  for (const base of [root, path.join(root, 'dist', 'static')]) {
+    const target = path.join(base, file);
+    const source = fs.readFileSync(target, 'utf8');
+    if (retiredBrandColor.test(source)) {
+      failures.push(`${path.relative(root, target)} contains a retired blue or cyan brand color`);
     }
   }
 }

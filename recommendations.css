@@ -1,7 +1,7 @@
 .feedback-btn {
-  border: 1px solid rgba(255,255,255,0.16);
-  background: rgba(255,255,255,0.06);
-  color: #dce7ff;
+  border: 1px solid var(--line);
+  background: rgba(15, 23, 19, .78);
+  color: var(--text);
   border-radius: 10px;
   padding: 0.35rem 0.6rem;
   font-size: 0.82rem;
@@ -9,8 +9,8 @@
 }
 
 .feedback-btn:hover {
-  border-color: rgba(48,169,222,0.6);
-  background: rgba(48,169,222,0.12);
+  border-color: rgba(185, 245, 93, .42);
+  background: rgba(185, 245, 93, .1);
 }
 
 .confidence-chip {
@@ -18,9 +18,9 @@
   margin: 0.35rem 0 0.15rem;
   padding: 0.2rem 0.48rem;
   border-radius: 999px;
-  border: 1px solid rgba(124, 252, 0, 0.35);
-  background: rgba(124, 252, 0, 0.10);
-  color: #d5ffb0;
+  border: 1px solid rgba(185, 245, 93, .35);
+  background: rgba(185, 245, 93, .1);
+  color: var(--mint);
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -30,17 +30,17 @@
   margin: 0.15rem 0 0.15rem;
   padding: 0.2rem 0.48rem;
   border-radius: 999px;
-  border: 1px solid rgba(48,169,222,0.45);
-  background: rgba(48,169,222,0.14);
-  color: #bfe9ff;
+  border: 1px solid var(--line);
+  background: rgba(15, 23, 19, .78);
+  color: var(--text-2);
   font-size: 0.73rem;
   font-weight: 600;
 }
 
 .auth-bar {
   margin-bottom: 14px;
-  border: 1px solid rgba(48,169,222,0.25);
-  background: rgba(10, 25, 35, 0.55);
+  border: 1px solid rgba(185, 245, 93, .24);
+  background: rgba(15, 23, 19, .78);
   border-radius: 12px;
   padding: 10px;
   display: flex;
@@ -57,9 +57,9 @@
 }
 
 .auth-actions input {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #dce7ff;
+  background: rgba(15, 23, 19, .78);
+  border: 1px solid rgba(185, 245, 93, .24);
+  color: var(--text);
   border-radius: 8px;
   padding: 8px 10px;
   min-width: 200px;
@@ -88,15 +88,15 @@ html, body {
 }
 
 .genre-match-select {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #dce7ff;
+  background: rgba(15, 23, 19, .78);
+  border: 1px solid rgba(185, 245, 93, .24);
+  color: var(--text);
   border-radius: 8px;
   padding: 0.45rem 0.65rem;
 }
 
 .genre-hint {
-  color: #9fb0c9;
+  color: var(--text-3);
   font-size: 0.78rem;
   margin-top: 0.35rem;
 }
@@ -108,7 +108,7 @@ html, body {
 .quiz-modal {
   position: fixed;
   inset: 0;
-  background: rgba(4,10,18,0.72);
+  background: rgba(4, 7, 5, .78);
   display: grid;
   place-items: center;
   z-index: 2500;
@@ -116,17 +116,17 @@ html, body {
 
 .quiz-card {
   width: min(92vw, 430px);
-  background: rgba(11,22,35,0.95);
-  border: 1px solid rgba(48,169,222,0.35);
+  background: rgba(15, 23, 19, .96);
+  border: 1px solid rgba(185, 245, 93, .24);
   border-radius: 14px;
   padding: 14px;
 }
 
 .quiz-card h3 { margin: 0 0 6px; }
-.quiz-sub { margin: 0 0 10px; color: #9fb0c9; font-size: 0.9rem; }
-.quiz-card label { display:block; margin: 8px 0 5px; font-size: 0.86rem; color:#b5c5df; }
-.quiz-card select { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); color: #dce7ff; border-radius: 8px; padding: 8px 10px; color-scheme: dark; }
-.quiz-card select option { background-color: #0f1b2b; color: #dce7ff; }
+.quiz-sub { margin: 0 0 10px; color: var(--text-3); font-size: 0.9rem; }
+.quiz-card label { display:block; margin: 8px 0 5px; font-size: 0.86rem; color: var(--text-2); }
+.quiz-card select { width: 100%; background: rgba(15, 23, 19, .78); border: 1px solid rgba(185, 245, 93, .24); color: var(--text); border-radius: 8px; padding: 8px 10px; color-scheme: dark; }
+.quiz-card select option { background-color: var(--surface); color: var(--text); }
 .quiz-actions { display:flex; gap: 8px; margin-top: 12px; }
 
 /* show all genre pills without clipping */
@@ -155,10 +155,10 @@ html, body {
     height: 36px;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(48,169,222,0.35);
+    border: 1px solid var(--line);
     border-radius: 9px;
     background: rgba(255,255,255,0.04);
-    color: #d8f4ff;
+    color: var(--text);
     font-size: 1rem;
   }
 
