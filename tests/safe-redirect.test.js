@@ -72,3 +72,19 @@ test('validates the fallback and defaults to the site root', () => {
   assert.equal(safeRedirect(null, 'https://evil.test'), '/');
   assert.equal(safeRedirect('//evil.test', '//also-evil.test'), '/');
 });
+
+test('login redirects default to the private account page', () => {
+  for (const value of [
+    null,
+    '',
+    'https://evil.test/account.html',
+    '//evil.test/account.html',
+    'javascript:alert(1)'
+  ]) {
+    assert.equal(safeRedirect(value, '/account.html'), '/account.html', String(value));
+  }
+  assert.equal(
+    safeRedirect('/recommendations.html', '/account.html'),
+    '/recommendations.html'
+  );
+});

@@ -9,7 +9,7 @@ const brandIconFiles = [
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png'
 ];
 const requiredSource = [
-  'index.html', 'methodology.html', 'app.js', 'style.css', 'manifest.json',
+  'index.html', 'methodology.html', 'app.js', 'login.js', 'style.css', 'manifest.json',
   'alert-deals.json', 'deals.json', 'enriched-deals.json', 'config/editorial-config.js',
   'lib/deal-normalizer.js', 'lib/deal-score.js', 'lib/deal-filters.js',
   'lib/cheapshark-client.js', 'lib/deal-snapshot-validator.js',
@@ -21,6 +21,7 @@ const requiredSource = [
 ];
 const requiredBuild = [
   'dist/server/index.js', 'dist/static/index.html', 'dist/static/app.js',
+  'dist/static/login.js',
   'dist/static/alert-deals.json', 'dist/static/deals.json',
   'dist/static/lib/alert-snapshot.js', 'dist/static/lib/cheapshark-client.js',
   'dist/static/lib/account-data.js', 'dist/static/lib/account-client.js',
@@ -188,12 +189,27 @@ for (const token of ["track('deal_click'", "'recommendation_like'", "'recommenda
 }
 
 const loginPage = fs.readFileSync(path.join(root, 'login.html'), 'utf8');
-for (const token of ['lib/safe-redirect.js', 'LootRadarRedirect.safeRedirect', "track('auth_request'"]) {
+for (const token of ['lib/safe-redirect.js', 'lib/analytics.js', 'login.js?v=1', 'Continue with Google']) {
   if (!loginPage.includes(token)) failures.push(`login.html missing ${token}`);
 }
 const builtLoginPage = fs.readFileSync(path.join(root, 'dist', 'static', 'login.html'), 'utf8');
-for (const token of ['lib/safe-redirect.js', 'LootRadarRedirect.safeRedirect', "track('auth_request'"]) {
+for (const token of ['lib/safe-redirect.js', 'lib/analytics.js', 'login.js?v=1', 'Continue with Google']) {
   if (!builtLoginPage.includes(token)) failures.push(`dist/static/login.html missing ${token}`);
+}
+const loginScript = fs.readFileSync(path.join(root, 'login.js'), 'utf8');
+const builtLoginScript = fs.readFileSync(path.join(root, 'dist', 'static', 'login.js'), 'utf8');
+for (const [label, source] of [['login.js', loginScript], ['dist/static/login.js', builtLoginScript]]) {
+  for (const token of [
+    "safeRedirect(params.get('next'), '/account.html')",
+    'signInWithOAuth({',
+    "provider: 'google'",
+    'signInWithOtp({',
+    "track('email')",
+    'linkIdentity({',
+    "'/account.html?linked=google'"
+  ]) {
+    if (!source.includes(token)) failures.push(`${label} missing ${token}`);
+  }
 }
 for (const [label, source] of [['login.html', loginPage], ['dist/static/login.html', builtLoginPage]]) {
   if (!source.includes('name="robots" content="noindex,follow"')) {

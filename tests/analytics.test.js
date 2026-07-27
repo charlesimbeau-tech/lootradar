@@ -59,6 +59,23 @@ test('allows only privacy-safe account sync outcomes', () => {
   assert.deepEqual(sanitizeProperties({ result: 'maybe' }), {});
 });
 
+test('allows only Google and email authentication providers', () => {
+  assert.equal(sanitizeEvent('auth_request'), 'auth_request');
+  assert.deepEqual(
+    sanitizeProperties({
+      surface: 'login',
+      provider: 'google',
+      signedIn: false,
+      email: 'person@example.com',
+      userId: 'user-123'
+    }),
+    { surface: 'login', provider: 'google', signedIn: 'false' }
+  );
+  assert.deepEqual(sanitizeProperties({ provider: 'email' }), { provider: 'email' });
+  assert.deepEqual(sanitizeProperties({ provider: 'github' }), {});
+  assert.deepEqual(sanitizeProperties({ provider: 'person@example.com' }), {});
+});
+
 test('keeps property values printable and bounded', () => {
   const longValue = `  home\npage\u0000card ${'x'.repeat(100)}  `;
   const properties = sanitizeProperties({
