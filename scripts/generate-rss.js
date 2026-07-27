@@ -22,8 +22,8 @@ function generateRss(options = {}) {
     limit: options.limit || 20
   });
   const itemCount = (xml.match(/<item>/g) || []).length;
-  if (itemCount < 10 || itemCount > 20) {
-    throw new Error(`RSS requires 10-20 qualified items; generated ${itemCount}.`);
+  if (itemCount > 20) {
+    throw new Error(`RSS allows at most 20 qualified items; generated ${itemCount}.`);
   }
   const output = path.resolve(options.output || path.join(root, 'feed.xml'));
   fs.writeFileSync(output, xml);

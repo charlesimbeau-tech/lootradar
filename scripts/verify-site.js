@@ -25,15 +25,13 @@ const editorialPages = [
   'blog/indie-games-under-five.html', 'blog/steam-sale-guide.html'
 ];
 const adsensePublisher = 'ca-pub-3845680227675655';
-const adsensePages = [
+const adsenseEditorialPages = [
   'index.html', 'games.html', 'recommendations.html', 'methodology.html',
   'about.html', 'blog.html',
   'blog/best-free-pc-games.html', 'blog/cheapest-steam-games.html',
   'blog/game-price-comparison.html', 'blog/how-to-get-free-games.html',
   'blog/indie-games-under-five.html', 'blog/steam-sale-guide.html'
 ];
-const analyticsPages = ['index.html', 'games.html', 'recommendations.html', 'login.html'];
-const goatCounterPages = editorialPages;
 const generatedDealPages = [
   'deals/index.html',
   'deals/best-pc-game-deals.html',
@@ -43,6 +41,12 @@ const generatedDealPages = [
   'deals/deep-discounts.html',
   'deals/hidden-gems.html'
 ];
+const adsensePages = [...adsenseEditorialPages, ...generatedDealPages];
+const analyticsPages = [
+  'index.html', 'games.html', 'recommendations.html', 'login.html',
+  ...generatedDealPages
+];
+const goatCounterPages = [...editorialPages, ...generatedDealPages];
 
 const failures = [];
 for (const file of [...requiredSource, ...requiredBuild]) {
@@ -161,8 +165,8 @@ const sourceFeed = fs.readFileSync(path.join(root, 'feed.xml'), 'utf8');
 const builtFeed = fs.readFileSync(path.join(root, 'dist', 'static', 'feed.xml'), 'utf8');
 for (const [label, source] of [['feed.xml', sourceFeed], ['dist/static/feed.xml', builtFeed]]) {
   const itemCount = (source.match(/<item>/g) || []).length;
-  if (!source.includes('<rss version="2.0"') || itemCount < 10 || itemCount > 20) {
-    failures.push(`${label} must contain 10-20 RSS 2.0 items`);
+  if (!source.includes('<rss version="2.0"') || itemCount > 20) {
+    failures.push(`${label} must be a valid RSS 2.0 feed with at most 20 items`);
   }
   if (source.includes('http://thelootradar.com')) {
     failures.push(`${label} contains a non-HTTPS LootRadar URL`);

@@ -16,6 +16,11 @@ function safeJSON(value) {
   return JSON.stringify(value).replace(/</g, '\\u003c');
 }
 
+function safeDealID(value) {
+  const dealID = String(value || '');
+  return /^[A-Za-z0-9%._~-]+$/.test(dealID) ? dealID : '';
+}
+
 function formatPrice(value) {
   const price = Number(value || 0);
   if (price === 0) return 'Free';
@@ -74,7 +79,7 @@ function renderDealCard(deal) {
       <p class="landing-review">${escapeHTML(review)}</p>
       <p class="landing-reason">${escapeHTML(recommendationFor(deal))}</p>
       <div class="landing-price"><s>${formatPrice(deal.normalPrice)}</s><strong>${formatPrice(deal.salePrice)}</strong></div>
-      <a href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(deal.dealID)}" target="_blank" rel="sponsored noopener">View at ${escapeHTML(deal.storeName)}</a>
+      <a href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(deal.dealID))}" target="_blank" rel="sponsored noopener noreferrer" data-track-deal data-track-surface="search_landing" data-track-store="${escapeHTML(deal.storeName)}" data-track-price="${escapeHTML(deal.salePrice)}">View at ${escapeHTML(deal.storeName)}</a>
     </div>
   </article>`;
 }
@@ -252,8 +257,20 @@ ${quietNotice ? `    ${quietNotice}\n` : ''}    ${mainContent}
   </main>
   <footer>
     <div class="footer-inner"><div><a class="nav-brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a><p>Games worth playing. Prices worth paying.</p></div><div class="footer-links"><a href="../methodology.html">Scoring</a><a href="../blog.html">Guides</a><a href="../about.html">About</a><a href="../privacy.html">Privacy</a><a href="../terms.html">Terms</a></div></div>
-    <p class="footer-disclosure">Price listings come from CheapShark and may change after you leave LootRadar. Affiliate relationships never affect Deal Scores.</p>
+    <p class="footer-disclosure">Some retailer links may earn LootRadar a commission. Price listings come from CheapShark and may change after you leave LootRadar. Affiliate relationships never affect Deal Scores.</p>
   </footer>
+  <script src="../lib/analytics.js?v=1"></script>
+  <script>
+    document.addEventListener('click', function (event) {
+      var link = event.target.closest('[data-track-deal]');
+      if (!link || !window.LootRadarAnalytics) return;
+      window.LootRadarAnalytics.track('deal_click', {
+        surface: link.dataset.trackSurface,
+        store: link.dataset.trackStore,
+        priceBucket: window.LootRadarAnalytics.priceBucket(link.dataset.trackPrice)
+      });
+    });
+  </script>
   <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

@@ -80,11 +80,6 @@
         <section id="gameDetail" class="game-detail-section" style="display:none"></section>
     </main>
 
-    <footer>
-        <p>Current prices are supplied by CheapShark and may change.<br>
-        <a href="https://thelootradar.com/">Deals</a> &middot; <a href="https://thelootradar.com/games.html">Compare prices</a> &middot; <a href="https://thelootradar.com/blog.html">Guides</a></p>
-    </footer>
-
     <script src="lib/cheapshark-client.js?v=1"></script>
     <script src="lib/analytics.js?v=1"></script>
     <script>
@@ -110,6 +105,32 @@
     const gameResults = document.getElementById('gameResults');
     const gameList = document.getElementById('gameList');
     const gameDetail = document.getElementById('gameDetail');
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function safeImageUrl(value, fallback = 'icons/icon.png') {
+        try {
+            const url = new URL(String(value || ''), window.location.href);
+            if (url.protocol === 'https:' || (url.origin === window.location.origin && url.protocol === window.location.protocol)) {
+                return url.href;
+            }
+        } catch (_) {
+            // Fall through to the local placeholder.
+        }
+        return new URL(fallback, window.location.href).href;
+    }
+
+    function safeDealID(value) {
+        const dealID = String(value || '');
+        return /^[A-Za-z0-9%._~-]+$/.test(dealID) ? dealID : '';
+    }
 
     // Handle hash-based game navigation
     function getGameIDFromHash() {
@@ -153,20 +174,23 @@
                 gameResults.style.display = 'block';
                 gameList.innerHTML = '<div class="deals-grid">' + games.map(g => {
                     const cheapest = parseFloat(g.cheapest);
+                    const gameID = /^\d+$/.test(String(g.gameID || '')) ? String(g.gameID) : '';
+                    if (!gameID) return '';
+                    const title = escapeHtml(g.external || 'Title unavailable');
+                    const thumb = escapeHtml(safeImageUrl(g.thumb));
                     return `
-                        <div class="deal-card" style="cursor:pointer" onclick="showGameDetail('${g.gameID}')">
+                        <a class="deal-card" href="#game-${gameID}" style="cursor:pointer;text-align:left" data-game-id="${gameID}">
                             <div class="thumb-wrapper">
-                                <img class="thumb" src="${g.thumb}" alt="${g.external} cover" loading="lazy"
-                                    onerror="this.parentElement.style.background='linear-gradient(135deg,#111720,#0c1015)'">
+                                <img class="thumb" src="${thumb}" alt="${title} cover" loading="lazy">
                             </div>
                             <div class="card-body">
-                                <div class="title">${g.external}</div>
+                                <div class="title">${title}</div>
                                 <div class="pricing">
                                     <span class="sale-price">${cheapest === 0 ? 'Free' : 'From $' + cheapest.toFixed(2)}</span>
                                     <span class="rating" style="font-size:0.8rem">Current listed price</span>
                                 </div>
                             </div>
-                        </div>`;
+                        </a>`;
                 }).join('') + '</div>';
             } catch (error) {
                 if (error.name === 'AbortError') return;
@@ -197,6 +221,8 @@
             });
             const info = data.info;
             const deals = data.deals || [];
+            const safeTitle = escapeHtml(info.title || 'Title unavailable');
+            const safeThumb = escapeHtml(safeImageUrl(info.thumb));
 
             // Build structured data for this game
             const jsonLd = {
@@ -210,7 +236,7 @@
                     "@type": "Offer",
                     "price": d.price,
                     "priceCurrency": "USD",
-                    "url": `https://www.cheapshark.com/redirect?dealID=${d.dealID}`,
+                    "url": `https://www.cheapshark.com/redirect?dealID=${safeDealID(d.dealID)}`,
                     "seller": { "@type": "Organization", "name": STORES[d.storeID] || 'Unknown Store' },
                     "availability": "https://schema.org/InStock"
                 }))
@@ -237,8 +263,8 @@
 
             gameDetail.innerHTML = `
                 <div class="game-detail-header">
-                    <img src="${info.thumb}" alt="${info.title}" style="max-width:300px;border-radius:8px;margin-bottom:1rem">
-                    <h1 style="color:#e8ecf1;font-size:1.8rem;margin:0 0 0.5rem">${info.title}</h1>
+                    <img src="${safeThumb}" alt="${safeTitle} cover" style="max-width:300px;border-radius:8px;margin-bottom:1rem">
+                    <h1 style="color:#e8ecf1;font-size:1.8rem;margin:0 0 0.5rem">${safeTitle}</h1>
                     <p style="color:#8a94a6;font-size:1rem;margin:0 0 1rem">
                         ${cheapest !== null ? `Lowest listed price in this result: <strong style="color:#4cda64;font-size:1.3rem">${cheapest === 0 ? 'Free' : '$' + cheapest.toFixed(2)}</strong>` : 'No current store listings'}
                     </p>
@@ -249,23 +275,25 @@
                 <div class="deals-grid">
                     ${deals.map(d => {
                         const store = STORES[d.storeID] || 'Store name unavailable';
+                        const safeStore = escapeHtml(store);
                         const price = parseFloat(d.price);
                         const retail = parseFloat(d.retailPrice);
                         const savings = retail > 0 ? Math.round((1 - price / retail) * 100) : 0;
+                        const dealUrl = `https://www.cheapshark.com/redirect?dealID=${safeDealID(d.dealID)}`;
                         return `
                             <div class="deal-card">
                                 <div class="card-body">
                                     <div class="card-meta">
-                                        <span class="store-tag">${store}</span>
+                                        <span class="store-tag">${safeStore}</span>
                                         ${savings > 0 ? `<span class="discount-badge">-${savings}%</span>` : ''}
                                     </div>
                                     <div class="pricing" style="margin:0.5rem 0">
                                         ${retail > price ? `<span class="original-price">$${retail.toFixed(2)}</span>` : ''}
                                         <span class="sale-price">${price === 0 ? 'Free' : '$' + price.toFixed(2)}</span>
                                     </div>
-                                    <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer"
-                                        data-track-deal data-track-surface="games_detail" data-track-store="${store}" data-track-price="${price}">
-                                        Open ${store} →
+                                    <a class="deal-link" href="${escapeHtml(dealUrl)}" target="_blank" rel="noopener noreferrer sponsored"
+                                        data-track-deal data-track-surface="games_detail" data-track-store="${safeStore}" data-track-price="${price}">
+                                        Open ${safeStore} →
                                     </a>
                                 </div>
                             </div>`;
@@ -273,10 +301,10 @@
                 </div>
 
                 <div style="margin-top:2rem;padding:1rem;background:#111720;border-radius:8px;color:#8a94a6;font-size:0.85rem">
-                    <h3 style="color:#e8ecf1;font-size:1rem;margin:0 0 0.5rem">Price snapshot for ${info.title}</h3>
+                    <h3 style="color:#e8ecf1;font-size:1rem;margin:0 0 0.5rem">Price snapshot for ${safeTitle}</h3>
                     <p>${deals.length
-                        ? `CheapShark returned ${deals.length} current store listing${deals.length === 1 ? '' : 's'} for <strong>${info.title}</strong>. The lowest listed price in this response is <strong>${cheapest === 0 ? 'free' : '$' + cheapest.toFixed(2)}</strong>.`
-                        : `CheapShark returned no current store listings for <strong>${info.title}</strong>.`} Prices and availability can change; confirm both with the retailer.</p>
+                        ? `CheapShark returned ${deals.length} current store listing${deals.length === 1 ? '' : 's'} for <strong>${safeTitle}</strong>. The lowest listed price in this response is <strong>${cheapest === 0 ? 'free' : '$' + cheapest.toFixed(2)}</strong>.`
+                        : `CheapShark returned no current store listings for <strong>${safeTitle}</strong>.`} Prices and availability can change; confirm both with the retailer.</p>
                 </div>
             `;
         } catch (err) {
@@ -297,23 +325,26 @@
                 const sale = parseFloat(d.salePrice);
                 const normal = parseFloat(d.normalPrice);
                 const store = STORES[d.storeID] || 'Store name unavailable';
-                const thumb = d.steamAppID ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${d.steamAppID}/header.jpg` : d.thumb;
+                const safeStore = escapeHtml(store);
+                const title = escapeHtml(d.title || 'Title unavailable');
+                const steamAppID = /^\d+$/.test(String(d.steamAppID || '')) ? String(d.steamAppID) : '';
+                const thumb = safeImageUrl(steamAppID ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${steamAppID}/header.jpg` : d.thumb);
+                const dealUrl = `https://www.cheapshark.com/redirect?dealID=${safeDealID(d.dealID)}`;
                 return `
                     <div class="deal-card">
                         <div class="thumb-wrapper">
-                            <img class="thumb" src="${thumb}" alt="${d.title} cover" loading="lazy"
-                                onerror="this.parentElement.style.background='linear-gradient(135deg,#111720,#0c1015)'">
+                            <img class="thumb" src="${escapeHtml(thumb)}" alt="${title} cover" loading="lazy">
                             <span class="discount-badge${sale === 0 ? ' free' : ''}">${sale === 0 ? 'FREE' : '-' + savings + '%'}</span>
                         </div>
                         <div class="card-body">
-                            <div class="card-meta"><span class="store-tag">${store}</span></div>
-                            <div class="title">${d.title}</div>
+                            <div class="card-meta"><span class="store-tag">${safeStore}</span></div>
+                            <div class="title">${title}</div>
                             <div class="pricing">
                                 ${sale === 0 ? '<span class="free-tag">Free</span>' :
                                     `<span class="original-price">$${normal.toFixed(2)}</span><span class="sale-price">$${sale.toFixed(2)}</span>`}
                             </div>
-                            <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer"
-                                data-track-deal data-track-surface="games_featured" data-track-store="${store}" data-track-price="${sale}">Open deal at ${store} →</a>
+                            <a class="deal-link" href="${escapeHtml(dealUrl)}" target="_blank" rel="noopener noreferrer sponsored"
+                                data-track-deal data-track-surface="games_featured" data-track-store="${safeStore}" data-track-price="${sale}">Open deal at ${safeStore} →</a>
                         </div>
                     </div>`;
             }).join('');
@@ -333,6 +364,11 @@
         if (id) showGameDetail(id);
     });
     document.addEventListener('click', event => {
+        const gameCard = event.target.closest('[data-game-id]');
+        if (gameCard) {
+            showGameDetail(gameCard.dataset.gameId);
+            return;
+        }
         const link = event.target.closest('[data-track-deal]');
         if (!link) return;
         analytics.track('deal_click', {
@@ -343,10 +379,10 @@
     });
     </script>
     <footer>
-        <p>LootRadar &copy; 2026 &mdash; Current prices supplied by CheapShark.</p>
+        <p>LootRadar &copy; 2026</p>
         <p class="footer-nav"><a href="index.html">Deals</a> &middot; <a href="recommendations.html">For you</a>
                 <a href="login.html">Sign in</a> &middot; <a href="blog.html">Guides</a> &middot; <a href="about.html">About</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a></p>
-        <p><small>Some retailer links may earn LootRadar a commission. This does not affect deal rankings.</small></p>
+        <p><small>Some retailer links may earn LootRadar a commission. Price listings come from CheapShark and may change after you leave LootRadar. Affiliate relationships never affect Deal Scores.</small></p>
     </footer>
 
     <!-- GoatCounter Analytics --><script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body>

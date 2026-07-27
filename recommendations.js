@@ -227,7 +227,8 @@ function whyChip(game, topGenres, topTags) {
 }
 
 function gameLink(game) {
-  if (game.dealID) return 'https://www.cheapshark.com/redirect?dealID=' + encodeURIComponent(game.dealID);
+  var dealID = safeDealID(game.dealID);
+  if (dealID) return 'https://www.cheapshark.com/redirect?dealID=' + dealID;
   var app = game.steamAppID || game.appid;
   if (app) return 'https://store.steampowered.com/app/' + app;
   return '#';
@@ -248,32 +249,50 @@ function escapeAttribute(value) {
     .replace(/>/g, '&gt;');
 }
 
+function safeDealID(value) {
+  var dealID = String(value || '');
+  return /^[A-Za-z0-9%._~-]+$/.test(dealID) ? dealID : '';
+}
+
+function safeImageUrl(value) {
+  try {
+    var url = new URL(String(value || ''), window.location.href);
+    if (url.protocol === 'https:' || (url.origin === window.location.origin && url.protocol === window.location.protocol)) {
+      return url.href;
+    }
+  } catch (_) {
+    // Fall through to the local placeholder.
+  }
+  return new URL('icons/icon.png', window.location.href).href;
+}
+
 function cardHtml(game, why) {
   var sale = Number(game.salePrice || game.price_usd || game.price || 0);
   var normal = Number(game.normalPrice || game.initial_price_usd || sale || 0);
   var savings = Math.round(Number(game.savings || game.discount || 0));
   var rating = Number(game.steamRatingPercent || game.rating || game.userscore || 0);
-  var key = itemKey(game);
-  var conf = confidenceLabel(game);
-  var title = game.title || (game.rawg && game.rawg.name) || 'Title unavailable';
-  var thumb = game.thumb || (game.rawg && game.rawg.backgroundImage) || 'icons/icon.png';
+  var key = escapeAttribute(itemKey(game));
+  var conf = escapeAttribute(confidenceLabel(game));
+  var title = escapeAttribute(game.title || (game.rawg && game.rawg.name) || 'Title unavailable');
+  var thumb = escapeAttribute(safeImageUrl(game.thumb || (game.rawg && game.rawg.backgroundImage)));
   var onSale = !!game.dealID || savings > 0;
   var badge = onSale ? ('-' + savings + '%') : 'PICK';
   var storeLabel = onSale ? 'On sale' : 'Catalog';
   var linkText = onSale ? 'See current deal \u2192' : 'View on Steam \u2192';
-  var outboundStore = gameStoreName(game);
+  var outboundStore = escapeAttribute(gameStoreName(game));
+  var outboundLink = escapeAttribute(gameLink(game));
   var trackingAttributes = onSale
-    ? ' data-track-deal data-track-surface="recommendations" data-track-store="' + escapeAttribute(outboundStore)
+    ? ' data-track-deal data-track-surface="recommendations" data-track-store="' + outboundStore
       + '" data-track-price="' + sale + '"'
     : '';
   var priceHtml = onSale
     ? '<span class="price-old">$' + normal.toFixed(2) + '</span><span class="price-new">' + (sale === 0 ? 'Free' : '$' + sale.toFixed(2)) + '</span>'
     : '<span class="price-new">' + (sale > 0 ? '$' + sale.toFixed(2) : 'Price unavailable') + '</span>';
-  var whyHtml = why ? '<div class="why-chip">' + why + '</div>' : '';
+  var whyHtml = why ? '<div class="why-chip">' + escapeAttribute(why) + '</div>' : '';
 
   return '<div class="card">'
     + '<div class="card-thumb">'
-    + '<img src="' + thumb + '" alt="' + title.replace(/"/g,'&quot;') + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.src=\'icons/icon.png\'">'
+    + '<img src="' + thumb + '" alt="' + title + ' cover" loading="lazy" referrerpolicy="no-referrer">'
     + '<span class="badge">' + badge + '</span>'
     + '</div>'
     + '<div class="card-body">'
@@ -282,7 +301,7 @@ function cardHtml(game, why) {
     + '<div class="confidence-chip">' + conf + '</div>'
     + whyHtml
     + '<div class="pricing">' + priceHtml + '</div>'
-    + '<a class="deal-link" href="' + gameLink(game) + '" target="_blank" rel="noopener noreferrer"' + trackingAttributes + '>' + linkText + '</a>'
+    + '<a class="deal-link" href="' + outboundLink + '" target="_blank" rel="noopener noreferrer sponsored"' + trackingAttributes + '>' + linkText + '</a>'
     + '<div class="card-actions" style="margin-top:8px;display:flex;gap:8px;">'
     + '<button class="feedback-btn" data-fb="like" data-id="' + key + '">More like this</button>'
     + '<button class="feedback-btn" data-fb="dislike" data-id="' + key + '">Not for me</button>'

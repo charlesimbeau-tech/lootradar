@@ -67,11 +67,11 @@ jobs:
 
           git pull --rebase origin main || {
             git rebase --abort || true
-            echo "Rebase conflict on generated files; skipping push this run"
-            exit 0
+            echo "Rebase conflict on generated files; the refresh was not published"
+            exit 1
           }
 
           git push || {
-            echo "Push race; skipping this run (next run will retry)"
-            exit 0
+            echo "Push failed; the refresh was not published"
+            exit 1
           }

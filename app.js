@@ -49,6 +49,11 @@
       .replace(/'/g, '&#039;');
   }
 
+  function safeDealID(value) {
+    const dealID = String(value || '');
+    return /^[A-Za-z0-9%._~-]+$/.test(dealID) ? dealID : '';
+  }
+
   function money(value) {
     const number = Number(value || 0);
     return number === 0 ? 'Free' : new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(number);
@@ -267,7 +272,7 @@
           <div><strong>${scoreLabel(deal.dealScore)}</strong><p>${escapeHTML(deal.recommendation)}</p></div>
         </div>
         <div class="card-actions">
-          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="${escapeHTML(deal.storeName)}" data-price="${deal.salePrice}">View at ${escapeHTML(deal.storeName)}</a>
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(deal.dealID))}" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="${escapeHTML(deal.storeName)}" data-price="${deal.salePrice}">View at ${escapeHTML(deal.storeName)}</a>
           <button class="watch-button ${watched ? 'watched' : ''}" type="button" data-watch="${escapeHTML(deal.key)}" aria-label="${watched ? 'Remove from' : 'Add to'} watchlist">
             <span aria-hidden="true">${watched ? '✓' : '+'}</span>
           </button>
@@ -392,7 +397,7 @@
         <button class="button button-secondary" type="button" data-save-target="${escapeHTML(deal.key)}">${watched ? 'Update target' : 'Add to watchlist'}</button>
       </section>
       <div class="detail-actions">
-        <a class="button button-primary button-full" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="detail_primary" data-store="${escapeHTML(deal.storeName)}" data-price="${deal.salePrice}">View deal at ${escapeHTML(deal.storeName)} · ${money(deal.salePrice)}</a>
+        <a class="button button-primary button-full" href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(deal.dealID))}" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="detail_primary" data-store="${escapeHTML(deal.storeName)}" data-price="${deal.salePrice}">View deal at ${escapeHTML(deal.storeName)} · ${money(deal.salePrice)}</a>
         <p>LootRadar may earn a commission from eligible links. Commissions never affect Deal Scores.</p>
       </div>
     </div>`;
@@ -432,7 +437,7 @@
     const difference = historical ? livePrice - historical : null;
     const alternateRows = (lookup?.cheaperStores || []).map(item => {
       const store = state.stores[item.storeID] || { name: `Store ${item.storeID}` };
-      return `<a href="https://www.cheapshark.com/redirect?dealID=${item.dealID}" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="detail_alternate" data-store="${escapeHTML(store.name)}" data-price="${Number(item.salePrice)}"><span>${escapeHTML(store.name)}</span><strong>${money(item.salePrice)}</strong></a>`;
+      return `<a href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(item.dealID))}" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="detail_alternate" data-store="${escapeHTML(store.name)}" data-price="${Number(item.salePrice)}"><span>${escapeHTML(store.name)}</span><strong>${money(item.salePrice)}</strong></a>`;
     }).join('');
     const fullWidth = 100;
     const lowWidth = retail ? Math.max(4, Math.min(100, (historical / retail) * 100)) : 0;

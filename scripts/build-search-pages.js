@@ -174,6 +174,13 @@ function selectLandingDeals(deals, pageId) {
     }
     return false;
   });
+  if (pageId === 'deep') {
+    return selected.sort(
+      (a, b) => Number(b.discount) - Number(a.discount) ||
+        Number(b.dealScore) - Number(a.dealScore) ||
+        Number(b.reviewCount) - Number(a.reviewCount)
+    );
+  }
   return selected.sort(
     (a, b) => Number(b.dealScore) - Number(a.dealScore) ||
       Number(b.reviewCount) - Number(a.reviewCount)

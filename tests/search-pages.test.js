@@ -100,6 +100,21 @@ test('deep discounts still require quality eligibility', () => {
   assert.equal(selectLandingDeals(fixtures, 'deep').some(item => item.title === 'Weak Deep Cut'), false);
 });
 
+test('deep discounts prioritize discount depth instead of duplicating best-deal order', () => {
+  const candidates = [
+    { ...fixtures[0], title: 'Higher score', discount: 72, dealScore: 95 },
+    { ...fixtures[1], title: 'Deeper discount', discount: 90, dealScore: 70 }
+  ];
+  assert.deepEqual(
+    selectLandingDeals(candidates, 'deep').map(item => item.title),
+    ['Deeper discount', 'Higher score']
+  );
+  assert.deepEqual(
+    selectLandingDeals(candidates, 'best').map(item => item.title),
+    ['Higher score', 'Deeper discount']
+  );
+});
+
 test('every landing collection applies the default bundle and Early Access exclusions', () => {
   const qualifying = {
     title: 'Qualified Pick',
@@ -134,6 +149,7 @@ test('every landing collection applies the default bundle and Early Access exclu
 test('generator writes a crawlable hub and six unique collection pages', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-search-pages-'));
   const deals = Array.from({ length: 14 }, (_, index) => generatedFixture(index + 1));
+  deals[0].dealID = 'abc%2Fdef%3D';
   const result = buildSearchPages({
     outputDir,
     deals,
@@ -155,6 +171,7 @@ test('generator writes a crawlable hub and six unique collection pages', () => {
       'Prices checked',
       'How these deals qualify',
       'methodology.html',
+      '../lib/analytics.js',
       'application/ld+json'
     ]) {
       assert.match(source, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `${route} is missing ${token}`);
@@ -169,6 +186,16 @@ test('generator writes a crawlable hub and six unique collection pages', () => {
     titles.add(title);
     descriptions.add(description);
   }
+
+  const bestPage = fs.readFileSync(
+    path.join(outputDir, PAGE_DEFINITIONS.best.route),
+    'utf8'
+  );
+  assert.match(bestPage, /data-track-deal/);
+  assert.match(bestPage, /LootRadarAnalytics\.track\('deal_click'/);
+  assert.match(bestPage, /Some retailer links may earn LootRadar a commission/);
+  assert.match(bestPage, /dealID=abc%2Fdef%3D/);
+  assert.doesNotMatch(bestPage, /dealID=abc%252Fdef%253D/);
 });
 
 test('quiet collections remain useful but are marked noindex', () => {
