@@ -6,9 +6,14 @@
   "scripts": {
     "test": "node --test tests/*.test.js",
     "build": "node scripts/build-static.js",
-    "verify": "node scripts/verify-site.js"
+    "verify": "node scripts/verify-site.js",
+    "brand:build": "node scripts/generate-brand-assets.js"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "png-to-ico": "^3.0.2",
+    "sharp": "^0.35.3"
   }
 }
