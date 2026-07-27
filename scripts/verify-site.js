@@ -30,7 +30,7 @@ const adsensePages = [
   'blog/game-price-comparison.html', 'blog/how-to-get-free-games.html',
   'blog/indie-games-under-five.html', 'blog/steam-sale-guide.html'
 ];
-const analyticsPages = ['games.html', 'recommendations.html', 'login.html'];
+const analyticsPages = ['index.html', 'games.html', 'recommendations.html', 'login.html'];
 const goatCounterPages = editorialPages;
 
 const failures = [];
@@ -57,11 +57,19 @@ for (const file of ['manifest.json', 'deals.json', 'enriched-deals.json']) {
 }
 
 const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-for (const token of ['lib/deal-score.js', 'id="deals"', 'id="dealDialog"', 'methodology.html']) {
+for (const token of ['lib/deal-score.js', 'lib/analytics.js', 'id="deals"', 'id="dealDialog"', 'methodology.html']) {
   if (!homepage.includes(token)) failures.push(`index.html missing ${token}`);
 }
 if (!homepage.includes('lib/cheapshark-client.js')) {
   failures.push('index.html missing the shared CheapShark client');
+}
+
+const homepageScript = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+for (const token of [
+  "track('deal_click'", "track('search_used'", "track('watchlist_add'",
+  "track('watchlist_remove'", "track('watchlist_open'", "track('watchlist_target_update'"
+]) {
+  if (!homepageScript.includes(token)) failures.push(`app.js missing ${token}`);
 }
 
 const gamesPage = fs.readFileSync(path.join(root, 'games.html'), 'utf8');

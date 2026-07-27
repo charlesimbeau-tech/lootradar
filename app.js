@@ -12,6 +12,7 @@
   const { calculateDealScore } = window.LootRadarScoring;
   const { DEFAULT_FILTERS, normalizeFilters, filterDeals, sortDeals, readFiltersFromUrl, filtersToSearchParams } = window.LootRadarFilters;
   const { buildDealDataset } = window.LootRadarDataset;
+  const analytics = window.LootRadarAnalytics;
   const config = window.LootRadarEditorialConfig;
 
   const state = {
@@ -81,6 +82,10 @@
     toast.classList.add('show');
     clearTimeout(showToast.timer);
     showToast.timer = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+
+  function track(eventName, properties) {
+    analytics?.track(eventName, properties);
   }
 
   async function fetchJSON(url, optional = false) {
@@ -166,6 +171,7 @@
   }
 
   function readFormIntoState() {
+    const previousQuery = state.filters.q;
     state.filters = normalizeFilters({
       ...state.filters,
       q: $('#searchInput').value.trim(),
@@ -185,6 +191,12 @@
     syncUrl();
     updateActiveFilterCount();
     render();
+    if (state.filters.q && state.filters.q !== previousQuery) {
+      track('search_used', {
+        surface: 'homepage_search',
+        resultBucket: analytics?.resultBucket(state.visibleDeals.length)
+      });
+    }
   }
 
   function syncUrl() {
@@ -255,7 +267,7 @@
           <div><strong>${scoreLabel(deal.dealScore)}</strong><p>${escapeHTML(deal.recommendation)}</p></div>
         </div>
         <div class="card-actions">
-          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer sponsored">View at ${escapeHTML(deal.storeName)}</a>
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="${escapeHTML(deal.storeName)}" data-price="${deal.salePrice}">View at ${escapeHTML(deal.storeName)}</a>
           <button class="watch-button ${watched ? 'watched' : ''}" type="button" data-watch="${escapeHTML(deal.key)}" aria-label="${watched ? 'Remove from' : 'Add to'} watchlist">
             <span aria-hidden="true">${watched ? '✓' : '+'}</span>
           </button>
@@ -303,9 +315,11 @@
     if (state.watchlist[key]) {
       delete state.watchlist[key];
       showToast(`${deal.title} removed from your watchlist.`);
+      track('watchlist_remove', { surface: 'homepage' });
     } else {
       state.watchlist[key] = { key, title: deal.title, targetPrice: deal.salePrice, addedAt: new Date().toISOString() };
       showToast(`${deal.title} saved. Target set to ${money(deal.salePrice)}.`);
+      track('watchlist_add', { surface: 'homepage' });
     }
     saveWatchlist();
     render();
@@ -378,7 +392,7 @@
         <button class="button button-secondary" type="button" data-save-target="${escapeHTML(deal.key)}">${watched ? 'Update target' : 'Add to watchlist'}</button>
       </section>
       <div class="detail-actions">
-        <a class="button button-primary button-full" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer sponsored">View deal at ${escapeHTML(deal.storeName)} · ${money(deal.salePrice)}</a>
+        <a class="button button-primary button-full" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="detail_primary" data-store="${escapeHTML(deal.storeName)}" data-price="${deal.salePrice}">View deal at ${escapeHTML(deal.storeName)} · ${money(deal.salePrice)}</a>
         <p>LootRadar may earn a commission from eligible links. Commissions never affect Deal Scores.</p>
       </div>
     </div>`;
@@ -418,7 +432,7 @@
     const difference = historical ? livePrice - historical : null;
     const alternateRows = (lookup?.cheaperStores || []).map(item => {
       const store = state.stores[item.storeID] || { name: `Store ${item.storeID}` };
-      return `<a href="https://www.cheapshark.com/redirect?dealID=${item.dealID}" target="_blank" rel="noopener noreferrer sponsored"><span>${escapeHTML(store.name)}</span><strong>${money(item.salePrice)}</strong></a>`;
+      return `<a href="https://www.cheapshark.com/redirect?dealID=${item.dealID}" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="detail_alternate" data-store="${escapeHTML(store.name)}" data-price="${Number(item.salePrice)}"><span>${escapeHTML(store.name)}</span><strong>${money(item.salePrice)}</strong></a>`;
     }).join('');
     const fullWidth = 100;
     const lowWidth = retail ? Math.max(4, Math.min(100, (historical / retail) * 100)) : 0;
@@ -499,6 +513,14 @@
       const detail = event.target.closest('[data-details]');
       const watch = event.target.closest('[data-watch]');
       const target = event.target.closest('[data-save-target]');
+      const outbound = event.target.closest('[data-track-deal]');
+      if (outbound) {
+        track('deal_click', {
+          surface: outbound.dataset.trackDeal,
+          store: outbound.dataset.store,
+          priceBucket: analytics?.priceBucket(outbound.dataset.price)
+        });
+      }
       if (detail) openDetails(detail.dataset.details);
       if (watch) toggleWatch(watch.dataset.watch);
       if (target) {
@@ -509,11 +531,13 @@
           saveWatchlist();
           showToast(`Watching ${deal.title} at ${money(price)}.`);
           target.textContent = 'Target saved';
+          track('watchlist_target_update', { surface: 'detail' });
           render();
         }
       }
     });
     $('#openWatchlist').addEventListener('click', () => {
+      track('watchlist_open', { surface: 'homepage' });
       state.lastFocused = document.activeElement;
       renderWatchlist();
       $('#watchDialog').showModal();
@@ -529,6 +553,7 @@
         saveWatchlist();
         renderWatchlist();
         showToast('Target price updated.');
+        track('watchlist_target_update', { surface: 'watchlist' });
       }
     });
     $('[data-close-dialog]').addEventListener('click', () => closeDialog($('#dealDialog'), state.detailController));
