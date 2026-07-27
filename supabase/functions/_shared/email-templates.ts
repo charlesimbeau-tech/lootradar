@@ -28,6 +28,7 @@ export interface DigestDeal {
   salePrice: number;
   storeName: string;
   dealScore: number;
+  recommendation: string;
 }
 
 export interface WeeklyDigestEmailInput extends EmailLinks {
@@ -38,6 +39,8 @@ const RETAILER_CAVEAT =
   "Prices and availability can change. The retailer page is authoritative for the final price and availability.";
 const FREE_COVERAGE_CAVEAT =
   "Free-game coverage is limited to LootRadar's current CheapShark-derived snapshot.";
+const DIGEST_COVERAGE_CAVEAT =
+  "Deal coverage is limited to LootRadar's current CheapShark-derived snapshot.";
 
 function escapeHtml(value: string): string {
   return value
@@ -48,8 +51,16 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
-function safeHeaderText(value: string, field: string): string {
-  if (typeof value !== "string" || value.trim().length === 0 || value.length > 300) {
+function safeHeaderText(
+  value: string,
+  field: string,
+  maxLength = 300,
+): string {
+  if (
+    typeof value !== "string" ||
+    value.trim().length === 0 ||
+    value.length > maxLength
+  ) {
     throw new Error(`${field} is required`);
   }
   return value.replace(/[\r\n]+/gu, " ").trim();
@@ -231,6 +242,11 @@ export function renderWeeklyDigestEmail(input: WeeklyDigestEmailInput): Rendered
     salePrice: finiteMoney(deal.salePrice, "Sale price"),
     storeName: safeHeaderText(deal.storeName, "Store name"),
     dealScore: finiteMoney(deal.dealScore, "Deal Score"),
+    recommendation: safeHeaderText(
+      deal.recommendation,
+      "Ranking reason",
+      240,
+    ),
   }));
   const subject = "Five PC game deals worth a look this week";
   const listItems = deals.map((deal) =>
@@ -238,7 +254,7 @@ export function renderWeeklyDigestEmail(input: WeeklyDigestEmailInput): Rendered
       escapeHtml(money(deal.salePrice))
     } at ${escapeHtml(deal.storeName)} <span style="color:#536052">(Deal Score ${
       escapeHtml(String(Math.round(deal.dealScore)))
-    })</span></li>`
+    })</span><br><span style="color:#536052">${escapeHtml(deal.recommendation)}</span></li>`
   ).join("");
   const content = `
         <h1 style="margin:0;font-size:28px;line-height:1.2">Five deals worth a look</h1>
@@ -252,7 +268,7 @@ export function renderWeeklyDigestEmail(input: WeeklyDigestEmailInput): Rendered
   const dealLines = deals.map((deal, index) =>
     `${index + 1}. ${deal.title} — ${money(deal.salePrice)} at ${deal.storeName} (Deal Score ${
       Math.round(deal.dealScore)
-    })`
+    })\n   ${deal.recommendation}`
   );
   const text = [
     "Five deals worth a look",
@@ -261,12 +277,16 @@ export function renderWeeklyDigestEmail(input: WeeklyDigestEmailInput): Rendered
     "",
     ...dealLines,
     "",
-    textFooter(links),
+    textFooter(links, DIGEST_COVERAGE_CAVEAT),
   ].join("\n");
 
   return {
     subject,
-    html: htmlShell(subject, content, htmlFooter(links)),
+    html: htmlShell(
+      subject,
+      content,
+      htmlFooter(links, DIGEST_COVERAGE_CAVEAT),
+    ),
     text,
   };
 }

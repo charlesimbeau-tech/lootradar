@@ -2,6 +2,8 @@ import type { RenderedEmail } from "./email-templates.ts";
 
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
 const DEFAULT_FROM = "LootRadar <deals@thelootradar.com>";
+const DEFAULT_TIMEOUT_MS = 15_000;
+const MAX_TIMEOUT_MS = 60_000;
 
 export interface EmailMessage extends RenderedEmail {
   to: string | string[];
@@ -9,13 +11,22 @@ export interface EmailMessage extends RenderedEmail {
 }
 
 export interface EmailProvider {
-  send(message: EmailMessage, idempotencyKey: string): Promise<{ id: string }>;
+  send(
+    message: EmailMessage,
+    idempotencyKey: string,
+    options?: EmailSendOptions,
+  ): Promise<{ id: string }>;
 }
 
 export interface ResendProviderOptions {
   apiKey: string;
   from?: string;
   fetchImpl?: typeof fetch;
+  timeoutMs?: number;
+}
+
+export interface EmailSendOptions {
+  signal?: AbortSignal;
 }
 
 export class EmailProviderError extends Error {
@@ -81,6 +92,53 @@ function retryableStatus(status: number): boolean {
   return status === 408 || status === 429 || status >= 500;
 }
 
+function requestTimeout(value: number | undefined): number {
+  const timeoutMs = value ?? DEFAULT_TIMEOUT_MS;
+  if (
+    !Number.isSafeInteger(timeoutMs) ||
+    timeoutMs < 1 ||
+    timeoutMs > MAX_TIMEOUT_MS
+  ) {
+    throw new Error(
+      `Resend timeout must be an integer between 1 and ${MAX_TIMEOUT_MS} milliseconds`,
+    );
+  }
+  return timeoutMs;
+}
+
+function boundedSignal(
+  timeoutMs: number,
+  callerSignal?: AbortSignal,
+): { signal: AbortSignal; cleanup: () => void } {
+  const controller = new AbortController();
+  const abortFromCaller = () => {
+    controller.abort(
+      callerSignal?.reason ?? new DOMException("Request aborted", "AbortError"),
+    );
+  };
+  const timeout = setTimeout(
+    () =>
+      controller.abort(
+        new DOMException("Resend request timed out", "TimeoutError"),
+      ),
+    timeoutMs,
+  );
+
+  if (callerSignal?.aborted) {
+    abortFromCaller();
+  } else {
+    callerSignal?.addEventListener("abort", abortFromCaller, { once: true });
+  }
+
+  return {
+    signal: controller.signal,
+    cleanup() {
+      clearTimeout(timeout);
+      callerSignal?.removeEventListener("abort", abortFromCaller);
+    },
+  };
+}
+
 async function providerMessage(response: Response): Promise<string> {
   try {
     const body = await response.json() as Record<string, unknown>;
@@ -102,9 +160,10 @@ export function createResendProvider(
   const apiKey = requiredSingleLine(options.apiKey, "Resend API key", 500);
   const from = requiredSingleLine(options.from ?? DEFAULT_FROM, "From address");
   const fetchImpl = options.fetchImpl ?? fetch;
+  const timeoutMs = requestTimeout(options.timeoutMs);
 
   return {
-    async send(message, idempotencyKey) {
+    async send(message, idempotencyKey, sendOptions = {}) {
       if (!message || typeof message !== "object") {
         throw new Error("Email message is required");
       }
@@ -123,50 +182,62 @@ export function createResendProvider(
       };
 
       let response: Response;
+      const requestSignal = boundedSignal(timeoutMs, sendOptions.signal);
       try {
-        response = await fetchImpl(RESEND_ENDPOINT, {
-          method: "POST",
-          redirect: "manual",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-            "User-Agent": "LootRadar-Alerts/1.0",
-            "Idempotency-Key": key,
-          },
-          body: JSON.stringify(body),
-        });
-      } catch (error) {
-        throw new EmailProviderError("Resend request failed before receiving a response", {
-          retryable: true,
-          cause: error,
-        });
-      }
+        try {
+          if (requestSignal.signal.aborted) {
+            throw requestSignal.signal.reason;
+          }
+          response = await fetchImpl(RESEND_ENDPOINT, {
+            method: "POST",
+            redirect: "manual",
+            signal: requestSignal.signal,
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+              "User-Agent": "LootRadar-Alerts/1.0",
+              "Idempotency-Key": key,
+            },
+            body: JSON.stringify(body),
+          });
+          if (requestSignal.signal.aborted) {
+            throw requestSignal.signal.reason;
+          }
+        } catch (error) {
+          throw new EmailProviderError("Resend request failed before receiving a response", {
+            retryable: true,
+            cause: error,
+          });
+        }
 
-      if (!response.ok) {
-        throw new EmailProviderError(await providerMessage(response), {
-          retryable: retryableStatus(response.status),
-          status: response.status,
-        });
-      }
+        if (!response.ok) {
+          throw new EmailProviderError(await providerMessage(response), {
+            retryable: retryableStatus(response.status),
+            status: response.status,
+          });
+        }
 
-      let result: unknown;
-      try {
-        result = await response.json();
-      } catch (error) {
-        throw new EmailProviderError("Resend returned an invalid success response", {
-          retryable: false,
-          status: response.status,
-          cause: error,
-        });
+        let result: unknown;
+        try {
+          result = await response.json();
+        } catch (error) {
+          throw new EmailProviderError("Resend returned an invalid success response", {
+            retryable: true,
+            status: response.status,
+            cause: error,
+          });
+        }
+        const id = (result as { id?: unknown } | null)?.id;
+        if (typeof id !== "string" || id.trim().length === 0) {
+          throw new EmailProviderError("Resend success response did not contain an email ID", {
+            retryable: true,
+            status: response.status,
+          });
+        }
+        return { id: id.trim() };
+      } finally {
+        requestSignal.cleanup();
       }
-      const id = (result as { id?: unknown } | null)?.id;
-      if (typeof id !== "string" || id.trim().length === 0) {
-        throw new EmailProviderError("Resend success response did not contain an email ID", {
-          retryable: false,
-          status: response.status,
-        });
-      }
-      return { id: id.trim() };
     },
   };
 }
