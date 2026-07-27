@@ -24,6 +24,9 @@ test('the refresh workflow limits automated CheapShark pressure', () => {
 
   assert.match(workflow, /cron: '17 \*\/3 \* \* \*'/);
   assert.doesNotMatch(workflow, /cron: '0 \* \* \* \*'/);
+  assert.match(workflow, /actions\/checkout@v5/);
+  assert.match(workflow, /actions\/setup-node@v6/);
+  assert.match(workflow, /node-version: '24'/);
 });
 
 test('the refresh script retries safely and validates before publishing', () => {
