@@ -45,3 +45,60 @@ test('every exposed account table enables RLS and checks auth.uid', () => {
     );
   }
 });
+
+test('account sync RPCs derive ownership and reject stale timestamps atomically', () => {
+  for (const functionName of [
+    'lr_sync_profile',
+    'lr_sync_feedback',
+    'lr_sync_watch_item',
+    'lr_delete_watch_item'
+  ]) {
+    assert.match(sql, new RegExp(`create or replace function public\\.${functionName}`, 'i'));
+    assert.match(
+      sql,
+      new RegExp(
+        `function public\\.${functionName}[\\s\\S]+?auth\\.uid\\(\\)[\\s\\S]+?p_expected_user_id`,
+        'i'
+      )
+    );
+    assert.match(
+      sql,
+      new RegExp(`revoke all on function public\\.${functionName}[\\s\\S]+?from public`, 'i')
+    );
+    assert.match(
+      sql,
+      new RegExp(`grant execute on function public\\.${functionName}[\\s\\S]+?to authenticated`, 'i')
+    );
+  }
+
+  assert.match(
+    sql,
+    /excluded\.updated_at\s*>\s*(?:public\.)?lr_profiles\.updated_at/i
+  );
+  assert.match(
+    sql,
+    /excluded\.updated_at\s*>\s*(?:public\.)?lr_feedback\.updated_at/i
+  );
+  assert.match(
+    sql,
+    /excluded\.updated_at\s*>\s*(?:public\.)?lr_watchlist\.updated_at/i
+  );
+  assert.match(
+    sql,
+    /delete from public\.lr_watchlist[\s\S]+?updated_at\s*=\s*p_expected_updated_at/i
+  );
+  assert.match(sql, /security definer[\s\S]+?set search_path\s*=\s*''/i);
+  assert.match(
+    sql,
+    /create or replace function public\.lr_keep_newest_account_update\(\)[\s\S]+?new\.updated_at\s*<=\s*old\.updated_at/i
+  );
+  for (const table of ['lr_profiles', 'lr_feedback', 'lr_watchlist']) {
+    assert.match(
+      sql,
+      new RegExp(
+        `create trigger ${table}_keep_newest[\\s\\S]+?before update on public\\.${table}`,
+        'i'
+      )
+    );
+  }
+});

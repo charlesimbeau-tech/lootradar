@@ -5,6 +5,29 @@ const accountData = require('../lib/account-data.js');
 
 const PROFILE_KEY = 'lr_rec_profile_v3';
 const WATCHLIST_KEY = 'lr_watchlist_v1';
+const CACHE_OWNER_KEY = 'lr_account_cache_owner_v1';
+
+function userCacheKey(base, userId) {
+  return `${base}:user:${encodeURIComponent(userId)}`;
+}
+
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, resolve, reject };
+}
+
+async function waitFor(predicate, timeoutMs = 1500) {
+  const started = Date.now();
+  while (!predicate()) {
+    if (Date.now() - started > timeoutMs) throw new Error('Timed out waiting for condition');
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+}
 
 function makeStorage(initial = {}) {
   const values = new Map(Object.entries(initial));
@@ -17,6 +40,9 @@ function makeStorage(initial = {}) {
     setItem(key, value) {
       values.set(key, value);
       writes.push([key, value]);
+    },
+    removeItem(key) {
+      values.delete(key);
     }
   };
 }
@@ -59,6 +85,13 @@ function makeFakeSupabase(options = {}) {
     }
   }, options.reads || {});
   const calls = [];
+  let authCallback = null;
+  const rpcHandlers = Object.assign({}, options.rpcHandlers || {});
+
+  function readResult(table) {
+    const configured = reads[table] || { data: [], error: null };
+    return typeof configured === 'function' ? configured() : configured;
+  }
 
   function responseFor(table, operation) {
     const key = `${table}:${operation}`;
@@ -72,13 +105,12 @@ function makeFakeSupabase(options = {}) {
     return {
       select(columns) {
         calls.push({ table, operation: 'select', columns });
-        const result = reads[table] || { data: [], error: null };
         return {
           maybeSingle() {
-            return Promise.resolve(result);
+            return Promise.resolve(readResult(table));
           },
           then(resolve, reject) {
-            return Promise.resolve(result).then(resolve, reject);
+            return Promise.resolve(readResult(table)).then(resolve, reject);
           }
         };
       },
@@ -112,6 +144,7 @@ function makeFakeSupabase(options = {}) {
         };
       },
       onAuthStateChange(callback) {
+        authCallback = callback;
         return {
           data: {
             subscription: {
@@ -125,7 +158,28 @@ function makeFakeSupabase(options = {}) {
         return { error: options.signOutError ? new Error('sign out failed') : null };
       }
     },
-    from
+    from,
+    async rpc(name, parameters) {
+      calls.push({ operation: 'rpc', name, parameters });
+      if (options.errors && options.errors[`rpc:${name}`]) {
+        return { data: null, error: new Error(options.errors[`rpc:${name}`]) };
+      }
+      if (typeof rpcHandlers[name] === 'function') {
+        return rpcHandlers[name](parameters);
+      }
+      return { data: true, error: null };
+    },
+    emitAuth(event, nextUser) {
+      if (authCallback) {
+        authCallback(event, nextUser ? { user: nextUser, access_token: 'token' } : null);
+      }
+    },
+    setRead(table, value) {
+      reads[table] = value;
+    },
+    setRpcHandler(name, handler) {
+      rpcHandlers[name] = handler;
+    }
   };
 }
 
@@ -171,7 +225,13 @@ test('loadAndMerge reads all account records, applies feedback, then writes merg
     fake.calls.filter(call => call.operation === 'select').map(call => call.table),
     ['lr_profiles', 'lr_feedback', 'lr_watchlist']
   );
-  assert.deepEqual(storage.writes.map(([key]) => key), [PROFILE_KEY, WATCHLIST_KEY]);
+  assert.deepEqual(storage.writes.map(([key]) => key), [
+    userCacheKey(PROFILE_KEY, 'user-123'),
+    userCacheKey(WATCHLIST_KEY, 'user-123'),
+    PROFILE_KEY,
+    WATCHLIST_KEY,
+    CACHE_OWNER_KEY
+  ]);
   assert.deepEqual(JSON.parse(storage.getItem(PROFILE_KEY)), result.profile);
   assert.deepEqual(JSON.parse(storage.getItem(WATCHLIST_KEY)), result.watchlist);
   assert.equal(client.state().status, 'synced');
@@ -204,7 +264,7 @@ test('failed reads do not write local storage and report delayed without throwin
 test('failed remote writes keep the successfully merged local caches and report delayed', async () => {
   const storage = makeStorage();
   const fake = makeFakeSupabase({
-    errors: { 'lr_profiles:upsert': 'offline' }
+    errors: { 'rpc:lr_sync_profile': 'offline' }
   });
   const { createAccountClient } = loadClient();
   const client = createAccountClient({ client: fake, storage });
@@ -254,22 +314,32 @@ test('an absent remote profile does not replace newer local preferences', async 
 test('syncWatchlist debounces writes, upserts current rows, and deletes removed remote keys', async () => {
   const fake = makeFakeSupabase({
     reads: {
+      lr_profiles: { data: null, error: null },
+      lr_feedback: { data: [], error: null },
       lr_watchlist: {
-        data: [{ game_key: 'portal' }, { game_key: 'hades' }],
+        data: [{
+          game_key: 'portal',
+          title: 'Portal',
+          target_price: 5,
+          created_at: '2026-07-27T12:00:00.000Z',
+          updated_at: '2026-07-27T12:00:00.000Z'
+        }, {
+          game_key: 'hades',
+          title: 'Hades',
+          target_price: 10,
+          created_at: '2026-07-27T12:00:00.000Z',
+          updated_at: '2026-07-27T12:00:00.000Z'
+        }],
         error: null
       }
     }
   });
   const { createAccountClient } = loadClient();
   const client = createAccountClient({ client: fake, storage: makeStorage() });
+  const loaded = await client.loadAndMerge({}, {});
+  fake.calls.length = 0;
   const first = client.syncWatchlist({
-    portal: {
-      key: 'portal',
-      title: 'Portal',
-      targetPrice: 5,
-      addedAt: '2026-07-27T12:00:00.000Z',
-      updatedAt: '2026-07-27T12:00:00.000Z'
-    }
+    portal: loaded.watchlist.portal
   });
   const second = client.syncWatchlist({
     portal: {
@@ -281,18 +351,16 @@ test('syncWatchlist debounces writes, upserts current rows, and deletes removed 
     }
   });
 
-  assert.equal(fake.calls.some(call => call.operation === 'upsert'), false);
+  assert.equal(fake.calls.some(call => call.operation === 'rpc'), false);
   assert.equal(await first, true);
   assert.equal(await second, true);
 
-  const upsert = fake.calls.find(call => call.table === 'lr_watchlist' && call.operation === 'upsert');
-  assert.equal(upsert.rows.length, 1);
-  assert.equal(upsert.rows[0].target_price, 3);
-  assert.equal(upsert.rows[0].user_id, 'user-123');
-  assert.deepEqual(upsert.config, { onConflict: 'user_id,game_key' });
-  const removal = fake.calls.find(call => call.table === 'lr_watchlist' && call.operation === 'delete-in');
-  assert.equal(removal.column, 'game_key');
-  assert.deepEqual(removal.values, ['hades']);
+  const upsert = fake.calls.find(call => call.name === 'lr_sync_watch_item');
+  assert.equal(upsert.parameters.p_target_price, 3);
+  assert.equal(upsert.parameters.p_expected_user_id, 'user-123');
+  const removal = fake.calls.find(call => call.name === 'lr_delete_watch_item');
+  assert.equal(removal.parameters.p_game_key, 'hades');
+  assert.equal(removal.parameters.p_expected_updated_at, '2026-07-27T12:00:00.000Z');
 });
 
 test('guest and session failures report delayed or guest without rejecting writes', async () => {
@@ -316,7 +384,14 @@ test('a debounced write is cancelled when the authenticated account changes', as
   let activeUser = { id: 'user-a' };
   const fake = makeFakeSupabase({ getUser: () => activeUser });
   const { createAccountClient } = loadClient();
-  const client = createAccountClient({ client: fake, storage: makeStorage() });
+  const storage = makeStorage({
+    [CACHE_OWNER_KEY]: 'user-a',
+    [PROFILE_KEY]: '{}',
+    [WATCHLIST_KEY]: '{}',
+    [userCacheKey(PROFILE_KEY, 'user-a')]: '{}',
+    [userCacheKey(WATCHLIST_KEY, 'user-a')]: '{}'
+  });
+  const client = createAccountClient({ client: fake, storage });
 
   const pending = client.syncProfile({
     schemaVersion: 1,
@@ -329,8 +404,10 @@ test('a debounced write is cancelled when the authenticated account changes', as
   activeUser = { id: 'user-b' };
 
   assert.equal(await pending, false);
-  assert.equal(client.state().status, 'delayed');
-  assert.equal(fake.calls.some(call => call.table === 'lr_profiles' && call.operation === 'upsert'), false);
+  assert.equal(client.state().status, 'syncing');
+  assert.equal(client.state().user.id, 'user-b');
+  assert.equal(client.state().profile, null);
+  assert.equal(fake.calls.some(call => call.name === 'lr_sync_profile'), false);
 });
 
 test('account synchronization analytics exposes only success or failure', async () => {
@@ -365,4 +442,324 @@ test('account synchronization analytics exposes only success or failure', async 
     if (previous === undefined) delete globalThis.LootRadarAnalytics;
     else globalThis.LootRadarAnalytics = previous;
   }
+});
+
+test('a signed-in account never merges another account cache', async () => {
+  const accountAProfile = {
+    schemaVersion: 1,
+    budget: 99,
+    genres: ['Private A'],
+    updatedAt: '2026-07-27T12:00:00.000Z',
+    likes: {},
+    dislikes: {}
+  };
+  const accountBProfile = {
+    schemaVersion: 1,
+    budget: 12,
+    genres: ['B'],
+    updatedAt: '2026-07-27T11:00:00.000Z',
+    likes: {},
+    dislikes: {}
+  };
+  const storage = makeStorage({
+    [PROFILE_KEY]: JSON.stringify(accountAProfile),
+    [WATCHLIST_KEY]: JSON.stringify({
+      secretA: {
+        key: 'secretA',
+        title: 'Private A',
+        targetPrice: 1,
+        addedAt: '2026-07-27T12:00:00.000Z',
+        updatedAt: '2026-07-27T12:00:00.000Z'
+      }
+    }),
+    [CACHE_OWNER_KEY]: 'user-a',
+    [userCacheKey(PROFILE_KEY, 'user-b')]: JSON.stringify(accountBProfile),
+    [userCacheKey(WATCHLIST_KEY, 'user-b')]: '{}'
+  });
+  const fake = makeFakeSupabase({
+    user: { id: 'user-b' },
+    reads: {
+      lr_profiles: { data: null, error: null },
+      lr_feedback: { data: [], error: null },
+      lr_watchlist: { data: [], error: null }
+    }
+  });
+  const { createAccountClient } = loadClient();
+  const client = createAccountClient({ client: fake, storage });
+
+  const result = await client.loadAndMerge(accountAProfile, JSON.parse(storage.getItem(WATCHLIST_KEY)));
+
+  assert.equal(result.profile.budget, 12);
+  assert.deepEqual(result.profile.genres, ['B']);
+  assert.deepEqual(result.watchlist, {});
+  assert.equal(storage.getItem(CACHE_OWNER_KEY), 'user-b');
+  assert.equal(JSON.parse(storage.getItem(PROFILE_KEY)).budget, 12);
+});
+
+test('sign-out never reclassifies the previous account cache as guest data', async () => {
+  let activeUser = { id: 'user-a' };
+  const storage = makeStorage({
+    [CACHE_OWNER_KEY]: 'user-a',
+    [PROFILE_KEY]: JSON.stringify({
+      schemaVersion: 1,
+      budget: 88,
+      updatedAt: '2026-07-27T12:00:00.000Z',
+      likes: {},
+      dislikes: {}
+    }),
+    [WATCHLIST_KEY]: '{}'
+  });
+  const fake = makeFakeSupabase({ getUser: () => activeUser });
+  const { createAccountClient } = loadClient();
+  const client = createAccountClient({ client: fake, storage });
+  activeUser = null;
+  fake.emitAuth('SIGNED_OUT', null);
+
+  const result = await client.loadAndMerge(
+    JSON.parse(storage.getItem(PROFILE_KEY)),
+    JSON.parse(storage.getItem(WATCHLIST_KEY))
+  );
+
+  assert.equal(result.guest, true);
+  assert.notEqual(result.profile.budget, 88);
+  assert.deepEqual(result.watchlist, {});
+  assert.equal(storage.getItem(CACHE_OWNER_KEY), 'user-a');
+});
+
+test('a concurrent remote watch addition absent from the synchronized baseline is not deleted', async () => {
+  const storage = makeStorage();
+  const fake = makeFakeSupabase({
+    reads: {
+      lr_profiles: { data: null, error: null },
+      lr_feedback: { data: [], error: null },
+      lr_watchlist: {
+        data: [{
+          game_key: 'portal',
+          title: 'Portal',
+          target_price: 5,
+          created_at: '2026-07-27T10:00:00.000Z',
+          updated_at: '2026-07-27T10:00:00.000Z'
+        }],
+        error: null
+      }
+    }
+  });
+  const { createAccountClient } = loadClient();
+  const client = createAccountClient({ client: fake, storage });
+  const initial = await client.loadAndMerge({}, {});
+  fake.calls.length = 0;
+  fake.setRead('lr_watchlist', {
+    data: [
+      { game_key: 'portal' },
+      { game_key: 'hades' }
+    ],
+    error: null
+  });
+
+  await client.syncWatchlist(initial.watchlist);
+
+  const deletedKeys = fake.calls
+    .filter(call => call.name === 'lr_delete_watch_item')
+    .map(call => call.parameters.p_game_key);
+  assert.deepEqual(deletedKeys, []);
+});
+
+test('loadAndMerge does not save or emit private data after sign-out during reads', async () => {
+  let activeUser = { id: 'user-a' };
+  const profileRead = deferred();
+  const fake = makeFakeSupabase({
+    getUser: () => activeUser,
+    reads: {
+      lr_profiles: () => profileRead.promise,
+      lr_feedback: { data: [], error: null },
+      lr_watchlist: { data: [], error: null }
+    }
+  });
+  const storage = makeStorage();
+  const { createAccountClient } = loadClient();
+  const client = createAccountClient({ client: fake, storage });
+  const states = [];
+  client.subscribe(state => states.push(state));
+  const loading = client.loadAndMerge({
+    schemaVersion: 1,
+    budget: 77,
+    updatedAt: '2026-07-27T12:00:00.000Z',
+    likes: {},
+    dislikes: {}
+  }, {});
+  await waitFor(() => fake.calls.filter(call => call.operation === 'select').length === 3);
+  activeUser = null;
+  fake.emitAuth('SIGNED_OUT', null);
+  profileRead.resolve({ data: null, error: null });
+
+  const result = await loading;
+
+  assert.equal(result.cancelled, true);
+  assert.deepEqual(storage.writes, []);
+  assert.equal(client.state().status, 'guest');
+  assert.equal(
+    states.some(state => state.status !== 'syncing' && state.profile && state.profile.budget === 77),
+    false
+  );
+});
+
+test('loadAndMerge does not save or emit account A data after switching to account B during reads', async () => {
+  let activeUser = { id: 'user-a' };
+  const watchRead = deferred();
+  const fake = makeFakeSupabase({
+    getUser: () => activeUser,
+    reads: {
+      lr_profiles: { data: null, error: null },
+      lr_feedback: { data: [], error: null },
+      lr_watchlist: () => watchRead.promise
+    }
+  });
+  const storage = makeStorage();
+  const { createAccountClient } = loadClient();
+  const client = createAccountClient({ client: fake, storage });
+  const loading = client.loadAndMerge({
+    schemaVersion: 1,
+    budget: 77,
+    updatedAt: '2026-07-27T12:00:00.000Z',
+    likes: {},
+    dislikes: {}
+  }, {});
+  await waitFor(() => fake.calls.filter(call => call.operation === 'select').length === 3);
+  activeUser = { id: 'user-b' };
+  fake.emitAuth('SIGNED_IN', activeUser);
+  watchRead.resolve({ data: [], error: null });
+
+  const result = await loading;
+
+  assert.equal(result.cancelled, true);
+  assert.deepEqual(storage.writes, []);
+  assert.equal(client.state().status, 'syncing');
+  assert.equal(client.state().user.id, 'user-b');
+  assert.equal(client.state().profile, null);
+  assert.equal(client.state().watchlist, null);
+});
+
+test('same-resource writes remain serialized after the debounce window', async () => {
+  const firstRpc = deferred();
+  const storage = makeStorage();
+  const fake = makeFakeSupabase({
+    reads: {
+      lr_profiles: { data: null, error: null },
+      lr_feedback: { data: [], error: null },
+      lr_watchlist: { data: [], error: null }
+    }
+  });
+  const { createAccountClient } = loadClient();
+  let clock = Date.parse('2026-07-27T12:00:00.000Z');
+  const client = createAccountClient({
+    client: fake,
+    storage,
+    now: () => new Date(clock += 1000).toISOString()
+  });
+  await client.loadAndMerge({}, {});
+  fake.calls.length = 0;
+  let profileRpcCount = 0;
+  fake.setRpcHandler('lr_sync_profile', () => {
+    profileRpcCount += 1;
+    return profileRpcCount === 1
+      ? firstRpc.promise
+      : Promise.resolve({ data: true, error: null });
+  });
+
+  const first = client.syncProfile({ budget: 10, likes: {}, dislikes: {} });
+  await waitFor(() => profileRpcCount === 1);
+  const second = client.syncProfile({ budget: 20, likes: {}, dislikes: {} });
+  await new Promise(resolve => setTimeout(resolve, 450));
+  assert.equal(profileRpcCount, 1);
+
+  firstRpc.resolve({ data: true, error: null });
+  assert.equal(await first, true);
+  assert.equal(await second, true);
+  assert.equal(profileRpcCount, 2);
+  const writes = fake.calls.filter(call => call.name === 'lr_sync_profile');
+  assert.deepEqual(writes.map(call => call.parameters.p_data.budget), [10, 20]);
+  assert.ok(
+    Date.parse(writes[1].parameters.p_updated_at) >
+      Date.parse(writes[0].parameters.p_updated_at)
+  );
+});
+
+test('a server-rejected stale write stays local and reports sync delayed', async () => {
+  const storage = makeStorage();
+  const fake = makeFakeSupabase({
+    reads: {
+      lr_profiles: { data: null, error: null },
+      lr_feedback: { data: [], error: null },
+      lr_watchlist: { data: [], error: null }
+    }
+  });
+  const { createAccountClient } = loadClient();
+  const client = createAccountClient({ client: fake, storage });
+  await client.loadAndMerge({}, {});
+  fake.setRpcHandler('lr_sync_profile', () => ({ data: false, error: null }));
+
+  const success = await client.syncProfile({
+    budget: 42,
+    likes: {},
+    dislikes: {}
+  });
+
+  assert.equal(success, false);
+  assert.equal(client.state().status, 'delayed');
+  assert.equal(JSON.parse(storage.getItem(PROFILE_KEY)).budget, 42);
+});
+
+test('an edit made during load cancels the stale load before it can replace the local cache', async () => {
+  const profileRead = deferred();
+  const existingProfile = {
+    schemaVersion: 1,
+    budget: 10,
+    updatedAt: '2026-07-27T10:00:00.000Z',
+    likes: {},
+    dislikes: {}
+  };
+  const storage = makeStorage({
+    [CACHE_OWNER_KEY]: 'user-123',
+    [PROFILE_KEY]: JSON.stringify(existingProfile),
+    [WATCHLIST_KEY]: '{}',
+    [userCacheKey(PROFILE_KEY, 'user-123')]: JSON.stringify(existingProfile),
+    [userCacheKey(WATCHLIST_KEY, 'user-123')]: '{}'
+  });
+  const fake = makeFakeSupabase({
+    reads: {
+      lr_profiles: () => profileRead.promise,
+      lr_feedback: { data: [], error: null },
+      lr_watchlist: { data: [], error: null }
+    }
+  });
+  const { createAccountClient } = loadClient();
+  let clock = Date.parse('2026-07-27T12:00:00.000Z');
+  const client = createAccountClient({
+    client: fake,
+    storage,
+    now: () => new Date(clock += 1000).toISOString()
+  });
+  const loading = client.loadAndMerge(existingProfile, {});
+  await waitFor(() => fake.calls.filter(call => call.operation === 'select').length === 3);
+  const saving = client.syncProfile({ budget: 20, likes: {}, dislikes: {} });
+  profileRead.resolve({
+    data: {
+      data: {
+        schemaVersion: 1,
+        budget: 5,
+        updatedAt: '2026-07-27T11:00:00.000Z',
+        likes: {},
+        dislikes: {}
+      },
+      updated_at: '2026-07-27T11:00:00.000Z',
+      schema_version: 1
+    },
+    error: null
+  });
+
+  const loadResult = await loading;
+  assert.equal(loadResult.cancelled, true);
+  assert.equal(await saving, true);
+  assert.equal(JSON.parse(storage.getItem(PROFILE_KEY)).budget, 20);
+  assert.equal(client.state().profile.budget, 20);
 });
