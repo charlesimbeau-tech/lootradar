@@ -100,6 +100,37 @@ test('deep discounts still require quality eligibility', () => {
   assert.equal(selectLandingDeals(fixtures, 'deep').some(item => item.title === 'Weak Deep Cut'), false);
 });
 
+test('every landing collection applies the default bundle and Early Access exclusions', () => {
+  const qualifying = {
+    title: 'Qualified Pick',
+    storeID: '1',
+    storeName: 'Steam',
+    salePrice: 6,
+    userRating: 91,
+    reviewCount: 1200,
+    discount: 75,
+    dealScore: 82,
+    eligible: true,
+    tags: ['Online Co-op', 'Indie'],
+    genres: ['Indie'],
+    isIndie: true
+  };
+  const candidates = [
+    qualifying,
+    { ...qualifying, title: 'Bundle Pick', isBundle: true },
+    { ...qualifying, title: 'Early Access Pick', isEarlyAccess: true },
+    { ...qualifying, title: 'Excluded Content Pick', excludedContent: true }
+  ];
+
+  for (const pageId of Object.keys(PAGE_DEFINITIONS)) {
+    assert.deepEqual(
+      selectLandingDeals(candidates, pageId).map(item => item.title),
+      ['Qualified Pick'],
+      `${pageId} did not apply the default content exclusions`
+    );
+  }
+});
+
 test('generator writes a crawlable hub and six unique collection pages', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-search-pages-'));
   const deals = Array.from({ length: 14 }, (_, index) => generatedFixture(index + 1));

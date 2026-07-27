@@ -16,7 +16,7 @@ const PAGE_DEFINITIONS = {
     limit: 24,
     shortLabel: 'Best today',
     kicker: 'Best right now',
-    title: 'Best PC Game Deals Today | LootRadar',
+    title: 'Best PC game deals today | LootRadar',
     description: 'Browse today’s strongest PC game deals, selected from the current CheapShark snapshot using quality, value, and review confidence.',
     heading: 'Best PC game deals today',
     lede: 'A short list of well-reviewed games whose current prices deserve a closer look.',
@@ -36,7 +36,7 @@ const PAGE_DEFINITIONS = {
     limit: 24,
     shortLabel: 'Steam under $10',
     kicker: 'Single-digit prices',
-    title: 'Steam Deals Under $10 | LootRadar',
+    title: 'Steam deals under $10 | LootRadar',
     description: 'Find well-reviewed Steam storefront deals under $10, ranked by LootRadar using the current CheapShark price snapshot and review confidence.',
     heading: 'Steam deals under $10',
     lede: 'Steam storefront listings with single-digit prices and enough quality evidence to make the shortlist.',
@@ -56,7 +56,7 @@ const PAGE_DEFINITIONS = {
     limit: 24,
     shortLabel: 'Co-op',
     kicker: 'Better with company',
-    title: 'Co-op Game Deals Worth Sharing | LootRadar',
+    title: 'Co-op game deals worth sharing | LootRadar',
     description: 'Browse quality-qualified co-op PC game deals with explicit co-op metadata, current CheapShark prices, and transparent LootRadar ranking reasons.',
     heading: 'Co-op game deals worth sharing',
     lede: 'Games explicitly tagged for co-op play, filtered for quality before price cuts enter the conversation.',
@@ -76,7 +76,7 @@ const PAGE_DEFINITIONS = {
     limit: 24,
     shortLabel: 'Indie',
     kicker: 'Smaller games, strong signals',
-    title: 'Indie Game Deals Worth Discovering | LootRadar',
+    title: 'Indie game deals worth discovering | LootRadar',
     description: 'Discover well-reviewed indie PC game deals selected from current CheapShark listings using available Steam metadata and LootRadar’s Deal Score.',
     heading: 'Indie game deals worth discovering',
     lede: 'Independent games with strong player feedback and current prices that stand out.',
@@ -96,7 +96,7 @@ const PAGE_DEFINITIONS = {
     limit: 24,
     shortLabel: 'Deep discounts',
     kicker: 'Big cuts, quality intact',
-    title: 'Deep PC Game Discounts Worth a Look | LootRadar',
+    title: 'Deep PC game discounts worth a look | LootRadar',
     description: 'See PC game discounts of 70% or more that still clear LootRadar’s quality checks, ranked from the latest CheapShark price snapshot.',
     heading: 'Deep discounts that clear the quality bar',
     lede: 'Price cuts of at least 70% where the game evidence remains stronger than the sale badge.',
@@ -116,7 +116,7 @@ const PAGE_DEFINITIONS = {
     limit: 24,
     shortLabel: 'Hidden gems',
     kicker: 'Strong reviews, smaller audience',
-    title: 'Hidden-Gem PC Game Deals | LootRadar',
+    title: 'Hidden-gem PC game deals | LootRadar',
     description: 'Find lesser-known PC game deals with at least 85% positive reviews, credible review volume, and a strong LootRadar Deal Score.',
     heading: 'Hidden-gem deals with strong player reviews',
     lede: 'Less-visible games with unusually positive feedback and enough reviews to support the signal.',
@@ -137,13 +137,13 @@ const HUB_DEFINITION = {
   canonicalPath: '/deals/index.html',
   shortLabel: 'All collections',
   kicker: 'Browse with a purpose',
-  title: 'Browse Quality-First PC Game Deals | LootRadar',
+  title: 'Browse quality-first PC game deals | LootRadar',
   description: 'Browse LootRadar’s permanent PC game deal collections, each built from current CheapShark listings with clear quality and selection rules.',
   heading: 'Browse quality-first PC game deals',
   lede: 'Permanent collections for finding worthwhile prices without treating every large discount as a recommendation.',
   introduction: [
     'LootRadar’s homepage is useful for searching and changing filters. This hub gives the strongest collections a permanent address, so you can return to the same kind of shortlist without rebuilding it each time. Choose by budget, play style, visibility, or discount depth.',
-    'Every collection begins with the current CheapShark price snapshot and applies a published LootRadar rule set. The pages are generated with visible listings, prices, review context, and ranking reasons before JavaScript runs. That makes them useful to readers, search engines, and anyone sharing a link with a friend who does not need another vague sale page.'
+      'Every collection begins with the current CheapShark price snapshot and applies a published LootRadar rule set. The pages show listings, prices, review context, and ranking reasons before JavaScript runs. That makes a shared link immediately useful, even when scripts do not run, and gives a friend something more specific than another vague sale page.'
   ],
   criteria: 'All collection pages exclude listings that fail LootRadar’s default content and quality rules unless a page states a stricter boundary. Each page explains its own price, metadata, rating, review-count, discount, or Deal Score requirements. Collections with fewer than 6 matches remain available as a useful fallback but are marked not to appear in search results until inventory recovers.',
   caveat: 'Prices come from CheapShark and the published snapshot refreshes every three hours. A listing may change before the next snapshot or after you follow its store link.',
@@ -152,7 +152,9 @@ const HUB_DEFINITION = {
 
 function selectLandingDeals(deals, pageId) {
   const selected = deals.filter(deal => {
-    if (!deal.eligible) return false;
+    if (!deal.eligible || deal.excludedContent || deal.isBundle || deal.isEarlyAccess) {
+      return false;
+    }
     if (pageId === 'best') return Number(deal.dealScore) >= 55;
     if (pageId === 'steam-under-10') {
       return String(deal.storeID) === '1' && Number(deal.salePrice) <= 10;
