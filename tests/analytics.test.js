@@ -41,6 +41,24 @@ test('drops sensitive and unknown properties', () => {
   assert.equal(sanitizeEvent('page_view'), null);
 });
 
+test('allows only privacy-safe account sync outcomes', () => {
+  assert.equal(sanitizeEvent('account_sync'), 'account_sync');
+  assert.deepEqual(
+    sanitizeProperties({
+      result: 'success',
+      email: 'person@example.com',
+      userId: 'user-123',
+      gameId: 'private-game',
+      targetPrice: 4.99,
+      watchlist: ['private-game'],
+      preferenceProfile: { genres: ['RPG'] }
+    }),
+    { result: 'success' }
+  );
+  assert.deepEqual(sanitizeProperties({ result: 'failure' }), { result: 'failure' });
+  assert.deepEqual(sanitizeProperties({ result: 'maybe' }), {});
+});
+
 test('keeps property values printable and bounded', () => {
   const longValue = `  home\npage\u0000card ${'x'.repeat(100)}  `;
   const properties = sanitizeProperties({

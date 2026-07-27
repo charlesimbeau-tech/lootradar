@@ -14,6 +14,7 @@ const requiredSource = [
   'lib/deal-normalizer.js', 'lib/deal-score.js', 'lib/deal-filters.js',
   'lib/cheapshark-client.js', 'lib/deal-snapshot-validator.js',
   'lib/alert-snapshot.js',
+  'lib/account-data.js', 'lib/account-client.js',
   'lib/analytics.js', 'lib/safe-redirect.js', 'lib/rss-feed.js',
   'feed.xml', 'sitemap.xml', 'public/og.png',
   ...brandIconFiles
@@ -22,6 +23,7 @@ const requiredBuild = [
   'dist/server/index.js', 'dist/static/index.html', 'dist/static/app.js',
   'dist/static/alert-deals.json', 'dist/static/deals.json',
   'dist/static/lib/alert-snapshot.js', 'dist/static/lib/cheapshark-client.js',
+  'dist/static/lib/account-data.js', 'dist/static/lib/account-client.js',
   'dist/static/lib/analytics.js', 'dist/static/lib/safe-redirect.js',
   'dist/static/lib/rss-feed.js', 'dist/static/recommendations.js',
   'dist/static/feed.xml', 'dist/static/sitemap.xml', 'dist/static/public/og.png',
