@@ -15,7 +15,7 @@ const requiredSource = [
   'lib/cheapshark-client.js', 'lib/deal-snapshot-validator.js',
   'lib/alert-snapshot.js',
   'lib/account-data.js', 'lib/account-client.js',
-  'lib/analytics.js', 'lib/safe-redirect.js', 'lib/rss-feed.js',
+  'lib/analytics.js', 'lib/auth-controller.js', 'lib/safe-redirect.js', 'lib/rss-feed.js',
   'feed.xml', 'sitemap.xml', 'public/og.png',
   ...brandIconFiles
 ];
@@ -25,7 +25,8 @@ const requiredBuild = [
   'dist/static/alert-deals.json', 'dist/static/deals.json',
   'dist/static/lib/alert-snapshot.js', 'dist/static/lib/cheapshark-client.js',
   'dist/static/lib/account-data.js', 'dist/static/lib/account-client.js',
-  'dist/static/lib/analytics.js', 'dist/static/lib/safe-redirect.js',
+  'dist/static/lib/analytics.js', 'dist/static/lib/auth-controller.js',
+  'dist/static/lib/safe-redirect.js',
   'dist/static/lib/rss-feed.js', 'dist/static/recommendations.js',
   'dist/static/feed.xml', 'dist/static/sitemap.xml', 'dist/static/public/og.png',
   ...brandIconFiles.map(file => path.join('dist', 'static', file))
@@ -189,22 +190,39 @@ for (const token of ["track('deal_click'", "'recommendation_like'", "'recommenda
 }
 
 const loginPage = fs.readFileSync(path.join(root, 'login.html'), 'utf8');
-for (const token of ['lib/safe-redirect.js', 'lib/analytics.js', 'login.js?v=1', 'Continue with Google']) {
+for (const token of ['lib/safe-redirect.js', 'lib/analytics.js', 'lib/auth-controller.js', 'login.js?v=1', 'Continue with Google']) {
   if (!loginPage.includes(token)) failures.push(`login.html missing ${token}`);
 }
 const builtLoginPage = fs.readFileSync(path.join(root, 'dist', 'static', 'login.html'), 'utf8');
-for (const token of ['lib/safe-redirect.js', 'lib/analytics.js', 'login.js?v=1', 'Continue with Google']) {
+for (const token of ['lib/safe-redirect.js', 'lib/analytics.js', 'lib/auth-controller.js', 'login.js?v=1', 'Continue with Google']) {
   if (!builtLoginPage.includes(token)) failures.push(`dist/static/login.html missing ${token}`);
 }
 const loginScript = fs.readFileSync(path.join(root, 'login.js'), 'utf8');
 const builtLoginScript = fs.readFileSync(path.join(root, 'dist', 'static', 'login.js'), 'utf8');
 for (const [label, source] of [['login.js', loginScript], ['dist/static/login.js', builtLoginScript]]) {
   for (const token of [
-    "safeRedirect(params.get('next'), '/account.html')",
+    'LootRadarAuth.resolveNext',
+    'LootRadarRedirect.safeRedirect',
+    'LootRadarAuth.createLoginController'
+  ]) {
+    if (!source.includes(token)) failures.push(`${label} missing ${token}`);
+  }
+}
+const authController = fs.readFileSync(path.join(root, 'lib', 'auth-controller.js'), 'utf8');
+const builtAuthController = fs.readFileSync(path.join(root, 'dist', 'static', 'lib', 'auth-controller.js'), 'utf8');
+for (const [label, source] of [
+  ['lib/auth-controller.js', authController],
+  ['dist/static/lib/auth-controller.js', builtAuthController]
+]) {
+  for (const token of [
+    "parsed.pathname.toLowerCase() === '/login.html'",
+    'CALLBACK_ERROR_KEYS',
+    'result?.error',
     'signInWithOAuth({',
     "provider: 'google'",
     'signInWithOtp({',
     "track('email')",
+    'bindGoogleIdentityLink',
     'linkIdentity({',
     "'/account.html?linked=google'"
   ]) {
