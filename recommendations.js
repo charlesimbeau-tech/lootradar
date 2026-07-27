@@ -233,6 +233,21 @@ function gameLink(game) {
   return '#';
 }
 
+function gameStoreName(game) {
+  var entry = stores[String(game.storeID || '')];
+  if (entry && entry.name) return entry.name;
+  if (entry && entry.storeName) return entry.storeName;
+  return game.dealID ? 'Participating store' : 'Steam';
+}
+
+function escapeAttribute(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 function cardHtml(game, why) {
   var sale = Number(game.salePrice || game.price_usd || game.price || 0);
   var normal = Number(game.normalPrice || game.initial_price_usd || sale || 0);
@@ -246,6 +261,11 @@ function cardHtml(game, why) {
   var badge = onSale ? ('-' + savings + '%') : 'PICK';
   var storeLabel = onSale ? 'On sale' : 'Catalog';
   var linkText = onSale ? 'See current deal \u2192' : 'View on Steam \u2192';
+  var outboundStore = gameStoreName(game);
+  var trackingAttributes = onSale
+    ? ' data-track-deal data-track-surface="recommendations" data-track-store="' + escapeAttribute(outboundStore)
+      + '" data-track-price="' + sale + '"'
+    : '';
   var priceHtml = onSale
     ? '<span class="price-old">$' + normal.toFixed(2) + '</span><span class="price-new">' + (sale === 0 ? 'Free' : '$' + sale.toFixed(2)) + '</span>'
     : '<span class="price-new">' + (sale > 0 ? '$' + sale.toFixed(2) : 'Price unavailable') + '</span>';
@@ -262,7 +282,7 @@ function cardHtml(game, why) {
     + '<div class="confidence-chip">' + conf + '</div>'
     + whyHtml
     + '<div class="pricing">' + priceHtml + '</div>'
-    + '<a class="deal-link" href="' + gameLink(game) + '" target="_blank" rel="noopener noreferrer">' + linkText + '</a>'
+    + '<a class="deal-link" href="' + gameLink(game) + '" target="_blank" rel="noopener noreferrer"' + trackingAttributes + '>' + linkText + '</a>'
     + '<div class="card-actions" style="margin-top:8px;display:flex;gap:8px;">'
     + '<button class="feedback-btn" data-fb="like" data-id="' + key + '">More like this</button>'
     + '<button class="feedback-btn" data-fb="dislike" data-id="' + key + '">Not for me</button>'
@@ -531,12 +551,28 @@ function bindControls() {
   });
 
   document.addEventListener('click', function(e) {
+    var dealLink = e.target.closest('[data-track-deal]');
+    if (dealLink && window.LootRadarAnalytics) {
+      window.LootRadarAnalytics.track('deal_click', {
+        surface: dealLink.dataset.trackSurface,
+        store: dealLink.dataset.trackStore,
+        priceBucket: window.LootRadarAnalytics.priceBucket(dealLink.dataset.trackPrice)
+      });
+    }
+
     var btn = e.target.closest('.feedback-btn');
     if (!btn) return;
     var id = btn.dataset.id, type = btn.dataset.fb;
-    if (!id || !type) return;
+    if (!id || (type !== 'like' && type !== 'dislike')) return;
     if (type === 'like') { profile.likes[id] = true; delete profile.dislikes[id]; }
     else { profile.dislikes[id] = true; delete profile.likes[id]; }
+    if (window.LootRadarAnalytics) {
+      window.LootRadarAnalytics.track(type === 'like' ? 'recommendation_like' : 'recommendation_skip', {
+        surface: 'recommendations',
+        action: type,
+        signedIn: Boolean(authedUserId)
+      });
+    }
     if (supabase && authedUserId) {
       supabase.from('lr_feedback').upsert({
         user_id: authedUserId, item_id: id, action: type,

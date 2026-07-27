@@ -85,8 +85,10 @@
     </footer>
 
     <script src="lib/cheapshark-client.js?v=1"></script>
+    <script src="lib/analytics.js?v=1"></script>
     <script>
     const API = 'https://www.cheapshark.com/api/1.0';
+    const analytics = window.LootRadarAnalytics;
     const cheapShark = window.LootRadarCheapShark.createCheapSharkClient({
         baseUrl: API,
         maxRetries: 2,
@@ -136,6 +138,10 @@
                     cacheTtlMs: 5 * 60 * 1000
                 });
                 if (searchInput.value.trim() !== q) return;
+                analytics.track('search_used', {
+                    surface: 'games_search',
+                    resultBucket: analytics.resultBucket(games.length)
+                });
 
                 if (!games.length) {
                     gameResults.style.display = 'block';
@@ -256,7 +262,8 @@
                                         ${retail > price ? `<span class="original-price">$${retail.toFixed(2)}</span>` : ''}
                                         <span class="sale-price">${price === 0 ? 'Free' : '$' + price.toFixed(2)}</span>
                                     </div>
-                                    <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer">
+                                    <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer"
+                                        data-track-deal data-track-surface="games_detail" data-track-store="${store}" data-track-price="${price}">
                                         Open ${store} →
                                     </a>
                                 </div>
@@ -304,7 +311,8 @@
                                 ${sale === 0 ? '<span class="free-tag">Free</span>' :
                                     `<span class="original-price">$${normal.toFixed(2)}</span><span class="sale-price">$${sale.toFixed(2)}</span>`}
                             </div>
-                            <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer">Open deal at ${store} →</a>
+                            <a class="deal-link" href="https://www.cheapshark.com/redirect?dealID=${d.dealID}" target="_blank" rel="noopener noreferrer"
+                                data-track-deal data-track-surface="games_featured" data-track-store="${store}" data-track-price="${sale}">Open deal at ${store} →</a>
                         </div>
                     </div>`;
             }).join('');
@@ -322,6 +330,15 @@
     window.addEventListener('hashchange', () => {
         const id = getGameIDFromHash();
         if (id) showGameDetail(id);
+    });
+    document.addEventListener('click', event => {
+        const link = event.target.closest('[data-track-deal]');
+        if (!link) return;
+        analytics.track('deal_click', {
+            surface: link.dataset.trackSurface,
+            store: link.dataset.trackStore,
+            priceBucket: analytics.priceBucket(link.dataset.trackPrice)
+        });
     });
     </script>
     <footer>
