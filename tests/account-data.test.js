@@ -41,11 +41,20 @@ test('watchlists union games and keep the most recently edited target', () => {
   const local = { portal: { key: 'portal', title: 'Portal', targetPrice: 3, updatedAt: '2026-07-27T13:00:00Z' } };
   const remote = [
     { game_key: 'portal', title: 'Portal', target_price: 5, updated_at: '2026-07-27T12:00:00Z' },
-    { game_key: 'hades', title: 'Hades', target_price: 10, updated_at: '2026-07-27T12:00:00Z' }
+    {
+      game_key: 'hades',
+      title: 'Hades',
+      target_price: 10,
+      last_known_price: 12.49,
+      last_known_store: ' Steam ',
+      updated_at: '2026-07-27T12:00:00Z'
+    }
   ];
   const merged = mergeWatchlists(local, remote);
   assert.equal(merged.portal.targetPrice, 3);
   assert.equal(merged.hades.targetPrice, 10);
+  assert.equal(merged.hades.lastKnownPrice, 12.49);
+  assert.equal(merged.hades.lastKnownStore, 'Steam');
 });
 
 test('legacy boolean feedback uses the profile timestamp and input data is cloned', () => {
@@ -99,11 +108,43 @@ test('watchlist normalization rejects invalid target prices and clones valid ent
     key: 'portal',
     title: 'Portal',
     targetPrice: 3.5,
+    lastKnownPrice: null,
+    lastKnownStore: null,
     addedAt: '2026-07-27T12:00:00Z',
     updatedAt: '2026-07-27T12:00:00Z'
   });
   normalized.portal.title = 'Changed';
   assert.equal(input.portal.title, 'Portal');
+});
+
+test('normalizes camel-case price context and clears invalid optional values', () => {
+  const normalized = normalizeWatchlist({
+    portal: {
+      title: 'Portal',
+      targetPrice: 3,
+      lastKnownPrice: '2.49',
+      lastKnownStore: '  GOG  '
+    },
+    hades: {
+      title: 'Hades',
+      targetPrice: 10,
+      lastKnownPrice: -1,
+      lastKnownStore: '   '
+    },
+    celeste: {
+      title: 'Celeste',
+      targetPrice: 5,
+      lastKnownPrice: Infinity,
+      lastKnownStore: null
+    }
+  }, '2026-07-27T12:00:00Z');
+
+  assert.equal(normalized.portal.lastKnownPrice, 2.49);
+  assert.equal(normalized.portal.lastKnownStore, 'GOG');
+  assert.equal(normalized.hades.lastKnownPrice, null);
+  assert.equal(normalized.hades.lastKnownStore, null);
+  assert.equal(normalized.celeste.lastKnownPrice, null);
+  assert.equal(normalized.celeste.lastKnownStore, null);
 });
 
 test('publishes the complete account data API as a browser global', () => {
