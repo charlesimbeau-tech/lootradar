@@ -31,6 +31,9 @@ jobs:
           MAX_NEW_STEAM_LOOKUPS: 60
         run: node scripts/enrich-catalog-steam.js
 
+      - name: Build quality-qualified alert snapshot
+        run: node scripts/build-alert-snapshot.js
+
       - name: Build search landing pages
         run: node scripts/build-search-pages.js
 
@@ -52,6 +55,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add deals.json
           [ -f enriched-deals.json ] && git add enriched-deals.json || true
+          [ -f alert-deals.json ] && git add alert-deals.json || true
           [ -f games-catalog.json ] && git add games-catalog.json || true
           [ -f games-catalog-large.json ] && git add games-catalog-large.json || true
           [ -d deals ] && git add deals || true

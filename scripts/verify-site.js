@@ -4,15 +4,17 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const requiredSource = [
   'index.html', 'methodology.html', 'app.js', 'style.css', 'manifest.json',
-  'deals.json', 'enriched-deals.json', 'config/editorial-config.js',
+  'alert-deals.json', 'deals.json', 'enriched-deals.json', 'config/editorial-config.js',
   'lib/deal-normalizer.js', 'lib/deal-score.js', 'lib/deal-filters.js',
   'lib/cheapshark-client.js', 'lib/deal-snapshot-validator.js',
+  'lib/alert-snapshot.js',
   'lib/analytics.js', 'lib/safe-redirect.js', 'lib/rss-feed.js',
   'feed.xml', 'sitemap.xml', 'public/og.png'
 ];
 const requiredBuild = [
   'dist/server/index.js', 'dist/static/index.html', 'dist/static/app.js',
-  'dist/static/deals.json', 'dist/static/lib/cheapshark-client.js',
+  'dist/static/alert-deals.json', 'dist/static/deals.json',
+  'dist/static/lib/alert-snapshot.js', 'dist/static/lib/cheapshark-client.js',
   'dist/static/lib/analytics.js', 'dist/static/lib/safe-redirect.js',
   'dist/static/lib/rss-feed.js', 'dist/static/recommendations.js',
   'dist/static/feed.xml', 'dist/static/sitemap.xml'
@@ -72,7 +74,7 @@ for (const file of generatedDealPages) {
   }
 }
 
-for (const file of ['manifest.json', 'deals.json', 'enriched-deals.json']) {
+for (const file of ['manifest.json', 'alert-deals.json', 'deals.json', 'enriched-deals.json']) {
   try {
     JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
   } catch (error) {
@@ -83,6 +85,23 @@ for (const file of ['manifest.json', 'deals.json', 'enriched-deals.json']) {
 const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 for (const token of ['lib/deal-score.js', 'lib/analytics.js', 'id="deals"', 'id="dealDialog"', 'methodology.html']) {
   if (!homepage.includes(token)) failures.push(`index.html missing ${token}`);
+}
+
+try {
+  const { validateAlertSnapshot } = require('../lib/alert-snapshot.js');
+  const sourceSnapshot = JSON.parse(
+    fs.readFileSync(path.join(root, 'alert-deals.json'), 'utf8')
+  );
+  const builtSnapshot = JSON.parse(
+    fs.readFileSync(path.join(root, 'dist', 'static', 'alert-deals.json'), 'utf8')
+  );
+  validateAlertSnapshot(sourceSnapshot);
+  validateAlertSnapshot(builtSnapshot);
+  if (JSON.stringify(sourceSnapshot) !== JSON.stringify(builtSnapshot)) {
+    failures.push('dist/static/alert-deals.json does not match the source snapshot');
+  }
+} catch (error) {
+  failures.push(`alert-deals.json (${error.message})`);
 }
 if (!homepage.includes('lib/cheapshark-client.js')) {
   failures.push('index.html missing the shared CheapShark client');
