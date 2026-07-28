@@ -88,6 +88,42 @@ test('account deletion analytics carries no private properties', () => {
   );
 });
 
+test('notification analytics carries only an allow-listed category and enabled state', () => {
+  assert.equal(sanitizeEvent('notification_toggle'), 'notification_toggle');
+  assert.deepEqual(
+    sanitizeProperties({
+      category: 'target_price',
+      enabled: true,
+      surface: 'account',
+      email: 'private@example.com',
+      userId: 'user-123',
+      targetPrice: 4.99,
+      gameKey: 'private-game'
+    }, 'notification_toggle'),
+    { category: 'target_price', enabled: 'true' }
+  );
+  assert.deepEqual(
+    sanitizeProperties({ category: 'free_game', enabled: false }, 'notification_toggle'),
+    { category: 'free_game', enabled: 'false' }
+  );
+  assert.deepEqual(
+    sanitizeProperties({ category: 'weekly_digest', enabled: true }, 'notification_toggle'),
+    { category: 'weekly_digest', enabled: 'true' }
+  );
+  assert.deepEqual(
+    sanitizeProperties({ category: 'all', enabled: false }, 'notification_toggle'),
+    {}
+  );
+  assert.deepEqual(
+    sanitizeProperties({ category: 'private-game', enabled: true }, 'notification_toggle'),
+    {}
+  );
+  assert.deepEqual(
+    sanitizeProperties({ category: 'free_game', enabled: true }, 'deal_click'),
+    {}
+  );
+});
+
 test('keeps property values printable and bounded', () => {
   const longValue = `  home\npage\u0000card ${'x'.repeat(100)}  `;
   const properties = sanitizeProperties({

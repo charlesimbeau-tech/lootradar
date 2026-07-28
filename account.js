@@ -15,6 +15,25 @@
   const deleteForm = document.getElementById('deleteForm');
   const deleteConfirm = document.getElementById('deleteConfirm');
   const confirmDelete = document.getElementById('confirmDelete');
+  const alertAvailabilityNode = document.getElementById('alertAvailability');
+  const alertHistoryNode = document.getElementById('alertHistory');
+  const alertHistoryStatusNode = document.getElementById('alertHistoryStatus');
+  const disableAllAlertsButton = document.getElementById('disableAllAlerts');
+  const ALERT_COLUMNS = Object.freeze({
+    target_price: 'target_price_enabled',
+    free_game: 'free_game_enabled',
+    weekly_digest: 'weekly_digest_enabled'
+  });
+  const ALERT_INPUTS = Object.freeze({
+    target_price: document.getElementById('targetPriceAlert'),
+    free_game: document.getElementById('freeGameAlert'),
+    weekly_digest: document.getElementById('weeklyDigestAlert')
+  });
+  const ALERT_LABELS = Object.freeze({
+    target_price: 'Target price',
+    free_game: 'Free game',
+    weekly_digest: 'Weekly digest'
+  });
 
   function show(text) {
     if (statusNode) statusNode.textContent = text;
@@ -77,6 +96,195 @@
       ? Object.keys(values.dislikes).length
       : 0;
     addTextRow(preferencesNode, 'Recommendation choices', `${likes} liked, ${dislikes} dismissed`);
+  }
+
+  function browserTimeZone() {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York';
+    } catch (_) {
+      return 'America/New_York';
+    }
+  }
+
+  function defaultAlertPreferences() {
+    return {
+      target_price_enabled: false,
+      free_game_enabled: false,
+      weekly_digest_enabled: false,
+      timezone: browserTimeZone(),
+      digest_day: 5,
+      digest_hour: 10,
+      unsubscribed_at: null
+    };
+  }
+
+  function setAlertControlsEnabled(enabled) {
+    for (const input of Object.values(ALERT_INPUTS)) {
+      if (input) input.disabled = !enabled;
+    }
+    if (disableAllAlertsButton) disableAllAlertsButton.disabled = !enabled;
+  }
+
+  function applyAlertPreferences(preferences) {
+    for (const [category, column] of Object.entries(ALERT_COLUMNS)) {
+      if (ALERT_INPUTS[category]) ALERT_INPUTS[category].checked = preferences[column] === true;
+    }
+  }
+
+  function renderAlertHistory(rows) {
+    if (!alertHistoryNode || !alertHistoryStatusNode) return;
+    alertHistoryNode.replaceChildren();
+    if (!rows.length) {
+      alertHistoryStatusNode.textContent = 'No deal email has been recorded for this account.';
+      return;
+    }
+    alertHistoryStatusNode.textContent = 'Your latest 20 deal-email delivery records.';
+    for (const delivery of rows) {
+      const row = document.createElement('li');
+      row.className = 'account-item';
+      const summary = document.createElement('span');
+      summary.textContent = ALERT_LABELS[delivery.alert_type] || 'Deal alert';
+      const detail = document.createElement('span');
+      detail.className = 'account-muted';
+      const createdAt = new Date(delivery.created_at);
+      const dateLabel = Number.isNaN(createdAt.getTime())
+        ? 'Date unavailable'
+        : createdAt.toLocaleString();
+      const statusLabel = typeof delivery.status === 'string'
+        ? delivery.status.replace(/_/g, ' ')
+        : 'unknown';
+      detail.textContent = `${statusLabel} · ${dateLabel}`;
+      row.append(summary, detail);
+      alertHistoryNode.appendChild(row);
+    }
+  }
+
+  async function loadAlertHistory(supabase) {
+    const result = await supabase
+      .from('lr_alert_deliveries')
+      .select('alert_type,status,created_at')
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (result.error) {
+      alertHistoryNode.replaceChildren();
+      alertHistoryStatusNode.textContent = 'Recent deal-email history is unavailable right now.';
+      return;
+    }
+    renderAlertHistory(Array.isArray(result.data) ? result.data : []);
+  }
+
+  async function setupAlertControls(supabase, user) {
+    const alertsEnabled = window.LR_ALERTS_ENABLED === true;
+    if (!alertsEnabled) {
+      setAlertControlsEnabled(false);
+      alertAvailabilityNode.textContent = 'Email alerts are not available yet.';
+      return;
+    }
+
+    let preferences = defaultAlertPreferences();
+    const result = await supabase
+      .from('lr_notification_preferences')
+      .select(
+        'target_price_enabled,free_game_enabled,weekly_digest_enabled,' +
+        'timezone,digest_day,digest_hour,unsubscribed_at'
+      )
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (result.error) {
+      setAlertControlsEnabled(false);
+      alertAvailabilityNode.textContent = 'Email alert settings are unavailable right now.';
+      await loadAlertHistory(supabase);
+      return;
+    }
+    if (result.data) preferences = { ...preferences, ...result.data };
+    applyAlertPreferences(preferences);
+    setAlertControlsEnabled(true);
+    alertAvailabilityNode.textContent =
+      `Choose the email you want. Weekly digests arrive Friday at 10:00 a.m. (${preferences.timezone || browserTimeZone()}).`;
+
+    async function saveCategory(category, enabled) {
+      const column = ALERT_COLUMNS[category];
+      const input = ALERT_INPUTS[category];
+      if (!column || !input) return;
+      setAlertControlsEnabled(false);
+      const next = {
+        ...preferences,
+        [column]: enabled,
+        timezone: browserTimeZone(),
+        digest_day: 5,
+        digest_hour: 10,
+        unsubscribed_at: enabled ? null : preferences.unsubscribed_at,
+        updated_at: new Date().toISOString()
+      };
+      const save = await supabase.from('lr_notification_preferences').upsert({
+        user_id: user.id,
+        [column]: enabled,
+        timezone: next.timezone,
+        digest_day: 5,
+        digest_hour: 10,
+        unsubscribed_at: next.unsubscribed_at,
+        updated_at: next.updated_at
+      }, { onConflict: 'user_id' });
+      if (save.error) {
+        input.checked = preferences[column] === true;
+        show('That email setting could not be saved. Try again.');
+      } else {
+        preferences = next;
+        window.LootRadarAnalytics?.track('notification_toggle', { category, enabled });
+        show('Deal email setting saved.');
+      }
+      setAlertControlsEnabled(true);
+    }
+
+    for (const [category, input] of Object.entries(ALERT_INPUTS)) {
+      input.addEventListener('change', () => {
+        saveCategory(category, input.checked).catch(() => {
+          input.checked = preferences[ALERT_COLUMNS[category]] === true;
+          setAlertControlsEnabled(true);
+          show('That email setting could not be saved. Try again.');
+        });
+      });
+    }
+
+    disableAllAlertsButton.addEventListener('click', async () => {
+      setAlertControlsEnabled(false);
+      const disabledAt = new Date().toISOString();
+      try {
+        const save = await supabase.from('lr_notification_preferences').upsert({
+          user_id: user.id,
+          target_price_enabled: false,
+          free_game_enabled: false,
+          weekly_digest_enabled: false,
+          timezone: browserTimeZone(),
+          digest_day: 5,
+          digest_hour: 10,
+          unsubscribed_at: disabledAt,
+          updated_at: disabledAt
+        }, { onConflict: 'user_id' });
+        if (save.error) throw save.error;
+        preferences = {
+          ...preferences,
+          target_price_enabled: false,
+          free_game_enabled: false,
+          weekly_digest_enabled: false,
+          unsubscribed_at: disabledAt,
+          updated_at: disabledAt
+        };
+        applyAlertPreferences(preferences);
+        for (const category of Object.keys(ALERT_COLUMNS)) {
+          window.LootRadarAnalytics?.track('notification_toggle', {
+            category,
+            enabled: false
+          });
+        }
+        show('All deal email is off.');
+      } catch (_) {
+        show('Deal email could not be turned off. Try again.');
+      }
+      setAlertControlsEnabled(true);
+    });
+
+    await loadAlertHistory(supabase);
   }
 
   function recentSession(session) {
@@ -155,6 +363,11 @@
     const merged = await account.loadAndMerge(localProfile, localWatchlist);
     renderWatchlist(merged.watchlist || localWatchlist);
     renderPreferences(merged.profile || localProfile);
+    setupAlertControls(supabase, session.user).catch(() => {
+      setAlertControlsEnabled(false);
+      alertAvailabilityNode.textContent = 'Email alert settings are unavailable right now.';
+      alertHistoryStatusNode.textContent = 'Recent deal-email history is unavailable right now.';
+    });
 
     const providers = Array.isArray(session.user.identities)
       ? session.user.identities.map(identity => identity.provider).filter(Boolean)

@@ -89,15 +89,19 @@
 
       <section class="account-card" aria-labelledby="notificationsHeading">
         <h2 id="notificationsHeading">Deal email</h2>
-        <p id="alertAvailability">Email delivery setup pending. No alert email is enabled.</p>
+        <p id="alertAvailability">Email alerts are not available yet.</p>
         <label class="account-toggle"><input id="targetPriceAlert" type="checkbox" disabled> <span><strong>Target-price alerts</strong><br><span class="account-muted">When a qualified watched game reaches your target.</span></span></label>
-        <label class="account-toggle"><input id="freeGameAlert" type="checkbox" disabled> <span><strong>Free-game alerts</strong><br><span class="account-muted">Qualified free listings in LootRadar’s current snapshot.</span></span></label>
+        <label class="account-toggle"><input id="freeGameAlert" type="checkbox" disabled> <span><strong>Free-game alerts</strong><br><span class="account-muted">Qualified free listings in LootRadar&rsquo;s current CheapShark-derived snapshot.</span></span></label>
         <label class="account-toggle"><input id="weeklyDigestAlert" type="checkbox" disabled> <span><strong>Weekly five-deal digest</strong><br><span class="account-muted">Friday at 10:00 a.m. in your time zone.</span></span></label>
+        <div class="account-actions">
+          <button class="account-button secondary" id="disableAllAlerts" type="button" disabled>Turn off all deal email</button>
+        </div>
+        <p class="account-muted">Each category is optional and off until you turn it on. Retailer pages control final price and availability.</p>
       </section>
 
       <section class="account-card" aria-labelledby="historyHeading">
         <h2 id="historyHeading">Recent alert history</h2>
-        <p class="account-muted">Alert delivery is not available yet. Once enabled, recent status appears here.</p>
+        <p class="account-muted" id="alertHistoryStatus">Alert delivery is not available yet. Once enabled, recent status appears here.</p>
         <ul class="account-list" id="alertHistory"></ul>
       </section>
 
