@@ -76,7 +76,8 @@ Basic browsing and local watchlists need no database.
 For optional private account syncing:
 
 1. Create a Supabase project and apply the complete, idempotent
-   `db/supabase-recommendations.sql` migration in its SQL editor.
+   `db/supabase-recommendations.sql` and `db/supabase-notifications.sql`
+   migrations in its SQL editor.
 2. In Authentication → URL Configuration, set the Site URL to exactly
    `https://thelootradar.com`.
 3. Set the Redirect allowlist to exactly
@@ -98,6 +99,38 @@ For optional private account syncing:
 7. Add `LR_SUPABASE_URL` and `LR_SUPABASE_ANON_KEY` as GitHub repository
    secrets, then run the “Sync Supabase Config” workflow. These are public
    browser values protected by Row Level Security, not privileged credentials.
+
+For default-off deal email:
+
+1. Verify `thelootradar.com` as a sending domain in Resend and create a
+   sending-only API key for `LootRadar <deals@thelootradar.com>`.
+2. Generate independent random values of at least 32 bytes for `CRON_SECRET`
+   and `UNSUBSCRIBE_SECRET`, then configure the Edge Function secrets:
+
+   ```bash
+   supabase secrets set \
+     CRON_SECRET="<random-cron-secret>" \
+     RESEND_API_KEY="<resend-sending-key>" \
+     UNSUBSCRIBE_SECRET="<random-unsubscribe-secret>"
+   ```
+
+3. Deploy the server functions. `supabase/config.toml` keeps the cron-secret
+   processor and signed-token unsubscribe endpoint public at the gateway;
+   each performs its own scoped authentication. Account deletion continues to
+   require a valid user JWT.
+
+   ```bash
+   supabase functions deploy process-alerts
+   supabase functions deploy unsubscribe
+   supabase functions deploy delete-account
+   ```
+
+4. In Supabase Vault, create `lootradar_project_url` with the project URL and
+   `lootradar_cron_secret` with the exact same value used for `CRON_SECRET`.
+   Enable `pg_cron` and `pg_net`, then apply `db/schedule-alerts.sql`.
+5. Keep every notification preference disabled and invoke `process-alerts`
+   once with the cron header. Confirm the current snapshot is processed with
+   zero deliveries, then test each category using one controlled account.
 
 Email controls use the public `LR_ALERTS_ENABLED` repository variable as a
 release gate. Leave it unset or `false` until the Resend sending domain, alert
@@ -144,9 +177,14 @@ Penalties include low review counts, mixed/negative sentiment, no reliable quali
 - [CheapShark](https://apidocs.cheapshark.com/) provides USD PC-store prices, deal redirects, Deal Rating, current alternate stores, and recorded historical lows. It is public and keyless, rate limited, and requires CheapShark redirect links. Pricing generally refreshes around hourly, but availability can lag.
 - Steam Store app details provides genres, categories, platforms, release date, and cover imagery for matching Steam App IDs.
 - SteamSpy provides tags and broad popularity metadata without a key. It is third-party, can be incomplete, and should be treated as approximate.
-- Supabase is optional and stores only user-owned recommendation profiles/feedback under RLS.
+- Supabase is optional and stores only owner-scoped profiles, feedback,
+  watchlists, alert preferences, and delivery history under RLS.
 
-LootRadar does not currently have a licensed full time-series price database, dependable repeated-bundle history, console price feeds, verified Steam Deck compatibility, publisher batch-release history, or email notification worker. The UI states these gaps rather than presenting inferred data as definite.
+LootRadar does not currently have a licensed full time-series price database,
+dependable repeated-bundle history, console price feeds, verified Steam Deck
+compatibility, or publisher batch-release history. Deal email remains
+unavailable until its sending domain, functions, schedule, and controlled
+production tests are complete.
 
 ## Deployment
 
@@ -171,7 +209,8 @@ The build produces `dist/static` plus a Cloudflare Worker-compatible `dist/serve
 - Historical lows are loaded on demand; the grid uses a labeled proxy to avoid bulk API calls.
 - There is no full price-history time series or typical-sale frequency.
 - Console deals and verified Steam Deck status require new licensed sources.
-- Email alerts require a scheduled backend and email provider; current targets are checked when the user visits.
+- Deal email code is default-off and requires the documented Supabase, Resend,
+  Vault, schedule, and controlled-delivery configuration before activation.
 - Publisher/developer signals are supported by configuration but metadata coverage is incomplete.
 - Existing personalized recommendations use their older profile score and have not yet been migrated to the new Deal Score.
 - Cached deal generation should be confirmed with CheapShark for long-term automated-volume compliance.
@@ -180,8 +219,9 @@ The build produces `dist/static` plus a Cloudflare Worker-compatible `dist/serve
 
 1. Ask CheapShark to confirm the scheduled caching pattern and preferred request volume.
 2. Add a licensed price-history/console source behind a replaceable adapter.
-3. Persist normalized games, offers, score snapshots, and watch alerts in Postgres.
-4. Add an email notification worker with double opt-in and unsubscribe handling.
+3. Add a normalized offer/score snapshot history for deeper price analysis.
+4. Verify the default-off email pipeline in production before setting
+   `LR_ALERTS_ENABLED=true`.
 5. Ingest verified Steam Deck status from a permitted source.
 6. Build a protected owner dashboard over `editorial-config` and flagged-title review queues.
 7. Migrate personalized recommendations to blend preference fit with the same transparent Deal Score.
