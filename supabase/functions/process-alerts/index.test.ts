@@ -6,7 +6,13 @@ import {
   type AlertDeliveryRow,
   type AlertPreference,
   type AlertRepository,
+  buildLootRadarDealUrl,
+  collectPaginated,
   createProcessAlertsHandler,
+  digestWindowDue,
+  fairDeliveryOrder,
+  RestAlertRepository,
+  retryAt,
 } from "./index.ts";
 
 const NOW = new Date("2026-07-31T14:15:00.000Z");
@@ -50,6 +56,7 @@ function preference(
 
 class MemoryRepository implements AlertRepository {
   snapshots = new Map<string, string>();
+  snapshotClaims = new Map<string, string>();
   preferences: AlertPreference[] = [preference()];
   watchlists = [{
     user_id: "user-a",
@@ -68,9 +75,30 @@ class MemoryRepository implements AlertRepository {
     this.rejected.push(input.reason);
   }
 
-  async claimSnapshot(input: { snapshotId: string }): Promise<boolean> {
-    if (this.snapshots.has(input.snapshotId)) return false;
+  async claimSnapshot(
+    input: { snapshotId: string },
+  ): Promise<{ token: string } | null> {
+    const current = this.snapshots.get(input.snapshotId);
+    if (current && current !== "failed") return null;
+    const token = crypto.randomUUID();
     this.snapshots.set(input.snapshotId, "processing");
+    this.snapshotClaims.set(input.snapshotId, token);
+    return { token };
+  }
+
+  async completeSnapshot(
+    snapshotId: string,
+    claimToken: string,
+    outcome: "processed" | "failed",
+  ): Promise<boolean> {
+    if (
+      this.snapshots.get(snapshotId) !== "processing" ||
+      this.snapshotClaims.get(snapshotId) !== claimToken
+    ) {
+      return false;
+    }
+    this.snapshots.set(snapshotId, outcome);
+    this.snapshotClaims.delete(snapshotId);
     return true;
   }
 
@@ -105,28 +133,70 @@ class MemoryRepository implements AlertRepository {
     }
   }
 
-  async markSnapshotProcessed(snapshotId: string): Promise<void> {
-    this.snapshots.set(snapshotId, "processed");
+  async recoverSendingLeases(
+    now: string,
+    retrySafetyCutoff: string,
+  ): Promise<void> {
+    for (const row of this.deliveries) {
+      if (
+        row.status !== "sending" ||
+        !row.lease_expires_at ||
+        Date.parse(row.lease_expires_at) > Date.parse(now)
+      ) {
+        continue;
+      }
+      const safe = Boolean(
+        row.first_attempt_at &&
+          Date.parse(row.first_attempt_at) >= Date.parse(retrySafetyCutoff) &&
+          row.attempt_count < 5,
+      );
+      Object.assign(row, {
+        status: safe ? "retryable" : "failed",
+        next_attempt_at: safe ? now : row.next_attempt_at,
+        lease_token: null,
+        lease_expires_at: null,
+      });
+    }
   }
 
-  async markSnapshotFailed(snapshotId: string): Promise<void> {
-    this.snapshots.set(snapshotId, "failed");
+  async listSendableDeliveries(
+    limit: number,
+    now: string,
+  ): Promise<AlertDeliveryRow[]> {
+    const due = (row: AlertDeliveryRow) =>
+      row.attempt_count < 5 &&
+      Date.parse(row.next_attempt_at ?? row.created_at ?? NOW.toISOString()) <=
+        Date.parse(now);
+    const pending = this.deliveries.filter((row) => row.status === "pending" && due(row));
+    const retryable = this.deliveries.filter((row) => row.status === "retryable" && due(row));
+    return structuredClone(fairDeliveryOrder(pending, retryable, limit));
   }
 
-  async listSendableDeliveries(limit: number): Promise<AlertDeliveryRow[]> {
-    return structuredClone(
-      this.deliveries.filter((row) => row.status === "pending" || row.status === "retryable").slice(
-        0,
-        limit,
-      ),
-    );
-  }
-
-  async claimDelivery(id: string): Promise<AlertDeliveryRow | null> {
-    const row = this.deliveries.find((candidate) => candidate.id === id);
-    if (!row || !["pending", "retryable"].includes(row.status)) return null;
+  async claimDelivery(
+    unclaimed: AlertDeliveryRow,
+    input: {
+      leaseToken: string;
+      now: string;
+      leaseExpiresAt: string;
+      maxAttempts: number;
+    },
+  ): Promise<AlertDeliveryRow | null> {
+    const row = this.deliveries.find((candidate) => candidate.id === unclaimed.id);
+    if (
+      !row ||
+      row.status !== unclaimed.status ||
+      row.attempt_count !== unclaimed.attempt_count ||
+      row.attempt_count >= input.maxAttempts ||
+      Date.parse(row.next_attempt_at ?? input.now) > Date.parse(input.now)
+    ) {
+      return null;
+    }
     row.status = "sending";
     row.attempt_count += 1;
+    row.lease_token = input.leaseToken;
+    row.lease_expires_at = input.leaseExpiresAt;
+    row.first_attempt_at ??= input.now;
+    row.last_attempt_at = input.now;
     return structuredClone(row);
   }
 
@@ -134,13 +204,41 @@ class MemoryRepository implements AlertRepository {
     return this.email;
   }
 
+  async freezeDeliveryPayload(
+    id: string,
+    leaseToken: string,
+    payload: AlertDeliveryRow["email_payload"],
+    idempotencyKey: string,
+    now: string,
+  ): Promise<AlertDeliveryRow | null> {
+    const row = this.deliveries.find((candidate) =>
+      candidate.id === id &&
+      candidate.status === "sending" &&
+      candidate.lease_token === leaseToken &&
+      !candidate.email_payload
+    );
+    if (!row || !payload) return null;
+    Object.assign(row, {
+      email_payload: structuredClone(payload),
+      idempotency_key: idempotencyKey,
+      payload_frozen_at: now,
+    });
+    return structuredClone(row);
+  }
+
   async updateDelivery(
     id: string,
+    leaseToken: string,
     patch: Partial<AlertDeliveryRow>,
-  ): Promise<void> {
-    const row = this.deliveries.find((candidate) => candidate.id === id);
-    if (!row) throw new Error("Missing delivery");
+  ): Promise<boolean> {
+    const row = this.deliveries.find((candidate) =>
+      candidate.id === id &&
+      candidate.status === "sending" &&
+      candidate.lease_token === leaseToken
+    );
+    if (!row) return false;
     Object.assign(row, structuredClone(patch));
+    return true;
   }
 }
 
@@ -163,7 +261,13 @@ function makeHarness(options: {
   deadlineMs?: number;
 } = {}) {
   const repository = options.repository ?? new MemoryRepository();
-  const sent: Array<{ key: string; to: string; allUrl: string }> = [];
+  const sent: Array<{
+    key: string;
+    to: string;
+    allUrl: string;
+    payload: string;
+  }> = [];
+  let currentNow = new Date(NOW);
   const handler = createProcessAlertsHandler({
     cronSecret: CRON_SECRET,
     repository,
@@ -177,17 +281,25 @@ function makeHarness(options: {
           key,
           to: String(message.to),
           allUrl: message.allUnsubscribeUrl,
+          payload: JSON.stringify(message),
         });
         return { id: `provider-${sent.length}` };
       }),
     },
     signToken: async (payload) => `signed-${payload.category}-${payload.userId}`,
-    now: () => new Date(NOW),
+    now: () => new Date(currentNow),
     publicSiteUrl: "https://thelootradar.com/",
     unsubscribeUrl: "https://project.supabase.co/functions/v1/unsubscribe",
     deadlineMs: options.deadlineMs,
   });
-  return { handler, repository, sent };
+  return {
+    handler,
+    repository,
+    sent,
+    advance(milliseconds: number) {
+      currentNow = new Date(currentNow.getTime() + milliseconds);
+    },
+  };
 }
 
 Deno.test("rejects an invalid cron secret before reading external state", async () => {
@@ -239,10 +351,12 @@ Deno.test("repeated invocation creates and sends no duplicate condition", async 
 Deno.test("retryable provider failures are retried with the same key", async () => {
   let attempts = 0;
   const keys: string[] = [];
-  const { handler, repository } = makeHarness({
-    send: async (_message, key) => {
+  const payloads: string[] = [];
+  const { handler, repository, advance } = makeHarness({
+    send: async (message, key) => {
       attempts += 1;
       keys.push(key);
+      payloads.push(JSON.stringify(message));
       if (attempts === 1) {
         throw new EmailProviderError("rate limited", {
           retryable: true,
@@ -255,10 +369,12 @@ Deno.test("retryable provider failures are retried with the same key", async () 
 
   await handler(makeRequest());
   assert.equal(repository.deliveries[0].status, "retryable");
+  advance(15 * 60 * 1000);
   await handler(makeRequest());
 
   assert.equal(attempts, 2);
   assert.equal(keys[0], keys[1]);
+  assert.equal(payloads[0], payloads[1]);
   assert.equal(repository.deliveries[0].status, "delivered");
   assert.equal(repository.deliveries[0].provider_message_id, "provider-success");
 });
@@ -420,4 +536,271 @@ Deno.test("caps work at 100 rows and no more than five concurrent sends", async 
     repository.deliveries.filter((row) => row.status === "retryable").length,
     10,
   );
+});
+
+Deno.test("digest window covers the scheduled three-hour interval and keeps the target week", () => {
+  const friday = preference({
+    weekly_digest_enabled: true,
+    digest_day: 5,
+    digest_hour: 10,
+  });
+  assert.equal(
+    digestWindowDue(friday, new Date("2026-07-31T14:00:00.000Z")),
+    "2026-W31",
+  );
+  assert.equal(
+    digestWindowDue(friday, new Date("2026-07-31T16:59:00.000Z")),
+    "2026-W31",
+  );
+  assert.equal(
+    digestWindowDue(friday, new Date("2026-07-31T17:00:00.000Z")),
+    null,
+  );
+
+  const sundayLate = preference({
+    timezone: "UTC",
+    digest_day: 0,
+    digest_hour: 23,
+  });
+  assert.equal(
+    digestWindowDue(sundayLate, new Date("2027-01-04T00:30:00.000Z")),
+    "2026-W53",
+  );
+});
+
+Deno.test("pagination reads every range exactly once", async () => {
+  const ranges: Array<[number, number]> = [];
+  const rows = await collectPaginated(
+    (from, to) => {
+      ranges.push([from, to]);
+      return Promise.resolve(
+        Array.from(
+          { length: from < 4 ? 2 : 1 },
+          (_, index) => from + index,
+        ),
+      );
+    },
+    { pageSize: 2, maxRows: 10 },
+  );
+
+  assert.deepEqual(rows, [0, 1, 2, 3, 4]);
+  assert.deepEqual(ranges, [[0, 1], [2, 3], [4, 5]]);
+});
+
+Deno.test("delivery selection alternates new and retry work fairly", () => {
+  const row = (
+    id: string,
+    status: "pending" | "retryable",
+  ): AlertDeliveryRow => ({
+    id,
+    user_id: "user-a",
+    alert_type: "free_game",
+    game_key: "steam:1000",
+    condition_key: `free:user-a:${id}`,
+    snapshot_id: NOW.toISOString(),
+    status,
+    attempt_count: status === "pending" ? 0 : 1,
+  });
+
+  assert.deepEqual(
+    fairDeliveryOrder(
+      [row("p1", "pending"), row("p2", "pending")],
+      [row("r1", "retryable"), row("r2", "retryable")],
+      3,
+    ).map((delivery) => delivery.id),
+    ["p1", "r1", "p2"],
+  );
+});
+
+Deno.test("retry backoff stops at the attempt ceiling", () => {
+  assert.equal(
+    retryAt(1, NOW),
+    new Date(NOW.getTime() + 15 * 60 * 1000).toISOString(),
+  );
+  assert.equal(
+    retryAt(4, NOW),
+    new Date(NOW.getTime() + 6 * 60 * 60 * 1000).toISOString(),
+  );
+  assert.equal(retryAt(5, NOW), null);
+});
+
+Deno.test("deal email CTA stays on LootRadar search", () => {
+  const url = new URL(
+    buildLootRadarDealUrl(
+      "https://thelootradar.com/deals/old-path?unsafe=1#fragment",
+      "A Game & Friends",
+    ),
+  );
+  assert.equal(url.origin, "https://thelootradar.com");
+  assert.equal(url.pathname, "/");
+  assert.equal(url.searchParams.get("q"), "A Game & Friends");
+  assert.equal(url.searchParams.get("collection"), "all");
+  assert.equal(url.hash, "");
+});
+
+Deno.test("a lost snapshot claim cannot be completed by the old worker", async () => {
+  class LostClaimRepository extends MemoryRepository {
+    override async completeSnapshot(): Promise<boolean> {
+      return false;
+    }
+  }
+  const repository = new LostClaimRepository();
+  const { handler, sent } = makeHarness({ repository });
+
+  const response = await handler(makeRequest());
+
+  assert.equal(response.status, 409);
+  assert.equal(sent.length, 0);
+  assert.equal(repository.snapshots.get(NOW.toISOString()), "processing");
+});
+
+Deno.test("expired sending leases recover only inside the provider safety window", async () => {
+  const repository = new MemoryRepository();
+  const base: AlertDeliveryRow = {
+    id: "safe",
+    user_id: "user-a",
+    alert_type: "free_game",
+    game_key: "steam:1000",
+    condition_key: "free:user-a:steam:1000:deal",
+    snapshot_id: NOW.toISOString(),
+    status: "sending",
+    attempt_count: 1,
+    first_attempt_at: new Date(NOW.getTime() - 22 * 60 * 60 * 1000).toISOString(),
+    lease_expires_at: new Date(NOW.getTime() - 1).toISOString(),
+  };
+  repository.deliveries = [
+    base,
+    {
+      ...base,
+      id: "unsafe",
+      first_attempt_at: new Date(NOW.getTime() - 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      ...base,
+      id: "exhausted",
+      attempt_count: 5,
+    },
+  ];
+
+  await repository.recoverSendingLeases(
+    NOW.toISOString(),
+    new Date(NOW.getTime() - 23 * 60 * 60 * 1000).toISOString(),
+  );
+
+  assert.deepEqual(
+    repository.deliveries.map((delivery) => delivery.status),
+    ["retryable", "failed", "failed"],
+  );
+});
+
+Deno.test("REST watchlist reads are user-batched, paginated, and tombstone-filtered", async () => {
+  const requests: Array<{ url: URL; range: string | null }> = [];
+  const fetchImpl = (async (
+    input: string | URL | Request,
+    init?: RequestInit,
+  ) => {
+    const url = new URL(String(input));
+    requests.push({
+      url,
+      range: new Headers(init?.headers).get("range"),
+    });
+    return new Response("[]", {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  }) as typeof fetch;
+  const repository = new RestAlertRepository({
+    supabaseUrl: "https://project.supabase.co",
+    serviceRoleKey: "service-role-secret",
+    fetchImpl,
+  });
+  const userIds = Array.from(
+    { length: 101 },
+    (_, index) => `00000000-0000-4000-8000-${String(index).padStart(12, "0")}`,
+  );
+
+  await repository.loadWatchlists(userIds);
+
+  assert.equal(requests.length, 2);
+  for (const request of requests) {
+    assert.equal(request.url.pathname, "/rest/v1/lr_watchlist");
+    assert.equal(request.url.searchParams.get("deleted_at"), "is.null");
+    assert.equal(request.range, "0-499");
+  }
+  assert.match(requests[0].url.searchParams.get("user_id") ?? "", /^in\.\(/);
+});
+
+Deno.test("REST delivery claims enforce the attempt ceiling in the CAS query", async () => {
+  const requests: URL[] = [];
+  const fetchImpl = (async (
+    input: string | URL | Request,
+  ) => {
+    requests.push(new URL(String(input)));
+    return new Response("[]", { status: 200 });
+  }) as typeof fetch;
+  const repository = new RestAlertRepository({
+    supabaseUrl: "https://project.supabase.co",
+    serviceRoleKey: "service-role-secret",
+    fetchImpl,
+  });
+  const row: AlertDeliveryRow = {
+    id: "delivery-a",
+    user_id: "user-a",
+    alert_type: "free_game",
+    game_key: "steam:1000",
+    condition_key: "free:user-a:steam:1000:deal",
+    snapshot_id: NOW.toISOString(),
+    status: "retryable",
+    attempt_count: 4,
+  };
+  const input = {
+    leaseToken: crypto.randomUUID(),
+    now: NOW.toISOString(),
+    leaseExpiresAt: new Date(NOW.getTime() + 60_000).toISOString(),
+    maxAttempts: 5,
+  };
+
+  await repository.claimDelivery(row, input);
+  assert.equal(
+    requests[0].searchParams.get("and"),
+    "(attempt_count.eq.4,attempt_count.lt.5)",
+  );
+
+  requests.length = 0;
+  await repository.claimDelivery({ ...row, attempt_count: 5 }, input);
+  assert.equal(requests.length, 0);
+});
+
+Deno.test("REST and Auth requests inherit caller cancellation", async () => {
+  const observedSignals: AbortSignal[] = [];
+  const fetchImpl = ((
+    _input: string | URL | Request,
+    init?: RequestInit,
+  ) => {
+    const signal = init?.signal as AbortSignal;
+    observedSignals.push(signal);
+    return new Promise<Response>((_resolve, reject) => {
+      signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+    });
+  }) as typeof fetch;
+  const repository = new RestAlertRepository({
+    supabaseUrl: "https://project.supabase.co",
+    serviceRoleKey: "service-role-secret",
+    fetchImpl,
+    requestTimeoutMs: 60_000,
+  });
+
+  for (
+    const operation of [
+      (signal: AbortSignal) => repository.loadEnabledPreferences(signal),
+      (signal: AbortSignal) => repository.resolveUserEmail("user-a", signal),
+    ]
+  ) {
+    const controller = new AbortController();
+    const pending = operation(controller.signal);
+    controller.abort(new DOMException("deadline", "TimeoutError"));
+    await assert.rejects(pending, /deadline/);
+  }
+  assert.equal(observedSignals.length, 2);
+  assert.ok(observedSignals.every((signal) => signal.aborted));
 });

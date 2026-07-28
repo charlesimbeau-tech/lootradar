@@ -1,0 +1,7 @@
+project_id = "lootradar"
+
+[functions.process-alerts]
+verify_jwt = false
+
+[functions.unsubscribe]
+verify_jwt = false
