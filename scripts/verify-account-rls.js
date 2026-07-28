@@ -53,12 +53,16 @@ function jwtSubject(token, label) {
 function headers(anonKey, token, prefer) {
   const result = {
     apikey: anonKey,
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${token || anonKey}`,
     Accept: 'application/json',
     'Content-Type': 'application/json'
   };
   if (prefer) result.Prefer = prefer;
   return result;
+}
+
+function rpcUrl(baseUrl, functionName) {
+  return new URL(`${baseUrl}/rest/v1/rpc/${functionName}`);
 }
 
 function tableUrl(baseUrl, table, filters = {}, extra = {}) {
@@ -95,6 +99,61 @@ async function request(url, options, context) {
   }
 
   return { ok: response.ok, status: response.status, data };
+}
+
+async function callRpc(config, token, functionName, parameters, context) {
+  return request(
+    rpcUrl(config.baseUrl, functionName),
+    {
+      method: 'POST',
+      headers: headers(config.anonKey, token),
+      body: JSON.stringify(parameters)
+    },
+    context || `${functionName} RPC`
+  );
+}
+
+async function assertRpcBlocked(
+  config,
+  token,
+  functionName,
+  parameters,
+  context
+) {
+  const result = await callRpc(
+    config,
+    token,
+    functionName,
+    parameters,
+    context
+  );
+  assert.ok(
+    !result.ok && (result.status === 401 || result.status === 403),
+    `${context} was not rejected (${result.status}): ${JSON.stringify(result.data)}`
+  );
+}
+
+async function assertRpcBoolean(
+  config,
+  token,
+  functionName,
+  parameters,
+  expected,
+  context
+) {
+  const result = await callRpc(
+    config,
+    token,
+    functionName,
+    parameters,
+    context
+  );
+  assert.equal(
+    result.ok,
+    true,
+    `${context} failed (${result.status}): ${JSON.stringify(result.data)}`
+  );
+  assert.equal(result.data, expected, `${context} returned the wrong result`);
 }
 
 async function readRows(config, token, definition) {
@@ -242,6 +301,164 @@ async function verifyTable(config, definition, backups) {
   );
 }
 
+async function verifyRpcBoundary(config, userAId, runId) {
+  const baseMs = Date.now();
+  const timestamp = offset => new Date(baseMs + offset).toISOString();
+  const profileData = {
+    rlsProbe: `rpc-${runId}`,
+    schemaVersion: 1,
+    updatedAt: timestamp(4_000),
+    likes: {},
+    dislikes: {}
+  };
+  const profileParameters = {
+    p_expected_user_id: userAId,
+    p_data: profileData,
+    p_schema_version: 1,
+    p_updated_at: profileData.updatedAt
+  };
+
+  await assertRpcBlocked(
+    config,
+    null,
+    'lr_sync_profile',
+    profileParameters,
+    'anonymous RPC authorization'
+  );
+  await assertRpcBlocked(
+    config,
+    config.userBToken,
+    'lr_sync_profile',
+    profileParameters,
+    'cross-user profile RPC authorization'
+  );
+  await assertRpcBoolean(
+    config,
+    config.userAToken,
+    'lr_sync_profile',
+    profileParameters,
+    true,
+    'owner profile RPC'
+  );
+  await assertRpcBoolean(
+    config,
+    config.userAToken,
+    'lr_sync_profile',
+    {
+      ...profileParameters,
+      p_data: { ...profileData, rlsProbe: 'stale' },
+      p_updated_at: timestamp(3_000)
+    },
+    false,
+    'stale profile RPC'
+  );
+
+  const itemId = `rls-probe-${runId}`;
+  await assertRpcBoolean(
+    config,
+    config.userAToken,
+    'lr_sync_feedback',
+    {
+      p_expected_user_id: userAId,
+      p_item_id: itemId,
+      p_action: 'like',
+      p_updated_at: timestamp(5_000)
+    },
+    true,
+    'owner feedback RPC'
+  );
+  await assertRpcBoolean(
+    config,
+    config.userAToken,
+    'lr_sync_feedback',
+    {
+      p_expected_user_id: userAId,
+      p_item_id: itemId,
+      p_action: 'dislike',
+      p_updated_at: timestamp(4_000)
+    },
+    false,
+    'stale feedback RPC'
+  );
+
+  const watchParameters = {
+    p_expected_user_id: userAId,
+    p_game_key: itemId,
+    p_title: 'RLS RPC probe',
+    p_target_price: 2.34,
+    p_last_known_price: 2.34,
+    p_last_known_store: 'Test store',
+    p_created_at: timestamp(1_000),
+    p_updated_at: timestamp(6_000)
+  };
+  await assertRpcBlocked(
+    config,
+    config.userBToken,
+    'lr_sync_watch_item',
+    watchParameters,
+    'cross-user watch RPC authorization'
+  );
+  await assertRpcBoolean(
+    config,
+    config.userAToken,
+    'lr_sync_watch_item',
+    watchParameters,
+    true,
+    'owner watch RPC'
+  );
+  await assertRpcBoolean(
+    config,
+    config.userAToken,
+    'lr_sync_watch_item',
+    {
+      ...watchParameters,
+      p_target_price: 0.01,
+      p_updated_at: timestamp(5_000)
+    },
+    false,
+    'stale watch RPC'
+  );
+
+  const deletedAt = timestamp(7_000);
+  await assertRpcBoolean(
+    config,
+    config.userAToken,
+    'lr_delete_watch_item',
+    {
+      p_expected_user_id: userAId,
+      p_game_key: itemId,
+      p_expected_updated_at: timestamp(5_000),
+      p_deleted_at: deletedAt
+    },
+    false,
+    'stale conditional delete RPC'
+  );
+  await assertRpcBoolean(
+    config,
+    config.userAToken,
+    'lr_delete_watch_item',
+    {
+      p_expected_user_id: userAId,
+      p_game_key: itemId,
+      p_expected_updated_at: timestamp(6_000),
+      p_deleted_at: deletedAt
+    },
+    true,
+    'owner conditional delete RPC'
+  );
+
+  const tombstoneRows = await readRows(config, config.userAToken, {
+    table: 'lr_watchlist',
+    filters: { user_id: userAId, game_key: itemId }
+  });
+  assert.equal(tombstoneRows.length, 1, 'watch tombstone disappeared');
+  assert.equal(
+    tombstoneRows[0].deleted_at,
+    deletedAt,
+    'conditional delete did not persist deleted_at'
+  );
+}
+
 async function restoreTables(config, definitions, backups) {
   const failures = [];
 
@@ -346,6 +563,7 @@ async function main() {
     for (const definition of definitions) {
       await verifyTable(config, definition, backups);
     }
+    await verifyRpcBoundary(config, userAId, runId);
   } catch (error) {
     verificationError = error;
   }
@@ -365,7 +583,7 @@ async function main() {
   if (verificationError) throw verificationError;
 
   console.log(
-    'Verified owner access and cross-user isolation for 4 account tables.'
+    'Verified owner access, cross-user isolation, and stale RPC protection for 4 account tables.'
   );
 }
 

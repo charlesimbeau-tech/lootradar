@@ -33,8 +33,15 @@ create table if not exists public.lr_watchlist (
   last_known_store text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
+  deleted_at timestamptz,
   primary key (user_id, game_key)
 );
+
+alter table public.lr_watchlist
+  add column if not exists deleted_at timestamptz;
+
+comment on column public.lr_watchlist.deleted_at is
+  'Soft-delete version timestamp. Active watchlist queries must filter deleted_at is null.';
 
 create table if not exists public.lr_notification_preferences (
   user_id uuid primary key references auth.users(id) on delete cascade,
@@ -198,18 +205,20 @@ begin
 
   insert into public.lr_watchlist (
     user_id, game_key, title, target_price, last_known_price,
-    last_known_store, created_at, updated_at
+    last_known_store, created_at, updated_at, deleted_at
   )
   values (
     v_user_id, p_game_key, p_title, p_target_price, p_last_known_price,
-    p_last_known_store, p_created_at, p_updated_at
+    p_last_known_store, p_created_at, p_updated_at, null
   )
   on conflict (user_id, game_key) do update
     set title = excluded.title,
         target_price = excluded.target_price,
         last_known_price = excluded.last_known_price,
         last_known_store = excluded.last_known_store,
-        updated_at = excluded.updated_at
+        created_at = excluded.created_at,
+        updated_at = excluded.updated_at,
+        deleted_at = null
     where excluded.updated_at > public.lr_watchlist.updated_at
   returning true into v_applied;
 
@@ -224,14 +233,18 @@ begin
       and last_known_store is not distinct from p_last_known_store
       and created_at = p_created_at
       and updated_at = p_updated_at
+      and deleted_at is null
   );
 end;
 $$;
 
+drop function if exists public.lr_delete_watch_item(uuid, text, timestamptz);
+
 create or replace function public.lr_delete_watch_item(
   p_expected_user_id uuid,
   p_game_key text,
-  p_expected_updated_at timestamptz
+  p_expected_updated_at timestamptz,
+  p_deleted_at timestamptz
 )
 returns boolean
 language plpgsql
@@ -240,25 +253,33 @@ set search_path = ''
 as $$
 declare
   v_user_id uuid := auth.uid();
-  v_deleted boolean;
+  v_applied boolean;
 begin
   if v_user_id is null or v_user_id <> p_expected_user_id then
     raise exception 'Account session changed' using errcode = '42501';
   end if;
-  if nullif(trim(p_game_key), '') is null or p_expected_updated_at is null then
+  if nullif(trim(p_game_key), '') is null
+      or p_expected_updated_at is null
+      or p_deleted_at is null
+      or p_deleted_at <= p_expected_updated_at then
     return false;
   end if;
 
-  delete from public.lr_watchlist
+  update public.lr_watchlist
+  set deleted_at = p_deleted_at,
+      updated_at = p_deleted_at
   where user_id = v_user_id
     and game_key = p_game_key
     and updated_at = p_expected_updated_at
-  returning true into v_deleted;
+  returning true into v_applied;
 
-  if coalesce(v_deleted, false) then return true; end if;
-  return not exists (
+  if coalesce(v_applied, false) then return true; end if;
+  return exists (
     select 1 from public.lr_watchlist
-    where user_id = v_user_id and game_key = p_game_key
+    where user_id = v_user_id
+      and game_key = p_game_key
+      and updated_at = p_deleted_at
+      and deleted_at = p_deleted_at
   );
 end;
 $$;
@@ -297,7 +318,11 @@ revoke all on function public.lr_sync_watch_item(
 grant execute on function public.lr_sync_watch_item(
   uuid, text, text, numeric, numeric, text, timestamptz, timestamptz
 ) to authenticated;
-revoke all on function public.lr_delete_watch_item(uuid, text, timestamptz) from public;
-grant execute on function public.lr_delete_watch_item(uuid, text, timestamptz) to authenticated;
+revoke all on function public.lr_delete_watch_item(
+  uuid, text, timestamptz, timestamptz
+) from public;
+grant execute on function public.lr_delete_watch_item(
+  uuid, text, timestamptz, timestamptz
+) to authenticated;
 
 commit;

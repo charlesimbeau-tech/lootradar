@@ -7,6 +7,10 @@ const sql = fs.readFileSync(
   path.join(__dirname, '..', 'db', 'supabase-recommendations.sql'),
   'utf8'
 );
+const rlsVerifier = fs.readFileSync(
+  path.join(__dirname, '..', 'scripts', 'verify-account-rls.js'),
+  'utf8'
+);
 
 test('account schema contains private synchronized records', () => {
   for (const token of [
@@ -85,7 +89,7 @@ test('account sync RPCs derive ownership and reject stale timestamps atomically'
   );
   assert.match(
     sql,
-    /delete from public\.lr_watchlist[\s\S]+?updated_at\s*=\s*p_expected_updated_at/i
+    /update public\.lr_watchlist[\s\S]+?updated_at\s*=\s*p_expected_updated_at/i
   );
   assert.match(sql, /security definer[\s\S]+?set search_path\s*=\s*''/i);
   assert.match(
@@ -99,6 +103,40 @@ test('account sync RPCs derive ownership and reject stale timestamps atomically'
         `create trigger ${table}_keep_newest[\\s\\S]+?before update on public\\.${table}`,
         'i'
       )
+    );
+  }
+});
+
+test('watchlist persistence uses versioned soft-delete tombstones', () => {
+  assert.match(sql, /deleted_at timestamptz/i);
+  assert.match(
+    sql,
+    /create or replace function public\.lr_delete_watch_item[\s\S]+?set deleted_at\s*=\s*p_deleted_at[\s\S]+?updated_at\s*=\s*p_deleted_at/i
+  );
+  assert.match(
+    sql,
+    /create or replace function public\.lr_sync_watch_item[\s\S]+?deleted_at\s*=\s*null/i
+  );
+  assert.match(
+    sql,
+    /comment on column public\.lr_watchlist\.deleted_at[\s\S]+?filter deleted_at is null/i
+  );
+});
+
+test('live RLS verifier exercises the RPC authorization and convergence boundary', () => {
+  for (const token of [
+    'lr_sync_profile',
+    'lr_sync_feedback',
+    'lr_sync_watch_item',
+    'lr_delete_watch_item',
+    'anonymous RPC',
+    'p_expected_user_id',
+    'deleted_at',
+    'stale'
+  ]) {
+    assert.match(
+      rlsVerifier,
+      new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
     );
   }
 });

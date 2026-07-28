@@ -6,6 +6,8 @@ const accountData = require('../lib/account-data.js');
 const PROFILE_KEY = 'lr_rec_profile_v3';
 const WATCHLIST_KEY = 'lr_watchlist_v1';
 const CACHE_OWNER_KEY = 'lr_account_cache_owner_v1';
+const GUEST_PROFILE_KEY = `${PROFILE_KEY}:guest`;
+const GUEST_WATCHLIST_KEY = `${WATCHLIST_KEY}:guest`;
 
 function userCacheKey(base, userId) {
   return `${base}:user:${encodeURIComponent(userId)}`;
@@ -155,6 +157,7 @@ function makeFakeSupabase(options = {}) {
       },
       async signOut() {
         calls.push({ operation: 'signOut' });
+        if (typeof options.onSignOut === 'function') options.onSignOut();
         return { error: options.signOutError ? new Error('sign out failed') : null };
       }
     },
@@ -361,6 +364,10 @@ test('syncWatchlist debounces writes, upserts current rows, and deletes removed 
   const removal = fake.calls.find(call => call.name === 'lr_delete_watch_item');
   assert.equal(removal.parameters.p_game_key, 'hades');
   assert.equal(removal.parameters.p_expected_updated_at, '2026-07-27T12:00:00.000Z');
+  assert.ok(
+    Date.parse(removal.parameters.p_deleted_at) >
+      Date.parse(removal.parameters.p_expected_updated_at)
+  );
 });
 
 test('guest and session failures report delayed or guest without rejecting writes', async () => {
@@ -762,4 +769,209 @@ test('an edit made during load cancels the stale load before it can replace the 
   assert.equal(await saving, true);
   assert.equal(JSON.parse(storage.getItem(PROFILE_KEY)).budget, 20);
   assert.equal(client.state().profile.budget, 20);
+});
+
+test('sign-out activates a distinct guest cache and signed-out edits survive reload', async () => {
+  let activeUser = { id: 'user-a' };
+  const accountProfile = {
+    schemaVersion: 1,
+    budget: 88,
+    updatedAt: '2026-07-27T12:00:00.000Z',
+    likes: {},
+    dislikes: {}
+  };
+  const guestProfile = {
+    schemaVersion: 1,
+    budget: 7,
+    updatedAt: '2026-07-27T11:00:00.000Z',
+    likes: {},
+    dislikes: {}
+  };
+  const storage = makeStorage({
+    [CACHE_OWNER_KEY]: 'user-a',
+    [PROFILE_KEY]: JSON.stringify(accountProfile),
+    [WATCHLIST_KEY]: '{}',
+    [userCacheKey(PROFILE_KEY, 'user-a')]: JSON.stringify(accountProfile),
+    [userCacheKey(WATCHLIST_KEY, 'user-a')]: '{}',
+    [GUEST_PROFILE_KEY]: JSON.stringify(guestProfile),
+    [GUEST_WATCHLIST_KEY]: '{}'
+  });
+  const fake = makeFakeSupabase({
+    getUser: () => activeUser,
+    onSignOut: () => { activeUser = null; }
+  });
+  const { createAccountClient } = loadClient();
+  const client = createAccountClient({ client: fake, storage });
+
+  assert.equal(await client.signOut(), true);
+  assert.equal(client.state().status, 'guest');
+  assert.equal(client.state().profile.budget, 7);
+  assert.equal(storage.getItem(CACHE_OWNER_KEY), 'guest');
+  assert.equal(JSON.parse(storage.getItem(PROFILE_KEY)).budget, 7);
+
+  assert.equal(await client.syncProfile({ budget: 9, likes: {}, dislikes: {} }), false);
+  assert.equal(JSON.parse(storage.getItem(GUEST_PROFILE_KEY)).budget, 9);
+  assert.equal(JSON.parse(storage.getItem(PROFILE_KEY)).budget, 9);
+
+  const reloaded = createAccountClient({
+    client: makeFakeSupabase({ user: null }),
+    storage
+  });
+  const result = await reloaded.loadAndMerge(
+    JSON.parse(storage.getItem(PROFILE_KEY)),
+    JSON.parse(storage.getItem(WATCHLIST_KEY))
+  );
+  assert.equal(result.guest, true);
+  assert.equal(result.profile.budget, 9);
+  assert.notEqual(result.profile.budget, 88);
+});
+
+for (const failure of [
+  { label: 'profile', rpc: 'lr_sync_profile' },
+  { label: 'feedback', rpc: 'lr_sync_feedback' },
+  { label: 'watchlist', rpc: 'lr_sync_watch_item' }
+]) {
+  test(`failed ${failure.label} sync does not consume or reassign the guest cache`, async () => {
+    const guestProfile = {
+      schemaVersion: 1,
+      budget: 21,
+      updatedAt: '2026-07-27T12:00:00.000Z',
+      likes: { portal: '2026-07-27T12:00:00.000Z' },
+      dislikes: {}
+    };
+    const guestWatchlist = {
+      portal: {
+        key: 'portal',
+        title: 'Portal',
+        targetPrice: 3,
+        addedAt: '2026-07-27T12:00:00.000Z',
+        updatedAt: '2026-07-27T12:00:00.000Z'
+      }
+    };
+    const storage = makeStorage({
+      [CACHE_OWNER_KEY]: 'guest',
+      [PROFILE_KEY]: JSON.stringify(guestProfile),
+      [WATCHLIST_KEY]: JSON.stringify(guestWatchlist),
+      [GUEST_PROFILE_KEY]: JSON.stringify(guestProfile),
+      [GUEST_WATCHLIST_KEY]: JSON.stringify(guestWatchlist)
+    });
+    const fake = makeFakeSupabase({
+      errors: { [`rpc:${failure.rpc}`]: 'offline' },
+      reads: {
+        lr_profiles: { data: null, error: null },
+        lr_feedback: { data: [], error: null },
+        lr_watchlist: { data: [], error: null }
+      }
+    });
+    const { createAccountClient } = loadClient();
+    const client = createAccountClient({ client: fake, storage });
+
+    const result = await client.loadAndMerge(guestProfile, guestWatchlist);
+
+    assert.equal(result.synced, false);
+    assert.equal(result.delayed, true);
+    assert.equal(storage.getItem(CACHE_OWNER_KEY), 'guest');
+    assert.deepEqual(JSON.parse(storage.getItem(GUEST_PROFILE_KEY)), guestProfile);
+    assert.deepEqual(JSON.parse(storage.getItem(GUEST_WATCHLIST_KEY)), guestWatchlist);
+    assert.equal(JSON.parse(storage.getItem(PROFILE_KEY)).budget, 21);
+    assert.ok(storage.getItem(userCacheKey(PROFILE_KEY, 'user-123')));
+    assert.ok(storage.getItem(userCacheKey(WATCHLIST_KEY, 'user-123')));
+  });
+}
+
+test('a remote tombstone removes stale local watch data and a later explicit re-add clears it', async () => {
+  const staleLocal = {
+    portal: {
+      key: 'portal',
+      title: 'Portal',
+      targetPrice: 3,
+      addedAt: '2026-07-27T10:00:00.000Z',
+      updatedAt: '2026-07-27T12:00:00.000Z'
+    }
+  };
+  const fake = makeFakeSupabase({
+    reads: {
+      lr_profiles: { data: null, error: null },
+      lr_feedback: { data: [], error: null },
+      lr_watchlist: {
+        data: [{
+          game_key: 'portal',
+          title: 'Portal',
+          target_price: 3,
+          created_at: '2026-07-27T10:00:00.000Z',
+          updated_at: '2026-07-27T13:00:00.000Z',
+          deleted_at: '2026-07-27T13:00:00.000Z'
+        }],
+        error: null
+      }
+    }
+  });
+  const storage = makeStorage();
+  const { createAccountClient } = loadClient();
+  const client = createAccountClient({
+    client: fake,
+    storage,
+    now: () => '2026-07-27T14:00:00.000Z'
+  });
+
+  const loaded = await client.loadAndMerge({}, staleLocal);
+  assert.deepEqual(loaded.watchlist, {});
+  fake.calls.length = 0;
+  const readded = {
+    portal: {
+      key: 'portal',
+      title: 'Portal',
+      targetPrice: 2,
+      addedAt: '2026-07-27T14:00:00.000Z'
+    }
+  };
+  assert.equal(await client.syncWatchlist(readded), true);
+  const rpc = fake.calls.find(call => call.name === 'lr_sync_watch_item');
+  assert.equal(rpc.parameters.p_game_key, 'portal');
+  assert.equal(rpc.parameters.p_updated_at, '2026-07-27T14:00:00.000Z');
+});
+
+test('a successful guest claim is consumed once and never leaks into another account', async () => {
+  const guestProfile = {
+    schemaVersion: 1,
+    budget: 17,
+    updatedAt: '2026-07-27T12:00:00.000Z',
+    likes: {},
+    dislikes: {}
+  };
+  const storage = makeStorage({
+    [CACHE_OWNER_KEY]: 'guest',
+    [PROFILE_KEY]: JSON.stringify(guestProfile),
+    [WATCHLIST_KEY]: '{}',
+    [GUEST_PROFILE_KEY]: JSON.stringify(guestProfile),
+    [GUEST_WATCHLIST_KEY]: '{}'
+  });
+  const emptyReads = {
+    lr_profiles: { data: null, error: null },
+    lr_feedback: { data: [], error: null },
+    lr_watchlist: { data: [], error: null }
+  };
+  const { createAccountClient } = loadClient();
+  const first = createAccountClient({
+    client: makeFakeSupabase({ user: { id: 'user-a' }, reads: emptyReads }),
+    storage
+  });
+
+  const claimed = await first.loadAndMerge(guestProfile, {});
+  assert.equal(claimed.synced, true);
+  assert.equal(claimed.profile.budget, 17);
+  assert.equal(storage.getItem(CACHE_OWNER_KEY), 'user-a');
+  assert.equal(storage.getItem(GUEST_PROFILE_KEY), null);
+  assert.equal(storage.getItem(GUEST_WATCHLIST_KEY), null);
+
+  const second = createAccountClient({
+    client: makeFakeSupabase({ user: { id: 'user-b' }, reads: emptyReads }),
+    storage
+  });
+  const isolated = await second.loadAndMerge(
+    JSON.parse(storage.getItem(PROFILE_KEY)),
+    JSON.parse(storage.getItem(WATCHLIST_KEY))
+  );
+  assert.notEqual(isolated.profile.budget, 17);
+  assert.equal(storage.getItem(CACHE_OWNER_KEY), 'user-b');
 });

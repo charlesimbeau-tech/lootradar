@@ -57,6 +57,48 @@ test('watchlists union games and keep the most recently edited target', () => {
   assert.equal(merged.hades.lastKnownStore, 'Steam');
 });
 
+test('a newer remote watch tombstone removes a stale local item', () => {
+  const local = {
+    portal: {
+      key: 'portal',
+      title: 'Portal',
+      targetPrice: 3,
+      updatedAt: '2026-07-27T12:00:00Z'
+    }
+  };
+  const remote = [{
+    game_key: 'portal',
+    title: 'Portal',
+    target_price: 3,
+    updated_at: '2026-07-27T13:00:00Z',
+    deleted_at: '2026-07-27T13:00:00Z'
+  }];
+
+  assert.deepEqual(mergeWatchlists(local, remote), {});
+});
+
+test('an explicit re-add newer than a remote tombstone becomes active again', () => {
+  const local = {
+    portal: {
+      key: 'portal',
+      title: 'Portal',
+      targetPrice: 2,
+      updatedAt: '2026-07-27T14:00:00Z'
+    }
+  };
+  const remote = [{
+    game_key: 'portal',
+    title: 'Portal',
+    target_price: 3,
+    updated_at: '2026-07-27T13:00:00Z',
+    deleted_at: '2026-07-27T13:00:00Z'
+  }];
+
+  const merged = mergeWatchlists(local, remote);
+  assert.equal(merged.portal.targetPrice, 2);
+  assert.equal('deletedAt' in merged.portal, false);
+});
+
 test('legacy boolean feedback uses the profile timestamp and input data is cloned', () => {
   const input = {
     updatedAt: '2026-07-27T14:00:00Z',
