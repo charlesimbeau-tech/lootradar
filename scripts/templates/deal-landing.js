@@ -69,7 +69,7 @@ function renderDealCard(deal) {
     ? `${deal.userRating}% positive from ${formatCount(deal.reviewCount)} reviews`
     : 'Limited player-review data';
   const image = /^https?:\/\//i.test(String(deal.image || ''))
-    ? `<img src="${escapeHTML(deal.image)}" alt="" loading="lazy">`
+    ? `<img src="${escapeHTML(deal.image)}" alt="${escapeHTML(deal.title)} cover art" loading="lazy" decoding="async">`
     : '<span class="landing-image-fallback" aria-hidden="true">LR</span>';
   return `<article class="landing-deal-card">
     <div class="landing-deal-image">${image}<span>${escapeHTML(deal.discount)}% off</span></div>
@@ -191,7 +191,14 @@ ${indexable ? '' : '  <meta name="robots" content="noindex,follow">\n'}  <link r
   <meta property="og:url" content="${canonical}">
   <meta property="og:site_name" content="LootRadar">
   <meta property="og:image" content="${SITE_ORIGIN}/public/og.png">
-  <link rel="stylesheet" href="../style.css?v=21">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${escapeHTML(definition.title)}">
+  <meta name="twitter:description" content="${escapeHTML(definition.description)}">
+  <meta name="twitter:image" content="${SITE_ORIGIN}/public/og.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css?v=23">
   <link rel="icon" href="../icons/icon.svg?v=2" type="image/svg+xml">
   <link rel="icon" href="../icons/favicon-32.png?v=2" sizes="32x32" type="image/png">
   <link rel="icon" href="../icons/favicon.ico?v=2" sizes="any">
@@ -240,7 +247,8 @@ ${indexable ? '' : '  <meta name="robots" content="noindex,follow">\n'}  <link r
   <nav class="site-nav" aria-label="Primary navigation">
     <div class="site-nav-inner">
       <a class="nav-brand" href="../index.html" aria-label="LootRadar home"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a>
-      <div class="nav-links"><a class="active" href="index.html">Deals</a><a href="../methodology.html">How scoring works</a><a href="../recommendations.html">For you</a><a href="../blog.html">Guides</a><a data-account-link href="../login.html">Sign in</a></div>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primaryNavLinks" aria-label="Toggle navigation menu"><i aria-hidden="true"></i></button>
+      <div class="nav-links" id="primaryNavLinks"><a class="active" href="index.html">Deals</a><a href="../methodology.html">How scoring works</a><a href="../recommendations.html">For you</a><a href="../blog.html">Guides</a><a data-account-link href="../login.html">Sign in</a></div>
     </div>
   </nav>
   <main class="landing-shell" id="mainContent">
@@ -260,11 +268,12 @@ ${quietNotice ? `    ${quietNotice}\n` : ''}    ${mainContent}
     <nav class="landing-links" aria-label="Related reading"><a href="index.html">Browse the deals hub</a><a href="../methodology.html">Read the scoring methodology</a>${relatedGuide}<a href="../feed.xml">Deal feed</a></nav>
   </main>
   <footer>
-    <div class="footer-inner"><div><a class="nav-brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a><p>Games worth playing. Prices worth paying.</p></div><div class="footer-links"><a href="../methodology.html">Scoring</a><a href="../blog.html">Guides</a><a data-account-link href="../login.html">Sign in</a><a href="../about.html">About</a><a href="../privacy.html">Privacy</a><a href="../terms.html">Terms</a></div></div>
+    <div class="footer-inner"><div><a class="nav-brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a><p>Games worth playing. Prices worth paying.</p></div><div class="footer-links"><a href="../methodology.html">Scoring</a><a href="../recommendations.html">For you</a><a href="../blog.html">Guides</a><a data-account-link href="../login.html">Sign in</a><a href="../feed.xml">Deal feed</a><a href="../about.html">About</a><a href="../privacy.html">Privacy</a><a href="../terms.html">Terms</a></div></div>
     <p class="footer-disclosure">Some retailer links may earn LootRadar a commission. Price listings come from CheapShark and may change after you leave LootRadar. Affiliate relationships never affect Deal Scores.</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../supabase-config.js"></script>
+  <script src="../lib/site-nav.js?v=1"></script>
   <script src="../lib/auth-nav.js?v=1"></script>
   <script src="../lib/analytics.js?v=1"></script>
   <script>

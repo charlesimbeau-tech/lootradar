@@ -7,45 +7,33 @@
   <meta name="description" content="Sign in to sync your LootRadar watchlist, target prices, recommendation choices, and private alert settings across devices.">
   <meta name="robots" content="noindex,follow">
   <link rel="canonical" href="https://thelootradar.com/login.html">
-  <link rel="stylesheet" href="style.css?v=16">
-  <link rel="stylesheet" href="recommendations.css?v=4">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=23">
+  <link rel="stylesheet" href="recommendations.css?v=9">
   <link rel="icon" href="icons/icon.svg?v=2" type="image/svg+xml">
   <link rel="icon" href="icons/favicon-32.png?v=2" sizes="32x32" type="image/png">
   <link rel="icon" href="icons/favicon.ico?v=2" sizes="any">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=2">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b0e0d">
-  <style>
-    .login-wrap { max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
-    .login-card { background: rgba(15,23,19,.78); border: 1px solid rgba(185,245,93,.24); border-radius: 14px; padding: clamp(1.25rem, 4vw, 2rem); }
-    .login-title { font-size: 1.6rem; font-weight: 800; margin-bottom: .4rem; }
-    .login-copy { color: var(--text-2); margin-bottom: 1rem; }
-    .login-list { color: var(--text-2); margin: .2rem 0 1.35rem 1rem; }
-    .login-list li { margin: .35rem 0; }
-    .google-login { width: 100%; min-height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: .65rem; background: #fff; border: 1px solid #dadce0; border-radius: 8px; color: #1f1f1f; cursor: pointer; font: inherit; font-weight: 700; padding: 10px 14px; }
-    .google-login:hover { background: #f8faff; border-color: #c6cacf; }
-    .google-login:focus-visible, .login-row input:focus-visible, .login-row button:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
-    .google-login:disabled, .login-row button:disabled { cursor: wait; opacity: .7; }
-    .google-mark { width: 18px; height: 18px; flex: 0 0 18px; }
-    .login-divider { align-items: center; color: var(--text-3); display: grid; font-size: .8rem; gap: .75rem; grid-template-columns: 1fr auto 1fr; margin: 1.1rem 0; text-transform: uppercase; }
-    .login-divider::before, .login-divider::after { background: rgba(185,245,93,.18); content: ""; height: 1px; }
-    .login-label { color: var(--text-2); display: block; font-size: .9rem; font-weight: 700; margin-bottom: .45rem; }
-    .login-row { display: grid; grid-template-columns: 1fr auto; gap: .6rem; }
-    .login-row input { background: rgba(15,23,19,.78); border: 1px solid rgba(185,245,93,.24); color: var(--text); border-radius: 8px; padding: 10px 12px; }
-    .login-note { font-size: .85rem; color: var(--text-3); margin-top: .8rem; }
-    .login-msg { min-height: 1.35em; margin-top: .8rem; color: var(--mint); }
-    @media (max-width: 680px) { .login-row { grid-template-columns: 1fr; } }
-  </style>
+
 </head>
 <body>
-  <nav class="site-nav">
+  <nav class="site-nav" aria-label="Primary navigation">
     <div class="site-nav-inner">
-      <a href="index.html" class="nav-brand">Loot<span>Radar</span></a>
-      <div class="nav-links">
+      <a class="nav-brand" href="index.html" aria-label="LootRadar home">
+        <span class="brand-mark" aria-hidden="true"><i></i></span>
+        <span>Loot<span>Radar</span></span>
+      </a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primaryNavLinks" aria-label="Toggle navigation menu"><i aria-hidden="true"></i></button>
+      <div class="nav-links" id="primaryNavLinks">
         <a href="index.html">Deals</a>
+        <a href="methodology.html">How scoring works</a>
         <a href="recommendations.html">For you</a>
-        <a data-account-link href="login.html" class="active">Sign in</a>
         <a href="blog.html">Guides</a>
+        <a data-account-link class="active" href="login.html">Sign in</a>
       </div>
     </div>
   </nav>
@@ -84,8 +72,18 @@
     </section>
   </main>
 
+  <footer>
+    <div class="footer-inner">
+      <div><a class="nav-brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a><p>Games worth playing. Prices worth paying.</p></div>
+      <div class="footer-links"><a href="methodology.html">Scoring</a><a href="recommendations.html">For you</a><a href="blog.html">Guides</a><a data-account-link href="login.html">Sign in</a><a href="feed.xml">Deal feed</a><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div>
+    </div>
+    <p class="footer-disclosure">Some retailer links may earn LootRadar a commission. Price listings come from CheapShark and may change after you leave LootRadar. Affiliate relationships never affect Deal Scores.</p>
+  </footer>
+
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+  <script src="lib/site-nav.js?v=1"></script>
   <script src="lib/auth-nav.js?v=1"></script>
   <script src="lib/safe-redirect.js?v=1"></script>
   <script src="lib/analytics.js?v=1"></script>

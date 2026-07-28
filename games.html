@@ -15,16 +15,18 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://thelootradar.com/games.html">
     <meta property="og:site_name" content="LootRadar">
+    <meta property="og:image" content="https://thelootradar.com/public/og.png">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Compare PC game prices — LootRadar">
     <meta name="twitter:description" content="Search current PC game listings across participating stores and compare the available prices.">
+    <meta name="twitter:image" content="https://thelootradar.com/public/og.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=23">
     <link rel="icon" href="icons/icon.svg?v=2" type="image/svg+xml">
     <link rel="icon" href="icons/favicon-32.png?v=2" sizes="32x32" type="image/png">
     <link rel="icon" href="icons/favicon.ico?v=2" sizes="any">
@@ -35,25 +37,27 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3845680227675655" crossorigin="anonymous"></script>
 </head>
 <body>
-    <nav class="site-nav">
-        <div class="site-nav-inner">
-            <a href="index.html" class="nav-brand">Loot<span>Radar</span></a>
-            <div class="nav-links">
-                <a href="index.html">Deals</a>
-                <a href="recommendations.html">For you</a>
-                <a data-account-link href="login.html">Sign in</a>
-                <a href="blog.html">Guides</a>
-                <a href="about.html">About</a>
-                <a href="privacy.html">Privacy</a>
-                <a href="terms.html">Terms</a>
-            </div>
-        </div>
-    </nav>
+    <nav class="site-nav" aria-label="Primary navigation">
+    <div class="site-nav-inner">
+      <a class="nav-brand" href="index.html" aria-label="LootRadar home">
+        <span class="brand-mark" aria-hidden="true"><i></i></span>
+        <span>Loot<span>Radar</span></span>
+      </a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primaryNavLinks" aria-label="Toggle navigation menu"><i aria-hidden="true"></i></button>
+      <div class="nav-links" id="primaryNavLinks">
+        <a href="index.html">Deals</a>
+        <a href="methodology.html">How scoring works</a>
+        <a href="recommendations.html">For you</a>
+        <a href="blog.html">Guides</a>
+        <a data-account-link href="login.html">Sign in</a>
+      </div>
+    </div>
+  </nav>
 
     <div class="controls-bar">
         <div class="controls-bar-inner">
             <div class="search-wrapper">
-                <span class="search-icon" aria-hidden="true">⌕</span>
+                <span class="search-glyph" aria-hidden="true"></span>
                 <label class="sr-only" for="gameSearch">Game title</label>
                 <input type="text" id="gameSearch" placeholder="Search by game title" autocomplete="off">
             </div>
@@ -62,6 +66,7 @@
 
     <main>
         <section class="featured-section" style="padding-bottom:0">
+            <p class="section-kicker">Price comparison</p>
             <h1>Compare prices before you buy</h1>
             <p>Search for a PC game to compare current listings from participating stores.</p>
         </section>
@@ -152,7 +157,7 @@
             if (!q) { gameResults.style.display = 'none'; return; }
             if (q.length < 2) {
                 gameResults.style.display = 'block';
-                gameList.innerHTML = '<p style="padding:1rem;color:#8a94a6">Enter at least 2 characters to search.</p>';
+                gameList.innerHTML = '<p class="note-muted">Enter at least 2 characters to search.</p>';
                 return;
             }
             searchController = new AbortController();
@@ -171,7 +176,7 @@
 
                 if (!games.length) {
                     gameResults.style.display = 'block';
-                    gameList.innerHTML = '<p style="padding:1rem;color:#8a94a6">No matching games found. Try the full title or a shorter search.</p>';
+                    gameList.innerHTML = '<p class="note-muted">No matching games found. Try the full title or a shorter search.</p>';
                     return;
                 }
 
@@ -199,7 +204,7 @@
             } catch (error) {
                 if (error.name === 'AbortError') return;
                 gameResults.style.display = 'block';
-                gameList.innerHTML = '<p style="padding:1rem;color:#ff9d9d">Search is unavailable right now. Please try again in a moment.</p>';
+                gameList.innerHTML = '<p class="note-error">Search is unavailable right now. Please try again in a moment.</p>';
             }
         }, 500);
     });
@@ -267,15 +272,15 @@
 
             gameDetail.innerHTML = `
                 <div class="game-detail-header">
-                    <img src="${safeThumb}" alt="${safeTitle} cover" style="max-width:300px;border-radius:8px;margin-bottom:1rem">
-                    <h1 style="color:#e8ecf1;font-size:1.8rem;margin:0 0 0.5rem">${safeTitle}</h1>
-                    <p style="color:#8a94a6;font-size:1rem;margin:0 0 1rem">
-                        ${cheapest !== null ? `Lowest listed price in this result: <strong style="color:#4cda64;font-size:1.3rem">${cheapest === 0 ? 'Free' : '$' + cheapest.toFixed(2)}</strong>` : 'No current store listings'}
+                    <img src="${safeThumb}" alt="${safeTitle} cover" loading="lazy" decoding="async">
+                    <h1>${safeTitle}</h1>
+                    <p class="detail-lede">
+                        ${cheapest !== null ? `Lowest listed price in this result: <strong>${cheapest === 0 ? 'Free' : '$' + cheapest.toFixed(2)}</strong>` : 'No current store listings'}
                     </p>
-                    <p style="color:#6b7588;font-size:0.85rem">${deals.length} current store listing${deals.length !== 1 ? 's' : ''} found.</p>
+                    <p class="detail-count">${deals.length} current store listing${deals.length !== 1 ? 's' : ''} found.</p>
                 </div>
 
-                <h2 style="color:#e8ecf1;font-size:1.2rem;margin:1.5rem 0 1rem">Current store listings</h2>
+                <h2>Current store listings</h2>
                 <div class="deals-grid">
                     ${deals.map(d => {
                         const store = STORES[d.storeID] || 'Store name unavailable';
@@ -304,8 +309,8 @@
                     }).join('')}
                 </div>
 
-                <div style="margin-top:2rem;padding:1rem;background:#111720;border-radius:8px;color:#8a94a6;font-size:0.85rem">
-                    <h3 style="color:#e8ecf1;font-size:1rem;margin:0 0 0.5rem">Price snapshot for ${safeTitle}</h3>
+                <div class="snapshot-note">
+                    <h3>Price snapshot for ${safeTitle}</h3>
                     <p>${deals.length
                         ? `${deals.length} current store listing${deals.length === 1 ? '' : 's'} found for <strong>${safeTitle}</strong>. The lowest listed price in this response is <strong>${cheapest === 0 ? 'free' : '$' + cheapest.toFixed(2)}</strong>.`
                         : `No current store listings were found for <strong>${safeTitle}</strong>.`} Prices and availability can change; confirm both with the retailer.</p>
@@ -313,17 +318,33 @@
             `;
         } catch (err) {
             if (err.name === 'AbortError') return;
-            gameDetail.innerHTML = '<p style="padding:2rem;color:#ff6b6b;text-align:center">The latest price details could not be loaded.</p>';
+            gameDetail.innerHTML = '<p class="note-error" style="text-align:center">The latest price details could not be loaded.</p>';
         }
     }
 
     // Load top deals on page load
+    const EXCLUDED_CONTENT = /\b(dlc|soundtrack|season pass|demo|art ?book|upgrade|currency|coins?|credits?|expansion|wallpaper|skin pack|bundle)\b/i;
+    function curateFeaturedDeals(deals) {
+        const seen = new Set();
+        return deals.filter(d => {
+            const title = String(d.title || '');
+            const rating = Number(d.steamRatingPercent) || 0;
+            const ratingCount = Number(d.steamRatingCount) || 0;
+            if (EXCLUDED_CONTENT.test(title)) return false;
+            if (rating < 70 || ratingCount < 500) return false;
+            const key = String(d.steamAppID || title.toLowerCase());
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        }).slice(0, 24);
+    }
     async function loadTopDeals() {
         try {
-            const deals = await cheapShark.get('/deals?sortBy=Deal+Rating&upperPrice=60&pageSize=24', {
-                cacheKey: 'top-deals',
+            const fetched = await cheapShark.get('/deals?sortBy=Deal+Rating&upperPrice=60&pageSize=60', {
+                cacheKey: 'top-deals-curated',
                 cacheTtlMs: 5 * 60 * 1000
             });
+            const deals = curateFeaturedDeals(fetched);
             document.getElementById('topDealsList').innerHTML = deals.map(d => {
                 const savings = Math.round(parseFloat(d.savings));
                 const sale = parseFloat(d.salePrice);
@@ -355,7 +376,7 @@
         } catch(error) {
             console.error(error);
             document.getElementById('topDealsList').innerHTML =
-                '<p style="padding:1rem;color:#8a94a6">Featured deals are unavailable right now. You can still search by title.</p>';
+                '<p class="note-muted">Featured deals are unavailable right now. You can still search by title.</p>';
         }
     }
 
@@ -383,14 +404,16 @@
     });
     </script>
     <footer>
-        <p>LootRadar &copy; 2026</p>
-        <p class="footer-nav"><a href="index.html">Deals</a> &middot; <a href="recommendations.html">For you</a>
-                <a data-account-link href="login.html">Sign in</a> &middot; <a href="blog.html">Guides</a> &middot; <a href="about.html">About</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a></p>
-        <p><small>Some retailer links may earn LootRadar a commission. Price listings come from CheapShark and may change after you leave LootRadar. Affiliate relationships never affect Deal Scores.</small></p>
-    </footer>
+    <div class="footer-inner">
+      <div><a class="nav-brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a><p>Games worth playing. Prices worth paying.</p></div>
+      <div class="footer-links"><a href="methodology.html">Scoring</a><a href="recommendations.html">For you</a><a href="blog.html">Guides</a><a data-account-link href="login.html">Sign in</a><a href="feed.xml">Deal feed</a><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div>
+    </div>
+    <p class="footer-disclosure">Some retailer links may earn LootRadar a commission. Price listings come from CheapShark and may change after you leave LootRadar. Affiliate relationships never affect Deal Scores.</p>
+  </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
+    <script src="lib/site-nav.js?v=1"></script>
     <script src="lib/auth-nav.js?v=1"></script>
     <!-- GoatCounter Analytics --><script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body>
 </html>

@@ -9,6 +9,8 @@ const PUBLIC_HTML = [
   'games.html',
   'recommendations.html',
   'login.html',
+  'account.html',
+  'unsubscribe.html',
   'about.html',
   'methodology.html',
   'blog.html',
@@ -19,10 +21,25 @@ const PUBLIC_HTML = [
   'blog/game-price-comparison.html',
   'blog/how-to-get-free-games.html',
   'blog/indie-games-under-five.html',
-  'blog/steam-sale-guide.html'
+  'blog/steam-sale-guide.html',
+  'deals/index.html',
+  'deals/best-pc-game-deals.html',
+  'deals/steam-deals-under-10.html',
+  'deals/co-op-game-deals.html',
+  'deals/indie-game-deals.html',
+  'deals/deep-discounts.html',
+  'deals/hidden-gems.html'
 ];
 
-const INTERFACE_SCRIPTS = ['app.js', 'recommendations.js'];
+const INTERFACE_SCRIPTS = [
+  'app.js',
+  'recommendations.js',
+  'login.js',
+  'account.js',
+  'unsubscribe.js',
+  'lib/auth-controller.js',
+  'lib/auth-nav.js'
+];
 
 function read(file) {
   return fs.readFileSync(path.join(root, file), 'utf8');
@@ -58,7 +75,7 @@ test('public copy avoids stale and unsupported marketing claims', () => {
   ];
 
   const violations = [];
-  for (const file of PUBLIC_HTML) {
+  for (const file of [...PUBLIC_HTML, ...INTERFACE_SCRIPTS]) {
     const source = read(file);
     for (const [pattern, label] of rules) {
       if (pattern.test(source)) violations.push(`${file}: ${label}`);
@@ -95,11 +112,18 @@ test('every public page has unique title and description metadata', () => {
       file,
       'a meta description'
     );
+    const canonical = extract(
+      source,
+      /<link\s+rel="canonical"\s+href="([^"]+)"/i,
+      file,
+      'a canonical URL'
+    );
     assert.ok(title.length >= 20 && title.length <= 70, `${file} title length is ${title.length}`);
     assert.ok(
       description.length >= 70 && description.length <= 170,
       `${file} description length is ${description.length}`
     );
+    assert.match(canonical, /^https:\/\/thelootradar\.com\//, `${file} canonical is off-site`);
     assert.equal(titles.has(title), false, `${file} duplicates the title from ${titles.get(title)}`);
     assert.equal(
       descriptions.has(description),
@@ -109,6 +133,22 @@ test('every public page has unique title and description metadata', () => {
     titles.set(title, file);
     descriptions.set(description, file);
   }
+});
+
+test('private utility pages are useful without entering the search index', () => {
+  for (const file of ['login.html', 'account.html', 'unsubscribe.html']) {
+    const source = read(file);
+    assert.match(source, /<meta\s+name="robots"\s+content="noindex,follow"/i, `${file} should be noindex`);
+  }
+});
+
+test('web app metadata uses the approved product language', () => {
+  const manifest = JSON.parse(read('manifest.json'));
+  assert.equal(manifest.short_name, 'LootRadar');
+  assert.match(manifest.name, /^LootRadar\b/);
+  assert.match(manifest.description, /quality/i);
+  assert.match(manifest.description, /value/i);
+  assert.match(manifest.description, /review confidence/i);
 });
 
 test('trust pages state the real refresh cadence and pricing source', () => {

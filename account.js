@@ -34,6 +34,18 @@
     free_game: 'Free game',
     weekly_digest: 'Weekly digest'
   });
+  const ALERT_STATUS_LABELS = Object.freeze({
+    pending: 'Waiting to send',
+    sending: 'Sending',
+    delivered: 'Delivered',
+    retryable: 'Retry scheduled',
+    failed: 'Delivery failed',
+    suppressed: 'Not sent'
+  });
+  const IDENTITY_LABELS = Object.freeze({
+    email: 'Email',
+    google: 'Google'
+  });
 
   function show(text) {
     if (statusNode) statusNode.textContent = text;
@@ -88,14 +100,20 @@
       : 'Any');
     addTextRow(preferencesNode, 'Stores', Array.isArray(values.stores) && values.stores.length
       ? values.stores.join(', ')
-      : 'Any qualified retailer');
+      : 'Any participating store');
     const likes = values.likes && typeof values.likes === 'object'
       ? Object.keys(values.likes).length
       : 0;
     const dislikes = values.dislikes && typeof values.dislikes === 'object'
       ? Object.keys(values.dislikes).length
       : 0;
-    addTextRow(preferencesNode, 'Recommendation choices', `${likes} liked, ${dislikes} dismissed`);
+    const likeLabel = `${likes} liked ${likes === 1 ? 'game' : 'games'}`;
+    const dislikeLabel = `${dislikes} dismissed ${dislikes === 1 ? 'game' : 'games'}`;
+    addTextRow(
+      preferencesNode,
+      'Recommendation choices',
+      likes || dislikes ? `${likeLabel}, ${dislikeLabel}` : 'No choices yet'
+    );
   }
 
   function browserTimeZone() {
@@ -135,10 +153,10 @@
     if (!alertHistoryNode || !alertHistoryStatusNode) return;
     alertHistoryNode.replaceChildren();
     if (!rows.length) {
-      alertHistoryStatusNode.textContent = 'No deal email has been recorded for this account.';
+      alertHistoryStatusNode.textContent = 'No alert emails have been sent for this account.';
       return;
     }
-    alertHistoryStatusNode.textContent = 'Your latest 20 deal-email delivery records.';
+    alertHistoryStatusNode.textContent = 'Your 20 most recent alert delivery results.';
     for (const delivery of rows) {
       const row = document.createElement('li');
       row.className = 'account-item';
@@ -150,9 +168,7 @@
       const dateLabel = Number.isNaN(createdAt.getTime())
         ? 'Date unavailable'
         : createdAt.toLocaleString();
-      const statusLabel = typeof delivery.status === 'string'
-        ? delivery.status.replace(/_/g, ' ')
-        : 'unknown';
+      const statusLabel = ALERT_STATUS_LABELS[delivery.status] || 'Status unavailable';
       detail.textContent = `${statusLabel} · ${dateLabel}`;
       row.append(summary, detail);
       alertHistoryNode.appendChild(row);
@@ -167,7 +183,7 @@
       .limit(20);
     if (result.error) {
       alertHistoryNode.replaceChildren();
-      alertHistoryStatusNode.textContent = 'Recent deal-email history is unavailable right now.';
+      alertHistoryStatusNode.textContent = 'Recent alert history is unavailable right now.';
       return;
     }
     renderAlertHistory(Array.isArray(result.data) ? result.data : []);
@@ -366,14 +382,15 @@
     setupAlertControls(supabase, session.user).catch(() => {
       setAlertControlsEnabled(false);
       alertAvailabilityNode.textContent = 'Email alert settings are unavailable right now.';
-      alertHistoryStatusNode.textContent = 'Recent deal-email history is unavailable right now.';
+      alertHistoryStatusNode.textContent = 'Recent alert history is unavailable right now.';
     });
 
     const providers = Array.isArray(session.user.identities)
       ? session.user.identities.map(identity => identity.provider).filter(Boolean)
       : [];
-    providersNode.textContent = providers.length
-      ? `Connected sign-in: ${providers.join(', ')}`
+    const providerLabels = providers.map(provider => IDENTITY_LABELS[provider] || provider);
+    providersNode.textContent = providerLabels.length
+      ? `Sign-in methods: ${providerLabels.join(', ')}`
       : 'Your sign-in methods are private.';
 
     if (window.LootRadarAuth?.bindGoogleIdentityLink) {

@@ -385,7 +385,7 @@ function cardHtml(game, why) {
   var title = escapeAttribute(game.title || (game.rawg && game.rawg.name) || 'Title unavailable');
   var thumb = escapeAttribute(safeImageUrl(game.thumb || (game.rawg && game.rawg.backgroundImage)));
   var onSale = !!game.dealID || savings > 0;
-  var badge = onSale ? ('-' + savings + '%') : 'PICK';
+  var badge = onSale ? ('-' + savings + '%') : 'CATALOG';
   var storeLabel = onSale ? 'On sale' : 'Catalog';
   var linkText = onSale ? 'See current deal \u2192' : 'View on Steam \u2192';
   var outboundStore = escapeAttribute(gameStoreName(game));
@@ -531,7 +531,7 @@ function renderRecommendations() {
 
   if (empty) empty.style.display = 'none';
   var label = profile.mode === 'on-sale' ? 'current deals' : 'matches';
-  if (count) count.textContent = filtered.length + ' of ' + matched.length + ' ' + label + ' shown';
+  if (count) count.textContent = 'Showing ' + filtered.length + ' of ' + matched.length + ' ' + label;
   if (grid) grid.innerHTML = filtered.map(function(x) {
     return cardHtml(x.g, whyChip(x.g, profile.genres, profile.genres));
   }).join('');

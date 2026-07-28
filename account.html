@@ -7,51 +7,33 @@
   <meta name="description" content="Manage your private LootRadar watchlist, recommendation preferences, account access, and deal-alert settings.">
   <meta name="robots" content="noindex,follow">
   <link rel="canonical" href="https://thelootradar.com/account.html">
-  <link rel="stylesheet" href="style.css?v=16">
-  <link rel="stylesheet" href="recommendations.css?v=4">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=23">
+  <link rel="stylesheet" href="recommendations.css?v=9">
   <link rel="icon" href="icons/icon.svg?v=2" type="image/svg+xml">
   <link rel="icon" href="icons/favicon-32.png?v=2" sizes="32x32" type="image/png">
   <link rel="icon" href="icons/favicon.ico?v=2" sizes="any">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=2">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b0e0d">
-  <style>
-    .account-wrap { max-width: 1040px; margin: 2rem auto 4rem; padding: 0 1rem; }
-    .account-head { margin-bottom: 1.5rem; }
-    .account-head h1 { font-size: clamp(2rem, 6vw, 3rem); margin: 0 0 .35rem; }
-    .account-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .account-card { background: rgba(15,23,19,.82); border: 1px solid rgba(185,245,93,.2); border-radius: 14px; padding: 1.1rem; }
-    .account-card h2 { font-size: 1.15rem; margin: 0 0 .7rem; }
-    .account-card p { color: var(--text-2); }
-    .account-wide { grid-column: 1 / -1; }
-    .account-list { display: grid; gap: .55rem; list-style: none; margin: .7rem 0 0; padding: 0; }
-    .account-item { align-items: center; background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.07); border-radius: 9px; display: flex; gap: .75rem; justify-content: space-between; padding: .7rem .8rem; }
-    .account-muted { color: var(--text-3); font-size: .88rem; }
-    .account-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
-    .account-button { background: var(--mint); border: 0; border-radius: 8px; color: #14200c; cursor: pointer; font: inherit; font-weight: 800; padding: .65rem .9rem; }
-    .account-button.secondary { background: transparent; border: 1px solid rgba(185,245,93,.35); color: var(--text); }
-    .account-button.danger { background: #b54444; color: #fff; }
-    .account-button:disabled { cursor: not-allowed; opacity: .55; }
-    .account-toggle { align-items: start; display: flex; gap: .7rem; margin: .8rem 0; }
-    .account-toggle input { margin-top: .25rem; }
-    .account-status { color: var(--mint); min-height: 1.35em; }
-    .danger-zone { border-color: rgba(221,87,87,.45); }
-    .delete-dialog { background: #101713; border: 1px solid rgba(221,87,87,.55); border-radius: 12px; color: var(--text); max-width: 520px; padding: 1.2rem; }
-    .delete-dialog::backdrop { background: rgba(0,0,0,.72); }
-    .delete-dialog input { background: #0b0e0d; border: 1px solid rgba(255,255,255,.18); border-radius: 8px; color: var(--text); margin: .5rem 0 1rem; padding: .7rem; width: 100%; }
-    [hidden] { display: none !important; }
-    @media (max-width: 760px) { .account-grid { grid-template-columns: 1fr; } .account-wide { grid-column: auto; } }
-  </style>
+
 </head>
 <body>
-  <nav class="site-nav">
+  <nav class="site-nav" aria-label="Primary navigation">
     <div class="site-nav-inner">
-      <a href="index.html" class="nav-brand">Loot<span>Radar</span></a>
-      <div class="nav-links">
+      <a class="nav-brand" href="index.html" aria-label="LootRadar home">
+        <span class="brand-mark" aria-hidden="true"><i></i></span>
+        <span>Loot<span>Radar</span></span>
+      </a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primaryNavLinks" aria-label="Toggle navigation menu"><i aria-hidden="true"></i></button>
+      <div class="nav-links" id="primaryNavLinks">
         <a href="index.html">Deals</a>
+        <a href="methodology.html">How scoring works</a>
         <a href="recommendations.html">For you</a>
-        <a href="account.html" class="active">My account</a>
         <a href="blog.html">Guides</a>
+        <a data-account-link href="login.html">Sign in</a>
       </div>
     </div>
   </nav>
@@ -89,7 +71,7 @@
 
       <section class="account-card" aria-labelledby="notificationsHeading">
         <h2 id="notificationsHeading">Deal email</h2>
-        <p id="alertAvailability">Email alerts are not available yet.</p>
+        <p id="alertAvailability" role="status" aria-live="polite">Email alerts are not available yet.</p>
         <label class="account-toggle"><input id="targetPriceAlert" type="checkbox" disabled> <span><strong>Target-price alerts</strong><br><span class="account-muted">When a qualified watched game reaches your target.</span></span></label>
         <label class="account-toggle"><input id="freeGameAlert" type="checkbox" disabled> <span><strong>Free-game alerts</strong><br><span class="account-muted">Qualified free listings in LootRadar&rsquo;s latest deal snapshot.</span></span></label>
         <label class="account-toggle"><input id="weeklyDigestAlert" type="checkbox" disabled> <span><strong>Weekly five-deal digest</strong><br><span class="account-muted">Friday at 10:00 a.m. in your time zone.</span></span></label>
@@ -101,7 +83,7 @@
 
       <section class="account-card" aria-labelledby="historyHeading">
         <h2 id="historyHeading">Recent alert history</h2>
-        <p class="account-muted" id="alertHistoryStatus">Alert delivery is not available yet. Once enabled, recent status appears here.</p>
+        <p class="account-muted" id="alertHistoryStatus" role="status" aria-live="polite">Alert delivery is not available yet. Once enabled, recent status appears here.</p>
         <ul class="account-list" id="alertHistory"></ul>
       </section>
 
@@ -126,6 +108,15 @@
     </form>
   </dialog>
 
+  <footer>
+    <div class="footer-inner">
+      <div><a class="nav-brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a><p>Games worth playing. Prices worth paying.</p></div>
+      <div class="footer-links"><a href="methodology.html">Scoring</a><a href="recommendations.html">For you</a><a href="blog.html">Guides</a><a data-account-link href="login.html">Sign in</a><a href="feed.xml">Deal feed</a><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div>
+    </div>
+    <p class="footer-disclosure">Some retailer links may earn LootRadar a commission. Price listings come from CheapShark and may change after you leave LootRadar. Affiliate relationships never affect Deal Scores.</p>
+  </footer>
+
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="lib/account-data.js?v=1"></script>
@@ -134,5 +125,6 @@
   <script src="lib/auth-controller.js?v=1"></script>
   <script src="account.js?v=1"></script>
   <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <script src="lib/site-nav.js?v=1"></script>
 </body>
 </html>

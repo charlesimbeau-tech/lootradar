@@ -3,30 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Email preference updated | LootRadar</title>
-  <meta name="description" content="Confirmation that a private LootRadar email preference was updated.">
+  <title>Manage email preferences | LootRadar</title>
+  <meta name="description" content="Review a private LootRadar email-preference update, then return to your account settings or browse current PC game deals.">
   <meta name="robots" content="noindex,follow">
   <link rel="canonical" href="https://thelootradar.com/unsubscribe.html">
-  <link rel="stylesheet" href="style.css?v=16">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=23">
   <link rel="icon" href="icons/icon.svg?v=2" type="image/svg+xml">
   <link rel="icon" href="icons/favicon-32.png?v=2" sizes="32x32" type="image/png">
   <link rel="icon" href="icons/favicon.ico?v=2" sizes="any">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=2">
   <meta name="theme-color" content="#0b0e0d">
-  <style>
-    .unsubscribe-wrap { max-width: 680px; margin: 4rem auto; padding: 0 1rem; }
-    .unsubscribe-card { background: rgba(15,23,19,.82); border: 1px solid rgba(185,245,93,.22); border-radius: 14px; padding: 1.4rem; }
-  </style>
+
 </head>
 <body>
+  <nav class="site-nav" aria-label="Primary navigation">
+    <div class="site-nav-inner">
+      <a class="nav-brand" href="index.html" aria-label="LootRadar home">
+        <span class="brand-mark" aria-hidden="true"><i></i></span>
+        <span>Loot<span>Radar</span></span>
+      </a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primaryNavLinks" aria-label="Toggle navigation menu"><i aria-hidden="true"></i></button>
+      <div class="nav-links" id="primaryNavLinks">
+        <a href="index.html">Deals</a>
+        <a href="methodology.html">How scoring works</a>
+        <a href="recommendations.html">For you</a>
+        <a href="blog.html">Guides</a>
+        <a data-account-link href="login.html">Sign in</a>
+      </div>
+    </div>
+  </nav>
+
   <main class="unsubscribe-wrap">
     <section class="unsubscribe-card">
       <p class="eyebrow">Email preferences</p>
-      <h1 id="unsubscribeTitle">Checking your request…</h1>
-      <p id="unsubscribeMessage">Your private preference update is being confirmed.</p>
+      <div role="status" aria-live="polite">
+        <h1 id="unsubscribeTitle">Checking your request…</h1>
+        <p id="unsubscribeMessage">Confirming your private email preference.</p>
+      </div>
       <p><a href="account.html">Manage my account</a> · <a href="index.html">Browse deals</a></p>
     </section>
   </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div><a class="nav-brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a><p>Games worth playing. Prices worth paying.</p></div>
+      <div class="footer-links"><a href="methodology.html">Scoring</a><a href="recommendations.html">For you</a><a href="blog.html">Guides</a><a data-account-link href="login.html">Sign in</a><a href="feed.xml">Deal feed</a><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div>
+    </div>
+    <p class="footer-disclosure">Some retailer links may earn LootRadar a commission. Price listings come from CheapShark and may change after you leave LootRadar. Affiliate relationships never affect Deal Scores.</p>
+  </footer>
+
   <script src="unsubscribe.js?v=1"></script>
+  <script src="lib/site-nav.js?v=1"></script>
 </body>
 </html>

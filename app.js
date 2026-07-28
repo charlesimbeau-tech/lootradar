@@ -50,7 +50,7 @@
     indie: { label: 'Indie standouts', title: 'Indie deals worth discovering', summary: 'Smaller games with strong player feedback and prices worth noticing.' },
     multiplayer: { label: 'Co-op & multiplayer', title: 'Deals worth sharing', summary: 'Well-reviewed games built for a couch, party, or squad.' },
     hidden: { label: 'Hidden gems', title: 'Less-famous games with strong reviews', summary: 'Smaller audiences, unusually positive feedback, and enough reviews to count.' },
-    all: { label: 'All deals', title: 'Browse every qualifying deal', summary: 'Every current listing that clears the selected quality and content filters.' }
+    all: { label: 'All deals', title: 'Browse all qualifying deals', summary: 'Current listings that clear the selected quality and content filters.' }
   };
 
   const $ = selector => document.querySelector(selector);
@@ -319,7 +319,7 @@
       : `${Math.round(deal.scoreBreakdown.components.priceValue)} price-value signal`;
     return `<article class="deal-card" data-key="${escapeHTML(deal.key)}" style="--delay:${Math.min(index, 12) * 28}ms">
       <button class="card-image" type="button" data-details="${escapeHTML(deal.key)}" aria-label="View details for ${escapeHTML(deal.title)}">
-        ${image ? `<img src="${image}" alt="" loading="lazy">` : '<span class="image-fallback">LR</span>'}
+        ${image ? `<img src="${image}" alt="${escapeHTML(deal.title)} cover art" loading="lazy" decoding="async">` : '<span class="image-fallback">LR</span>'}
         <span class="discount-badge">−${deal.discount}%</span>
         ${deal.isEarlyAccess ? '<span class="content-badge">Early Access</span>' : ''}
       </button>
@@ -365,7 +365,7 @@
     if (!top) return;
     const image = safeImage(top.image);
     $('#heroPick').innerHTML = `
-      <div class="pick-image">${image ? `<img src="${image}" alt="">` : ''}<span>Top-ranked deal</span></div>
+      <div class="pick-image">${image ? `<img src="${image}" alt="${escapeHTML(top.title)} cover art" loading="eager" decoding="async">` : ''}<span>Top-ranked deal</span></div>
       <div class="pick-content">
         <div class="pick-head"><div><p>${escapeHTML(top.storeName)}</p><h2>${escapeHTML(top.title)}</h2></div>
           <div class="score-ring ${scoreTone(top.dealScore)}" style="--score:${top.dealScore}"><strong>${top.dealScore}</strong><span>score</span></div>
@@ -444,7 +444,7 @@
     const image = safeImage(deal.image);
     const watched = state.watchlist[deal.key];
     return `<div class="detail-hero">
-      ${image ? `<img src="${image}" alt="">` : ''}
+      ${image ? `<img src="${image}" alt="${escapeHTML(deal.title)} cover art" decoding="async">` : ''}
       <div class="detail-overlay"></div>
       <div class="detail-title"><p>${escapeHTML(deal.storeName)} · ${escapeHTML(deal.genres.join(' / ') || 'PC game')}</p><h2>${escapeHTML(deal.title)}</h2></div>
     </div>
