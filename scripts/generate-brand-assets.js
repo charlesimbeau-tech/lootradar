@@ -34,6 +34,7 @@ async function generateBrandAssets() {
     path.join(icons, 'favicon-48.png')
   ]);
   await fs.writeFile(path.join(icons, 'favicon.ico'), ico);
+  await fs.writeFile(path.join(root, 'favicon.ico'), ico);
 
   const social = Buffer.from(`<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
     <rect width="1200" height="630" fill="#0a0d0c"/>

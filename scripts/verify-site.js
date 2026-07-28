@@ -9,7 +9,7 @@ const brandIconFiles = [
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png'
 ];
 const requiredSource = [
-  'index.html', 'account.html', 'account.js', 'unsubscribe.html', 'unsubscribe.js',
+  'index.html', 'favicon.ico', 'account.html', 'account.js', 'unsubscribe.html', 'unsubscribe.js',
   'methodology.html', 'app.js', 'login.js', 'style.css', 'manifest.json',
   'alert-deals.json', 'deals.json', 'enriched-deals.json', 'config/editorial-config.js',
   'lib/deal-normalizer.js', 'lib/deal-score.js', 'lib/deal-filters.js',
@@ -21,7 +21,7 @@ const requiredSource = [
   ...brandIconFiles
 ];
 const requiredBuild = [
-  'dist/server/index.js', 'dist/static/index.html', 'dist/static/app.js',
+  'dist/server/index.js', 'dist/static/index.html', 'dist/static/favicon.ico', 'dist/static/app.js',
   'dist/static/account.html', 'dist/static/account.js',
   'dist/static/unsubscribe.html', 'dist/static/unsubscribe.js',
   'dist/static/login.js',
@@ -96,7 +96,7 @@ for (const file of publicPages) {
   const requiredBrandTokens = [
     `href="${prefix}icons/icon.svg?v=2"`,
     `href="${prefix}icons/favicon-32.png?v=2"`,
-    `href="${prefix}icons/favicon.ico?v=2"`,
+    file === 'index.html' ? 'href="/favicon.ico"' : `href="${prefix}icons/favicon.ico?v=2"`,
     `href="${prefix}icons/apple-touch-icon.png?v=2"`,
     `href="${prefix}manifest.json"`,
     'name="theme-color" content="#0b0e0d"'

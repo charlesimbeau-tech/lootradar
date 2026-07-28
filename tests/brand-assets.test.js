@@ -55,6 +55,13 @@ test('generated brand images have their declared dimensions', async () => {
   assert.ok(fs.statSync(path.join(root, 'icons', 'favicon.ico')).size > 0);
 });
 
+test('homepage exposes the green favicon at a stable root URL for search crawlers', () => {
+  const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  assert.match(homepage, /<link rel="icon" href="\/favicon\.ico" sizes="any">/);
+  assert.match(homepage, /<link rel="icon" href="\/icons\/favicon-48\.png" sizes="48x48"/);
+  assert.ok(fs.statSync(path.join(root, 'favicon.ico')).size > 0);
+});
+
 test('manifest separates standard and maskable installed icons', () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
   assert.ok(manifest.icons.some(icon => icon.src === 'icons/icon-192.png' && icon.purpose === 'any'));
