@@ -9,7 +9,8 @@ const brandIconFiles = [
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png'
 ];
 const requiredSource = [
-  'index.html', 'account.html', 'account.js', 'methodology.html', 'app.js', 'login.js', 'style.css', 'manifest.json',
+  'index.html', 'account.html', 'account.js', 'unsubscribe.html', 'unsubscribe.js',
+  'methodology.html', 'app.js', 'login.js', 'style.css', 'manifest.json',
   'alert-deals.json', 'deals.json', 'enriched-deals.json', 'config/editorial-config.js',
   'lib/deal-normalizer.js', 'lib/deal-score.js', 'lib/deal-filters.js',
   'lib/cheapshark-client.js', 'lib/deal-snapshot-validator.js',
@@ -22,6 +23,7 @@ const requiredSource = [
 const requiredBuild = [
   'dist/server/index.js', 'dist/static/index.html', 'dist/static/app.js',
   'dist/static/account.html', 'dist/static/account.js',
+  'dist/static/unsubscribe.html', 'dist/static/unsubscribe.js',
   'dist/static/login.js',
   'dist/static/alert-deals.json', 'dist/static/deals.json',
   'dist/static/lib/alert-snapshot.js', 'dist/static/lib/cheapshark-client.js',
