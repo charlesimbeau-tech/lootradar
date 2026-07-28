@@ -60,7 +60,7 @@
         <li>Manage private alert settings</li>
       </ul>
 
-      <button class="google-login" id="googleLogin" type="button">
+      <button class="google-login" id="googleLogin" type="button" disabled>
         <svg class="google-mark" viewBox="0 0 18 18" aria-hidden="true">
           <path fill="#4285f4" d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.797 2.716v2.259h2.909c1.702-1.567 2.684-3.875 2.684-6.615Z"/>
           <path fill="#34a853" d="M9 18c2.43 0 4.468-.806 5.956-2.18l-2.909-2.259c-.806.54-1.835.859-3.047.859-2.344 0-4.328-1.585-5.037-3.714H.956v2.332A9 9 0 0 0 9 18Z"/>
@@ -74,8 +74,8 @@
 
       <label class="login-label" for="loginEmail">Get a one-time sign-in link by email</label>
       <div class="login-row">
-        <input id="loginEmail" type="email" placeholder="Email address" autocomplete="email">
-        <button class="apply-btn" id="sendLogin" type="button">Email me a link</button>
+        <input id="loginEmail" type="email" placeholder="Email address" autocomplete="email" disabled>
+        <button class="apply-btn" id="sendLogin" type="button" disabled>Email me a link</button>
       </div>
 
       <div class="login-msg" id="loginMsg" role="status" aria-live="polite"></div>
@@ -89,8 +89,8 @@
   <script src="lib/auth-nav.js?v=1"></script>
   <script src="lib/safe-redirect.js?v=1"></script>
   <script src="lib/analytics.js?v=1"></script>
-  <script src="lib/auth-controller.js?v=1"></script>
-  <script src="login.js?v=1"></script>
+  <script src="lib/auth-controller.js?v=2"></script>
+  <script src="login.js?v=2"></script>
   <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

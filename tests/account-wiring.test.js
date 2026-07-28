@@ -40,6 +40,19 @@ test('homepage and recommendations load account dependencies before page code', 
   }
 });
 
+test('login controls fail closed until the authentication service is healthy', () => {
+  const login = read('login.html');
+  const controller = read('lib/auth-controller.js');
+  const startup = read('login.js');
+
+  assert.match(login, /id="googleLogin"[^>]*disabled/);
+  assert.match(login, /id="loginEmail"[^>]*disabled/);
+  assert.match(login, /id="sendLogin"[^>]*disabled/);
+  assert.match(controller, /\/auth\/v1\/health/);
+  assert.match(startup, /probeAuthService/);
+  assert.match(startup, /setUnavailable/);
+});
+
 test('each page owns one account client and performs one initial merge', () => {
   for (const file of ['app.js', 'recommendations.js']) {
     const source = read(file);

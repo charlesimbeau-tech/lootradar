@@ -7,6 +7,7 @@ const {
   GOOGLE_RECOVERY_MESSAGE,
   createLoginController,
   bindGoogleIdentityLink,
+  probeAuthService,
   resolveNext
 } = require('../lib/auth-controller.js');
 
@@ -59,6 +60,40 @@ function elements() {
     message: { textContent: '' }
   };
 }
+
+test('auth availability probe fails closed before any sign-in redirect', async () => {
+  const requests = [];
+  const available = await probeAuthService({
+    url: 'https://working-project.supabase.co',
+    key: 'public-key',
+    fetchFn: async (url, options) => {
+      requests.push({ url, options });
+      return { ok: true };
+    }
+  });
+
+  assert.equal(available, true);
+  assert.equal(requests.length, 1);
+  assert.equal(
+    requests[0].url,
+    'https://working-project.supabase.co/auth/v1/health'
+  );
+  assert.equal(requests[0].options.headers.apikey, 'public-key');
+
+  assert.equal(await probeAuthService({
+    url: 'https://missing-project.supabase.co',
+    key: 'public-key',
+    fetchFn: async () => {
+      throw new TypeError('DNS failure');
+    }
+  }), false);
+
+  assert.equal(await probeAuthService({
+    url: 'https://unhealthy-project.supabase.co',
+    key: 'public-key',
+    fetchFn: async () => ({ ok: false })
+  }), false);
+});
 
 test('canonicalizes login next targets so an existing session cannot redirect-loop', async () => {
   for (const candidate of [

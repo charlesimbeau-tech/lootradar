@@ -194,11 +194,11 @@ for (const token of ["track('deal_click'", "'recommendation_like'", "'recommenda
 }
 
 const loginPage = fs.readFileSync(path.join(root, 'login.html'), 'utf8');
-for (const token of ['lib/safe-redirect.js', 'lib/analytics.js', 'lib/auth-controller.js', 'login.js?v=1', 'Continue with Google']) {
+for (const token of ['lib/safe-redirect.js', 'lib/analytics.js', 'lib/auth-controller.js?v=2', 'login.js?v=2', 'Continue with Google']) {
   if (!loginPage.includes(token)) failures.push(`login.html missing ${token}`);
 }
 const builtLoginPage = fs.readFileSync(path.join(root, 'dist', 'static', 'login.html'), 'utf8');
-for (const token of ['lib/safe-redirect.js', 'lib/analytics.js', 'lib/auth-controller.js', 'login.js?v=1', 'Continue with Google']) {
+for (const token of ['lib/safe-redirect.js', 'lib/analytics.js', 'lib/auth-controller.js?v=2', 'login.js?v=2', 'Continue with Google']) {
   if (!builtLoginPage.includes(token)) failures.push(`dist/static/login.html missing ${token}`);
 }
 const loginScript = fs.readFileSync(path.join(root, 'login.js'), 'utf8');
