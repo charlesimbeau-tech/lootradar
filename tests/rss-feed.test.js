@@ -70,7 +70,8 @@ test('includes price, store, score, recommendation, source note, and snapshot da
   assert.match(xml, /Free at Example Store\./);
   assert.match(xml, /LootRadar Deal Score: 91\.5\/100\./);
   assert.match(xml, /Well reviewed and currently free\./);
-  assert.match(xml, /sourced via CheapShark/);
+  assert.match(xml, /Price listings may change/);
+  assert.doesNotMatch(xml, /CheapShark/i);
   assert.match(xml, /Snapshot checked 2026-07-27T18:00:00\.000Z\./);
   assert.match(xml, /Mon, 27 Jul 2026 18:00:00 GMT/);
   assert.match(xml, /urn:lootradar:steam:free:0\.00/);

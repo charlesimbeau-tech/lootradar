@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compare PC game prices — LootRadar</title>
-    <meta name="description" content="Search current PC game listings from CheapShark’s participating stores, compare available prices, and open the retailer offering the deal.">
-    <meta name="keywords" content="compare PC game prices, PC game deals, Steam game prices, CheapShark">
+    <meta name="description" content="Search current PC game listings across participating stores, compare available prices, and open the retailer offering the deal.">
+    <meta name="keywords" content="compare PC game prices, PC game deals, Steam game prices, game price comparison">
     <link rel="canonical" href="https://thelootradar.com/games.html">
     <link rel="alternate" type="application/rss+xml" title="LootRadar deals worth attention" href="/feed.xml">
 
     <!-- Open Graph -->
     <meta property="og:title" content="Compare PC game prices — LootRadar">
-    <meta property="og:description" content="Search current PC game listings from CheapShark’s participating stores and compare the prices returned.">
+    <meta property="og:description" content="Search current PC game listings across participating stores and compare the available prices.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://thelootradar.com/games.html">
     <meta property="og:site_name" content="LootRadar">
@@ -19,7 +19,7 @@
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Compare PC game prices — LootRadar">
-    <meta name="twitter:description" content="Search current PC game listings from CheapShark’s participating stores and compare the prices returned.">
+    <meta name="twitter:description" content="Search current PC game listings across participating stores and compare the available prices.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,7 +63,7 @@
     <main>
         <section class="featured-section" style="padding-bottom:0">
             <h1>Compare prices before you buy</h1>
-            <p>Search for a PC game to see the current listings CheapShark returned from participating stores.</p>
+            <p>Search for a PC game to compare current listings from participating stores.</p>
         </section>
 
         <div id="loading" class="loading" style="display:none">
@@ -234,7 +234,7 @@
                 "@type": "Product",
                 "name": info.title,
                 "image": info.thumb,
-                "description": `Compare ${deals.length} current price listings for ${info.title} from CheapShark's participating stores.`,
+                "description": `Compare ${deals.length} current price listings for ${info.title} from participating stores.`,
                 "brand": { "@type": "Brand", "name": "PC Game" },
                 "offers": deals.map(d => ({
                     "@type": "Offer",
@@ -261,7 +261,7 @@
             const metaDesc = document.querySelector('meta[name="description"]');
             if (metaDesc) metaDesc.content = deals.length
                 ? `Compare ${deals.length} current price listing${deals.length === 1 ? '' : 's'} for ${info.title}. The lowest listed price in this result is $${Math.min(...deals.map(d => parseFloat(d.price))).toFixed(2)}.`
-                : `CheapShark returned no current store listings for ${info.title}.`;
+                : `No current store listings were found for ${info.title}.`;
 
             const cheapest = deals.length ? Math.min(...deals.map(d => parseFloat(d.price))) : null;
 
@@ -272,7 +272,7 @@
                     <p style="color:#8a94a6;font-size:1rem;margin:0 0 1rem">
                         ${cheapest !== null ? `Lowest listed price in this result: <strong style="color:#4cda64;font-size:1.3rem">${cheapest === 0 ? 'Free' : '$' + cheapest.toFixed(2)}</strong>` : 'No current store listings'}
                     </p>
-                    <p style="color:#6b7588;font-size:0.85rem">CheapShark returned ${deals.length} current store listing${deals.length !== 1 ? 's' : ''}.</p>
+                    <p style="color:#6b7588;font-size:0.85rem">${deals.length} current store listing${deals.length !== 1 ? 's' : ''} found.</p>
                 </div>
 
                 <h2 style="color:#e8ecf1;font-size:1.2rem;margin:1.5rem 0 1rem">Current store listings</h2>
@@ -307,8 +307,8 @@
                 <div style="margin-top:2rem;padding:1rem;background:#111720;border-radius:8px;color:#8a94a6;font-size:0.85rem">
                     <h3 style="color:#e8ecf1;font-size:1rem;margin:0 0 0.5rem">Price snapshot for ${safeTitle}</h3>
                     <p>${deals.length
-                        ? `CheapShark returned ${deals.length} current store listing${deals.length === 1 ? '' : 's'} for <strong>${safeTitle}</strong>. The lowest listed price in this response is <strong>${cheapest === 0 ? 'free' : '$' + cheapest.toFixed(2)}</strong>.`
-                        : `CheapShark returned no current store listings for <strong>${safeTitle}</strong>.`} Prices and availability can change; confirm both with the retailer.</p>
+                        ? `${deals.length} current store listing${deals.length === 1 ? '' : 's'} found for <strong>${safeTitle}</strong>. The lowest listed price in this response is <strong>${cheapest === 0 ? 'free' : '$' + cheapest.toFixed(2)}</strong>.`
+                        : `No current store listings were found for <strong>${safeTitle}</strong>.`} Prices and availability can change; confirm both with the retailer.</p>
                 </div>
             `;
         } catch (err) {

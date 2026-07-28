@@ -118,3 +118,56 @@ test('trust pages state the real refresh cadence and pricing source', () => {
     assert.match(source, /CheapShark/i, `${file} is missing the pricing source`);
   }
 });
+
+test('pricing provider stays in fine print instead of promotional copy', () => {
+  for (const file of PUBLIC_HTML) {
+    const source = read(file);
+    const description = extract(
+      source,
+      /<meta\s+name="description"\s+content="([^"]+)"/i,
+      file,
+      'a meta description'
+    );
+    assert.doesNotMatch(description, /CheapShark/i, `${file} promotes the pricing provider in metadata`);
+  }
+
+  const primaryCopy = [
+    read('index.html').match(/<main[\s\S]*?<\/main>/i)?.[0] || '',
+    read('games.html').replace(/<script[\s\S]*?<\/script>/gi, '').match(/<main[\s\S]*?<\/main>/i)?.[0] || '',
+    read('account.html').replace(/<script[\s\S]*?<\/script>/gi, '').match(/<main[\s\S]*?<\/main>/i)?.[0] || ''
+  ].join('\n');
+  assert.doesNotMatch(primaryCopy, />[^<]*CheapShark/i);
+  assert.doesNotMatch(
+    read('app.js'),
+    /(?:Checking|provides|returned|Deal Rating)[^'"`\n]*CheapShark|CheapShark[^'"`\n]*(?:provides|returned|Deal Rating)/i
+  );
+
+  for (const file of [
+    'deals/index.html',
+    'deals/best-pc-game-deals.html',
+    'deals/steam-deals-under-10.html',
+    'deals/co-op-game-deals.html',
+    'deals/indie-game-deals.html',
+    'deals/deep-discounts.html',
+    'deals/hidden-gems.html'
+  ]) {
+    const source = read(file);
+    const visibleText = source
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<[^>]+>/g, ' ');
+    assert.equal(
+      (visibleText.match(/CheapShark/gi) || []).length,
+      1,
+      `${file} should name the provider only in its footer disclosure`
+    );
+  }
+
+  for (const file of ['about.html', 'methodology.html']) {
+    assert.doesNotMatch(
+      read(file),
+      /<a[^>]+href="https:\/\/www\.cheapshark\.com\/?"[^>]*>/i,
+      `${file} should not advertise the provider with an outbound link`
+    );
+  }
+});

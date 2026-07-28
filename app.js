@@ -465,7 +465,7 @@
         </div>
         ${deal.scoreBreakdown.penalties.length ? `<div class="penalty-note"><strong>Score adjustments</strong><span>${deal.scoreBreakdown.penalties.map(p => `${escapeHTML(p.label)} (−${p.amount})`).join(' · ')}</span></div>` : ''}
       </section>
-      <section class="detail-section" id="livePriceContext"><div class="detail-loading"><span></span><p>Checking CheapShark for current price context&hellip;</p></div></section>
+      <section class="detail-section" id="livePriceContext"><div class="detail-loading"><span></span><p>Checking current price context&hellip;</p></div></section>
       <section class="detail-section watch-target">
         <div><p class="section-kicker">Target price</p><h3>Save a price worth waiting for</h3><p>Saved on this device. LootRadar checks the target when you return; it does not send alerts yet.</p></div>
         <label><span>Target price</span><div><span>$</span><input id="targetPriceInput" type="number" min="0" step="0.01" value="${Number(watched?.targetPrice ?? deal.salePrice).toFixed(2)}"></div></label>
@@ -524,8 +524,8 @@
         <div><span>Current price</span><i class="current" style="width:${currentWidth}%"></i><strong>${money(livePrice)}</strong></div>
         <div><span>Full retail</span><i class="retail" style="width:${fullWidth}%"></i><strong>${money(retail)}</strong></div>
       </div>
-      <p class="source-note">CheapShark provides the recorded low and current comparison, not a complete price-history chart. The list score uses CheapShark Deal Rating as a price-value signal until this view is opened.</p>
-      ${alternateRows ? `<div class="alternate-stores"><h4>Lower current listings</h4>${alternateRows}</div>` : '<p class="best-store-note">CheapShark didn’t return a lower current price for this game.</p>'}`;
+      <p class="source-note">Recorded-low coverage is incomplete. Treat it as useful context, not a complete price-history chart.</p>
+      ${alternateRows ? `<div class="alternate-stores"><h4>Lower current listings</h4>${alternateRows}</div>` : '<p class="best-store-note">No lower current listing was returned for this game.</p>'}`;
   }
 
   function closeDialog(dialog, controller) {
