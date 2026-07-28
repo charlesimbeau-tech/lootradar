@@ -65,6 +65,10 @@
       <button class="nav-watch" id="openWatchlist" type="button" aria-label="Open watchlist">
         Watchlist <span id="watchCount">0</span>
       </button>
+      <div class="account-sync account-sync-nav">
+        <span id="accountSyncStatus" aria-live="polite">Saved on this device</span>
+        <a id="accountSyncLink" href="login.html?next=/">Sign in to sync</a>
+      </div>
     </div>
   </nav>
 
@@ -228,7 +232,7 @@
 
   <dialog class="watch-dialog" id="watchDialog">
     <button class="dialog-close" type="button" data-close-watch aria-label="Close watchlist">×</button>
-    <div class="dialog-heading"><p class="section-kicker">Saved on this device</p><h2>Your watchlist</h2><p>Set a target price and LootRadar will check it against the latest snapshot when you return.</p></div>
+    <div class="dialog-heading"><p class="section-kicker">Your saved games</p><h2>Your watchlist</h2><p>Set a target price and LootRadar will check it against the latest snapshot when you return.</p></div>
     <div id="watchlistContent"></div>
   </dialog>
 
@@ -240,8 +244,14 @@
   <script src="lib/deal-filters.js?v=1"></script>
   <script src="lib/deal-dataset.js?v=1"></script>
   <script src="lib/cheapshark-client.js?v=1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="lib/account-data.js?v=1"></script>
+  <script src="lib/account-client.js?v=1"></script>
+  <script src="lib/redirect.js?v=1"></script>
   <script src="lib/analytics.js?v=1"></script>
-  <script src="app.js?v=22"></script>
+  <script src="lib/auth-controller.js?v=1"></script>
+  <script src="app.js?v=23"></script>
   <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

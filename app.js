@@ -14,6 +14,22 @@
   const { buildDealDataset } = window.LootRadarDataset;
   const analytics = window.LootRadarAnalytics;
   const config = window.LootRadarEditorialConfig;
+  let account = null;
+
+  try {
+    const supabaseClient = window.supabase && window.LR_SUPABASE_URL && window.LR_SUPABASE_ANON_KEY
+      ? window.supabase.createClient(window.LR_SUPABASE_URL, window.LR_SUPABASE_ANON_KEY)
+      : null;
+    account = supabaseClient && window.LootRadarAccountClient
+      ? window.LootRadarAccountClient.createAccountClient({
+        client: supabaseClient,
+        storage: window.localStorage
+      })
+      : null;
+  } catch (error) {
+    console.warn('Account sync is unavailable:', error);
+    account = null;
+  }
 
   const state = {
     allDeals: [],
@@ -79,6 +95,56 @@
   function saveWatchlist() {
     localStorage.setItem(WATCH_KEY, JSON.stringify(state.watchlist));
     updateWatchCount();
+    if (account) account.syncWatchlist(state.watchlist);
+  }
+
+  function loadRecommendationProfile() {
+    try {
+      return JSON.parse(localStorage.getItem('lr_rec_profile_v3') || '{}') || {};
+    } catch (_) {
+      return {};
+    }
+  }
+
+  function accountStatusText(status) {
+    if (status === 'syncing') return 'Syncing…';
+    if (status === 'synced') return 'Synced';
+    if (status === 'delayed') return 'Sync delayed';
+    return 'Saved on this device';
+  }
+
+  function renderAccountStatus(snapshot) {
+    const status = $('#accountSyncStatus');
+    const link = $('#accountSyncLink');
+    if (status) status.textContent = accountStatusText(snapshot?.status);
+    if (!link) return;
+    if (snapshot?.user) {
+      link.href = 'account.html';
+      link.textContent = 'Account';
+    } else {
+      const next = `${window.location.pathname || '/'}${window.location.search || ''}`;
+      link.href = `login.html?next=${encodeURIComponent(next)}`;
+      link.textContent = 'Sign in to sync';
+    }
+  }
+
+  function initAccountSync() {
+    if (!account) {
+      renderAccountStatus({ status: 'guest', user: null });
+      return;
+    }
+
+    account.subscribe(renderAccountStatus);
+    account.loadAndMerge(loadRecommendationProfile(), state.watchlist).then(result => {
+      if (!result || !result.watchlist || result.cancelled) return;
+      state.watchlist = result.watchlist;
+      localStorage.setItem(WATCH_KEY, JSON.stringify(state.watchlist));
+      updateWatchCount();
+      if (state.allDeals.length) render();
+      if ($('#watchDialog')?.open) renderWatchlist();
+    }).catch(() => {
+      renderAccountStatus({ status: 'delayed', user: account.state().user });
+    });
   }
 
   function showToast(message) {
@@ -322,7 +388,16 @@
       showToast(`${deal.title} removed from your watchlist.`);
       track('watchlist_remove', { surface: 'homepage' });
     } else {
-      state.watchlist[key] = { key, title: deal.title, targetPrice: deal.salePrice, addedAt: new Date().toISOString() };
+      const now = new Date().toISOString();
+      state.watchlist[key] = {
+        key,
+        title: deal.title,
+        targetPrice: deal.salePrice,
+        lastKnownPrice: deal.salePrice,
+        lastKnownStore: deal.storeName || '',
+        addedAt: now,
+        updatedAt: now
+      };
       showToast(`${deal.title} saved. Target set to ${money(deal.salePrice)}.`);
       track('watchlist_add', { surface: 'homepage' });
     }
@@ -532,7 +607,16 @@
         const deal = findDeal(target.dataset.saveTarget);
         const price = Number($('#targetPriceInput')?.value);
         if (deal && Number.isFinite(price) && price >= 0) {
-          state.watchlist[deal.key] = { key: deal.key, title: deal.title, targetPrice: price, addedAt: state.watchlist[deal.key]?.addedAt || new Date().toISOString() };
+          const now = new Date().toISOString();
+          state.watchlist[deal.key] = {
+            key: deal.key,
+            title: deal.title,
+            targetPrice: price,
+            lastKnownPrice: deal.salePrice,
+            lastKnownStore: deal.storeName || '',
+            addedAt: state.watchlist[deal.key]?.addedAt || now,
+            updatedAt: now
+          };
           saveWatchlist();
           showToast(`Watching ${deal.title} at ${money(price)}.`);
           target.textContent = 'Target saved';
@@ -555,6 +639,7 @@
       const price = Number(input.value);
       if (item && Number.isFinite(price) && price >= 0) {
         item.targetPrice = price;
+        item.updatedAt = new Date().toISOString();
         saveWatchlist();
         renderWatchlist();
         showToast('Target price updated.');
@@ -576,5 +661,6 @@
 
   bindEvents();
   updateWatchCount();
+  initAccountSync();
   loadDeals();
 })();

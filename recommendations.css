@@ -56,6 +56,28 @@
   align-items: center;
 }
 
+.auth-bar #authStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.auth-bar #authStatus::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mint);
+}
+
+.auth-bar small {
+  display: block;
+  margin-top: .2rem;
+  color: var(--text-3);
+}
+
 .auth-actions input {
   background: rgba(15, 23, 19, .78);
   border: 1px solid rgba(185, 245, 93, .24);

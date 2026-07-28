@@ -122,6 +122,31 @@ button { color: inherit; }
 }
 .nav-watch.has-alerts { border-color: var(--mint); }
 .nav-watch.has-alerts span { background: var(--mint); color: #0a0d0c; }
+.account-sync {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  color: var(--text-3);
+  font-size: .72rem;
+  white-space: nowrap;
+}
+.account-sync span {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+}
+.account-sync span::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.account-sync a {
+  color: var(--mint);
+  font-weight: 800;
+}
+.account-sync a:hover { color: var(--text); }
 
 .hero {
   position: relative; overflow: hidden;
@@ -623,6 +648,13 @@ body:not(.home-page) .hero-inner { display: block; min-height: 0; padding: 2.5re
   .site-nav-inner { width: min(100% - 28px, 1320px); min-height: 64px; gap: 1rem; }
   .nav-links { display: none; }
   .nav-watch { margin-left: auto; }
+  .account-sync-nav {
+    order: 4;
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: -.5rem;
+    padding-bottom: .55rem;
+  }
   .hero-inner { grid-template-columns: 1fr; min-height: 0; padding: 4rem 0; }
   .hero-pick { width: min(100%, 480px); transform: none; }
   .hero h1 { font-size: clamp(3rem, 13vw, 5.2rem); }

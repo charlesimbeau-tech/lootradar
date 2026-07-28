@@ -52,11 +52,11 @@
         <section class="section" style="display:block;max-width:1150px;margin:0 auto;padding:0 16px;">
             <div class="auth-bar" id="authBar">
                 <div>
-                    <div id="authStatus">Saved on this device</div>
+                    <div id="authStatus" aria-live="polite">Saved on this device</div>
                     <small>Browse without an account. Sign in only when you want these choices on another device.</small>
                 </div>
                 <div class="auth-actions">
-                    <a class="apply-btn" id="authLoginPage" href="login.html?next=/recommendations.html" style="text-align:center;">Sign in to sync</a>
+                    <a class="apply-btn" id="authAccountLink" href="login.html?next=/recommendations.html" style="text-align:center;">Sign in to sync</a>
                     <button class="reset-btn" id="authSignOut" style="display:none;">Sign out</button>
                 </div>
             </div>
@@ -187,8 +187,12 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
+    <script src="lib/account-data.js?v=1"></script>
+    <script src="lib/account-client.js?v=1"></script>
+    <script src="lib/redirect.js?v=1"></script>
     <script src="lib/analytics.js?v=1"></script>
-    <script src="recommendations.js?v=17"></script>
+    <script src="lib/auth-controller.js?v=1"></script>
+    <script src="recommendations.js?v=18"></script>
     <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

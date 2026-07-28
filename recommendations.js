@@ -41,9 +41,32 @@ const STORAGE_KEY = 'lr_rec_profile_v3';
 var stores = {};
 var deals = [];
 var catalog = [];
-var supabase = null;
-var authedUserId = null;
 var profile = loadProfile();
+var account = null;
+var accountUser = null;
+
+try {
+  var supabaseClient = window.supabase && window.LR_SUPABASE_URL && window.LR_SUPABASE_ANON_KEY
+    ? window.supabase.createClient(window.LR_SUPABASE_URL, window.LR_SUPABASE_ANON_KEY)
+    : null;
+  account = supabaseClient && window.LootRadarAccountClient
+    ? window.LootRadarAccountClient.createAccountClient({
+      client: supabaseClient,
+      storage: window.localStorage
+    })
+    : null;
+} catch (error) {
+  console.warn('Account sync is unavailable:', error);
+  account = null;
+}
+
+function freshDefaultProfile() {
+  return Object.assign({}, DEFAULT_PROFILE, {
+    genres: DEFAULT_PROFILE.genres.slice(),
+    likes: {},
+    dislikes: {}
+  });
+}
 
 function loadProfile() {
   try {
@@ -51,19 +74,105 @@ function loadProfile() {
     if (saved && typeof saved === 'object') {
       var merged = Object.assign({}, DEFAULT_PROFILE, saved);
       if (!Array.isArray(merged.genres)) merged.genres = DEFAULT_PROFILE.genres.slice();
+      else merged.genres = merged.genres.slice();
+      merged.likes = Object.assign({}, merged.likes || {});
+      merged.dislikes = Object.assign({}, merged.dislikes || {});
       return merged;
     }
   } catch(e) { /* ignore */ }
-  return Object.assign({}, DEFAULT_PROFILE);
+  return freshDefaultProfile();
 }
 
-function saveProfile() {
+function saveProfile(syncFeedback) {
+  profile.updatedAt = new Date().toISOString();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-  if (supabase && authedUserId) {
-    supabase.from('lr_profiles').upsert({
-      user_id: authedUserId, data: profile, updated_at: new Date().toISOString()
-    }).then(function(){}).catch(function(){});
+  if (account) {
+    account.syncProfile(profile);
+    if (syncFeedback) account.syncFeedback(profile);
   }
+}
+
+function loadWatchlistForSync() {
+  try {
+    return JSON.parse(localStorage.getItem('lr_watchlist_v1') || '{}') || {};
+  } catch (_) {
+    return {};
+  }
+}
+
+function accountStatusText(status) {
+  if (status === 'syncing') return 'Syncing…';
+  if (status === 'synced') return 'Synced';
+  if (status === 'delayed') return 'Sync delayed';
+  return 'Saved on this device';
+}
+
+function reflectAccountState(snapshot) {
+  var statusEl = document.getElementById('authStatus');
+  var accountLink = document.getElementById('authAccountLink');
+  var signOutBtn = document.getElementById('authSignOut');
+  accountUser = snapshot && snapshot.user ? snapshot.user : null;
+  if (statusEl) statusEl.textContent = accountStatusText(snapshot && snapshot.status);
+  if (accountLink) {
+    if (accountUser) {
+      accountLink.href = 'account.html';
+      accountLink.textContent = 'Account';
+    } else {
+      var next = (window.location.pathname || '/recommendations.html') + (window.location.search || '');
+      accountLink.href = 'login.html?next=' + encodeURIComponent(next);
+      accountLink.textContent = 'Sign in to sync';
+    }
+  }
+  if (signOutBtn) signOutBtn.style.display = accountUser ? 'inline-block' : 'none';
+}
+
+function reflectProfileInControls() {
+  var budgetRange = document.getElementById('budgetRange');
+  var budgetVal = document.getElementById('budgetVal');
+  var minRating = document.getElementById('minRating');
+  var minDiscount = document.getElementById('minDiscount');
+  var recMode = document.getElementById('recMode');
+  var popularityMin = document.getElementById('popularityMin');
+  var presetMode = document.getElementById('presetMode');
+  var genreMatchMode = document.getElementById('genreMatchMode');
+  if (budgetRange) budgetRange.value = profile.budget;
+  if (budgetVal) budgetVal.textContent = '$' + profile.budget;
+  if (minRating) minRating.value = String(profile.minRating);
+  if (minDiscount) minDiscount.value = String(profile.minDiscount);
+  if (recMode) recMode.value = profile.mode || 'all';
+  if (popularityMin) popularityMin.value = String(profile.popularityMin || 0);
+  if (presetMode) presetMode.value = profile.preset || 'custom';
+  if (genreMatchMode) genreMatchMode.value = profile.genreMatchMode || 'any';
+  updateGenreHint();
+}
+
+function initAccountSync() {
+  var signOutBtn = document.getElementById('authSignOut');
+  if (!account) {
+    reflectAccountState({ status: 'guest', user: null });
+    return;
+  }
+
+  account.subscribe(reflectAccountState);
+  if (signOutBtn) {
+    signOutBtn.addEventListener('click', function() {
+      account.signOut().then(function(signedOut) {
+        if (signedOut) window.location.reload();
+      });
+    });
+  }
+
+  account.loadAndMerge(profile, loadWatchlistForSync()).then(function(result) {
+    if (!result || !result.profile || result.cancelled) return;
+    profile = Object.assign({}, DEFAULT_PROFILE, result.profile);
+    if (!Array.isArray(profile.genres)) profile.genres = DEFAULT_PROFILE.genres.slice();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+    reflectProfileInControls();
+    buildGenrePills();
+    if (catalog.length || deals.length) renderRecommendations();
+  }).catch(function() {
+    reflectAccountState({ status: 'delayed', user: account.state().user });
+  });
 }
 
 function itemKey(x) {
@@ -494,14 +603,7 @@ function bindControls() {
   var clearGenres = document.getElementById('clearGenres');
   var launchQuiz = document.getElementById('launchQuiz');
 
-  if (budgetRange) { budgetRange.value = profile.budget; budgetVal.textContent = '$' + profile.budget; }
-  if (minRating) minRating.value = String(profile.minRating);
-  if (minDiscount) minDiscount.value = String(profile.minDiscount);
-  if (recMode) recMode.value = profile.mode || 'all';
-  if (popularityMin) popularityMin.value = String(profile.popularityMin || 0);
-  if (presetMode) presetMode.value = profile.preset || 'custom';
-  if (genreMatchMode) genreMatchMode.value = profile.genreMatchMode || 'any';
-  updateGenreHint();
+  reflectProfileInControls();
 
   if (budgetRange) budgetRange.addEventListener('input', function() {
     profile.budget = parseInt(budgetRange.value, 10);
@@ -559,14 +661,14 @@ function bindControls() {
   var saveBtn = document.getElementById('savePrefs');
   if (saveBtn) saveBtn.addEventListener('click', function() {
     saveProfile();
-    alert(authedUserId ? 'Preferences synced.' : 'Preferences saved on this device.');
+    alert(accountUser ? 'Changes saved. Account sync will continue in the background.' : 'Preferences saved on this device.');
   });
 
   var resetBtn = document.getElementById('resetPrefs');
   if (resetBtn) resetBtn.addEventListener('click', function() {
     if (!confirm('Reset your saved preferences?')) return;
-    profile = Object.assign({}, DEFAULT_PROFILE);
-    saveProfile(); bindControls(); buildGenrePills(); renderRecommendations();
+    profile = freshDefaultProfile();
+    saveProfile(); reflectProfileInControls(); buildGenrePills(); renderRecommendations();
   });
 
   document.addEventListener('click', function(e) {
@@ -583,105 +685,26 @@ function bindControls() {
     if (!btn) return;
     var id = btn.dataset.id, type = btn.dataset.fb;
     if (!id || (type !== 'like' && type !== 'dislike')) return;
-    if (type === 'like') { profile.likes[id] = true; delete profile.dislikes[id]; }
-    else { profile.dislikes[id] = true; delete profile.likes[id]; }
+    var feedbackTimestamp = new Date().toISOString();
+    if (type === 'like') { profile.likes[id] = feedbackTimestamp; delete profile.dislikes[id]; }
+    else { profile.dislikes[id] = feedbackTimestamp; delete profile.likes[id]; }
     if (window.LootRadarAnalytics) {
       window.LootRadarAnalytics.track(type === 'like' ? 'recommendation_like' : 'recommendation_skip', {
         surface: 'recommendations',
         action: type,
-        signedIn: Boolean(authedUserId)
+        signedIn: Boolean(accountUser)
       });
     }
-    if (supabase && authedUserId) {
-      supabase.from('lr_feedback').upsert({
-        user_id: authedUserId, item_id: id, action: type,
-        updated_at: new Date().toISOString()
-      }).then(function(){}).catch(function(){});
-    }
-    saveProfile(); renderRecommendations();
-  });
-}
-
-function initAuth() {
-  var statusEl = document.getElementById('authStatus');
-  var signOutBtn = document.getElementById('authSignOut');
-  var loginBtn = document.getElementById('authLoginPage');
-
-  function setGuest() {
-    authedUserId = null;
-    if (statusEl) statusEl.textContent = 'Saved on this device';
-    if (signOutBtn) signOutBtn.style.display = 'none';
-    if (loginBtn) loginBtn.style.display = '';
-  }
-
-  function setSignedIn(user) {
-    authedUserId = user.id;
-    if (statusEl) statusEl.textContent = user.email ? 'Synced as ' + user.email : 'Synced to your account';
-    if (signOutBtn) signOutBtn.style.display = 'inline-block';
-    if (loginBtn) loginBtn.style.display = 'none';
-  }
-
-  if (!window.supabase || !window.LR_SUPABASE_URL || !window.LR_SUPABASE_ANON_KEY) {
-    setGuest();
-    return Promise.resolve();
-  }
-
-  try {
-    supabase = window.supabase.createClient(window.LR_SUPABASE_URL, window.LR_SUPABASE_ANON_KEY);
-  } catch(e) {
-    console.warn('Supabase init failed:', e);
-    setGuest();
-    return Promise.resolve();
-  }
-
-  if (signOutBtn) {
-    signOutBtn.addEventListener('click', function() {
-      supabase.auth.signOut().then(function() { setGuest(); });
-    });
-  }
-
-  // Auth check with 3-second timeout so it never blocks rendering
-  return new Promise(function(resolve) {
-    var done = false;
-    var timer = setTimeout(function() {
-      if (!done) { done = true; setGuest(); resolve(); }
-    }, 3000);
-
-    supabase.auth.getSession().then(function(result) {
-      if (done) return;
-      done = true; clearTimeout(timer);
-      var session = result && result.data && result.data.session;
-      if (session && session.user) {
-        setSignedIn(session.user);
-        // Try loading cloud profile (non-blocking)
-        supabase.from('lr_profiles').select('data')
-          .eq('user_id', session.user.id).single()
-          .then(function(res) {
-            if (res.data && res.data.data) {
-              profile = Object.assign({}, DEFAULT_PROFILE, res.data.data);
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-            }
-          }).catch(function(){});
-      } else {
-        setGuest();
-      }
-      resolve();
-    }).catch(function(e) {
-      if (done) return;
-      done = true; clearTimeout(timer);
-      console.warn('Auth check failed:', e);
-      setGuest();
-      resolve();
-    });
+    saveProfile(true); renderRecommendations();
   });
 }
 
 function init() {
-  initAuth().then(function() {
-    var v = Math.floor(Date.now() / 3600000);
+  initAccountSync();
+  var v = Math.floor(Date.now() / 3600000);
 
-    // Load enriched deals first, fallback to plain deals
-    var dealsPromise = fetch('enriched-deals.json?v=' + v)
+  // Load enriched deals first, fallback to plain deals
+  var dealsPromise = fetch('enriched-deals.json?v=' + v)
       .then(function(r) { return r.ok ? r.json() : null; })
       .catch(function() { return null; })
       .then(function(enriched) {
@@ -703,12 +726,12 @@ function init() {
         }
       });
 
-    // Load umbrella catalog
-    var catalogPromise = fetch('games-catalog.json?v=' + v)
+  // Load umbrella catalog
+  var catalogPromise = fetch('games-catalog.json?v=' + v)
       .then(function(r) { return r.ok ? r.json() : null; })
       .catch(function() { return null; });
 
-    Promise.all([dealsPromise, catalogPromise]).then(function(results) {
+  Promise.all([dealsPromise, catalogPromise]).then(function(results) {
       var catData = results[1];
 
       if (catData && catData.games && catData.games.length) {
@@ -731,14 +754,13 @@ function init() {
       buildGenrePills();
       renderRecommendations();
       setupQuiz();
-    }).catch(function(err) {
+  }).catch(function(err) {
       console.error('LootRadar init error:', err);
       var empty = document.getElementById('emptyState');
       if (empty) {
         empty.style.display = 'block';
         empty.innerHTML = '<p>Recommendations could not be loaded. Please refresh the page.</p>';
       }
-    });
   });
 }
 
