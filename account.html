@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My account | LootRadar</title>
+  <meta name="description" content="Manage your private LootRadar watchlist, recommendation preferences, account access, and deal-alert settings.">
+  <meta name="robots" content="noindex,follow">
+  <link rel="canonical" href="https://thelootradar.com/account.html">
+  <link rel="stylesheet" href="style.css?v=16">
+  <link rel="stylesheet" href="recommendations.css?v=4">
+  <link rel="icon" href="icons/icon.svg?v=2" type="image/svg+xml">
+  <link rel="icon" href="icons/favicon-32.png?v=2" sizes="32x32" type="image/png">
+  <link rel="icon" href="icons/favicon.ico?v=2" sizes="any">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=2">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b0e0d">
+  <style>
+    .account-wrap { max-width: 1040px; margin: 2rem auto 4rem; padding: 0 1rem; }
+    .account-head { margin-bottom: 1.5rem; }
+    .account-head h1 { font-size: clamp(2rem, 6vw, 3rem); margin: 0 0 .35rem; }
+    .account-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .account-card { background: rgba(15,23,19,.82); border: 1px solid rgba(185,245,93,.2); border-radius: 14px; padding: 1.1rem; }
+    .account-card h2 { font-size: 1.15rem; margin: 0 0 .7rem; }
+    .account-card p { color: var(--text-2); }
+    .account-wide { grid-column: 1 / -1; }
+    .account-list { display: grid; gap: .55rem; list-style: none; margin: .7rem 0 0; padding: 0; }
+    .account-item { align-items: center; background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.07); border-radius: 9px; display: flex; gap: .75rem; justify-content: space-between; padding: .7rem .8rem; }
+    .account-muted { color: var(--text-3); font-size: .88rem; }
+    .account-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+    .account-button { background: var(--mint); border: 0; border-radius: 8px; color: #14200c; cursor: pointer; font: inherit; font-weight: 800; padding: .65rem .9rem; }
+    .account-button.secondary { background: transparent; border: 1px solid rgba(185,245,93,.35); color: var(--text); }
+    .account-button.danger { background: #b54444; color: #fff; }
+    .account-button:disabled { cursor: not-allowed; opacity: .55; }
+    .account-toggle { align-items: start; display: flex; gap: .7rem; margin: .8rem 0; }
+    .account-toggle input { margin-top: .25rem; }
+    .account-status { color: var(--mint); min-height: 1.35em; }
+    .danger-zone { border-color: rgba(221,87,87,.45); }
+    .delete-dialog { background: #101713; border: 1px solid rgba(221,87,87,.55); border-radius: 12px; color: var(--text); max-width: 520px; padding: 1.2rem; }
+    .delete-dialog::backdrop { background: rgba(0,0,0,.72); }
+    .delete-dialog input { background: #0b0e0d; border: 1px solid rgba(255,255,255,.18); border-radius: 8px; color: var(--text); margin: .5rem 0 1rem; padding: .7rem; width: 100%; }
+    [hidden] { display: none !important; }
+    @media (max-width: 760px) { .account-grid { grid-template-columns: 1fr; } .account-wide { grid-column: auto; } }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a href="index.html" class="nav-brand">Loot<span>Radar</span></a>
+      <div class="nav-links">
+        <a href="index.html">Deals</a>
+        <a href="recommendations.html">For you</a>
+        <a href="account.html" class="active">My account</a>
+        <a href="blog.html">Guides</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="account-wrap">
+    <header class="account-head">
+      <p class="eyebrow">Private account</p>
+      <h1>My LootRadar</h1>
+      <p id="accountIdentity" class="account-muted">Checking your account…</p>
+      <p id="accountStatus" class="account-status" role="status" aria-live="polite"></p>
+    </header>
+
+    <div class="account-grid" id="accountContent" hidden>
+      <section class="account-card account-wide" aria-labelledby="watchlistHeading">
+        <h2 id="watchlistHeading">Watched games and target prices</h2>
+        <p>Your saved games remain available on this device if synchronization is delayed.</p>
+        <ul class="account-list" id="accountWatchlist"></ul>
+        <p class="account-muted" id="emptyWatchlist">No watched games yet. Add one from the deals page.</p>
+      </section>
+
+      <section class="account-card" aria-labelledby="preferencesHeading">
+        <h2 id="preferencesHeading">Recommendation preferences</h2>
+        <div id="accountPreferences"></div>
+        <p><a href="recommendations.html">Edit recommendations</a></p>
+      </section>
+
+      <section class="account-card" aria-labelledby="accessHeading">
+        <h2 id="accessHeading">Account access</h2>
+        <p id="identityProviders">Your sign-in methods are private.</p>
+        <div class="account-actions">
+          <button class="account-button secondary" id="linkGoogle" type="button" hidden>Connect Google</button>
+          <button class="account-button secondary" id="signOut" type="button">Sign out</button>
+        </div>
+      </section>
+
+      <section class="account-card" aria-labelledby="notificationsHeading">
+        <h2 id="notificationsHeading">Deal email</h2>
+        <p id="alertAvailability">Email delivery setup pending. No alert email is enabled.</p>
+        <label class="account-toggle"><input id="targetPriceAlert" type="checkbox" disabled> <span><strong>Target-price alerts</strong><br><span class="account-muted">When a qualified watched game reaches your target.</span></span></label>
+        <label class="account-toggle"><input id="freeGameAlert" type="checkbox" disabled> <span><strong>Free-game alerts</strong><br><span class="account-muted">Qualified free listings in LootRadar’s current snapshot.</span></span></label>
+        <label class="account-toggle"><input id="weeklyDigestAlert" type="checkbox" disabled> <span><strong>Weekly five-deal digest</strong><br><span class="account-muted">Friday at 10:00 a.m. in your time zone.</span></span></label>
+      </section>
+
+      <section class="account-card" aria-labelledby="historyHeading">
+        <h2 id="historyHeading">Recent alert history</h2>
+        <p class="account-muted">Alert delivery is not available yet. Once enabled, recent status appears here.</p>
+        <ul class="account-list" id="alertHistory"></ul>
+      </section>
+
+      <section class="account-card account-wide danger-zone" aria-labelledby="deleteHeading">
+        <h2 id="deleteHeading">Delete account</h2>
+        <p>Permanently remove authentication access and private LootRadar account data. This cannot be undone.</p>
+        <button class="account-button danger" id="openDelete" type="button">Delete my account</button>
+      </section>
+    </div>
+  </main>
+
+  <dialog class="delete-dialog" id="deleteDialog">
+    <form method="dialog" id="deleteForm">
+      <h2>Delete this account?</h2>
+      <p>Type <strong>DELETE</strong> to permanently remove the account and synchronized data.</p>
+      <label for="deleteConfirm">Confirmation</label>
+      <input id="deleteConfirm" autocomplete="off" spellcheck="false">
+      <div class="account-actions">
+        <button class="account-button danger" id="confirmDelete" value="delete" type="submit">Delete permanently</button>
+        <button class="account-button secondary" value="cancel" type="submit">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="lib/account-data.js?v=1"></script>
+  <script src="lib/account-client.js?v=1"></script>
+  <script src="lib/analytics.js?v=1"></script>
+  <script src="lib/auth-controller.js?v=1"></script>
+  <script src="account.js?v=1"></script>
+  <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

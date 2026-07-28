@@ -76,6 +76,18 @@ test('allows only Google and email authentication providers', () => {
   assert.deepEqual(sanitizeProperties({ provider: 'person@example.com' }), {});
 });
 
+test('account deletion analytics carries no private properties', () => {
+  assert.equal(sanitizeEvent('account_delete_request'), 'account_delete_request');
+  assert.deepEqual(
+    sanitizeProperties({
+      email: 'private@example.com',
+      userId: 'user-123',
+      reason: 'private'
+    }),
+    {}
+  );
+});
+
 test('keeps property values printable and bounded', () => {
   const longValue = `  home\npage\u0000card ${'x'.repeat(100)}  `;
   const properties = sanitizeProperties({
