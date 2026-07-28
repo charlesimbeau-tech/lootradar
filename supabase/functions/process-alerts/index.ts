@@ -328,8 +328,8 @@ export function buildLootRadarDealUrl(
   return url.toString();
 }
 
-function buildDigestUrl(publicSiteUrl: string): string {
-  return new URL("deals/best-pc-game-deals-today.html", publicSiteUrl).toString();
+export function buildDigestUrl(publicSiteUrl: string): string {
+  return new URL("deals/best-pc-game-deals.html", publicSiteUrl).toString();
 }
 
 export function retryAt(attemptCount: number, now: Date): string | null {

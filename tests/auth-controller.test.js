@@ -239,7 +239,7 @@ test('identity linking is a reusable account-page action with a fixed return pat
   assert.deepEqual(linkRequest, {
     provider: 'google',
     options: {
-      redirectTo: 'https://thelootradar.com/account.html?linked=google'
+      redirectTo: 'https://thelootradar.com/login.html?next=%2Faccount.html%3Flinked%3Dgoogle'
     }
   });
   assert.equal(button.disabled, true);

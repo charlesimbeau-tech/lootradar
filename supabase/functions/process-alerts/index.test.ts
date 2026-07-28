@@ -6,6 +6,7 @@ import {
   type AlertDeliveryRow,
   type AlertPreference,
   type AlertRepository,
+  buildDigestUrl,
   buildLootRadarDealUrl,
   collectPaginated,
   createProcessAlertsHandler,
@@ -636,6 +637,13 @@ Deno.test("deal email CTA stays on LootRadar search", () => {
   assert.equal(url.searchParams.get("q"), "A Game & Friends");
   assert.equal(url.searchParams.get("collection"), "all");
   assert.equal(url.hash, "");
+});
+
+Deno.test("weekly digest CTA points to the published permanent collection", () => {
+  assert.equal(
+    buildDigestUrl("https://thelootradar.com/"),
+    "https://thelootradar.com/deals/best-pc-game-deals.html",
+  );
 });
 
 Deno.test("a lost snapshot claim cannot be completed by the old worker", async () => {
