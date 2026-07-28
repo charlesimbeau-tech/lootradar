@@ -2,3 +2,4 @@
 // Anon key is safe for client-side use; RLS must remain enabled.
 window.LR_SUPABASE_URL = "https://wqsmpkfxuzfjfnujgnea.supabase.co";
 window.LR_SUPABASE_ANON_KEY = "sb_publishable_FYa3TOErkmcVE1yFq9YZzw_nuecgh-k";
+window.LR_ALERTS_ENABLED = false;
