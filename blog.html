@@ -55,7 +55,7 @@
             <div class="nav-links">
                 <a href="index.html">Deals</a>
                 <a href="recommendations.html">For you</a>
-                <a href="login.html">Sign in</a>
+                <a data-account-link href="login.html">Sign in</a>
                 <a href="blog.html" class="active">Guides</a>
                 <a href="about.html">About</a>
                 <a href="privacy.html">Privacy</a>
@@ -130,10 +130,13 @@
     <footer>
         <p>LootRadar &copy; 2026</p>
         <p class="footer-nav"><a href="index.html">Deals</a> &middot; <a href="recommendations.html">For you</a>
-                <a href="login.html">Sign in</a> &middot; <a href="blog.html">Guides</a> &middot; <a href="feed.xml">Deal feed</a> &middot; <a href="about.html">About</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a></p>
+                <a data-account-link href="login.html">Sign in</a> &middot; <a href="blog.html">Guides</a> &middot; <a href="feed.xml">Deal feed</a> &middot; <a href="about.html">About</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a></p>
         <p><small>Some retailer links may earn LootRadar a commission. Price listings come from CheapShark and may change after you leave LootRadar. Affiliate relationships never affect Deal Scores.</small></p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="lib/auth-nav.js?v=1"></script>
     <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

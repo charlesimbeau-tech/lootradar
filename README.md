@@ -59,6 +59,7 @@ No key is required for CheapShark. Copy `.env.example` only when running data-re
 | --- | --- | --- |
 | `LR_SUPABASE_URL` | Optional | Supabase project URL for cross-device profile sync |
 | `LR_SUPABASE_ANON_KEY` | Optional | Supabase publishable browser key; RLS must remain enabled |
+| `LR_ALERTS_ENABLED` | No | Public email-alert release gate; keep `false` until delivery is verified |
 | `MAX_PRICE` | No | Maximum cached CheapShark price, default `70` |
 | `PAGE_SIZE` | No | CheapShark page size, maximum/default `60` |
 | `PAGES_PER_STORE` | No | Pages requested per active store, default `3` |
@@ -72,13 +73,41 @@ Obtain Supabase values from Project Settings → API in your Supabase dashboard.
 
 Basic browsing and local watchlists need no database.
 
-For optional account syncing:
+For optional private account syncing:
 
-1. Create a Supabase project.
-2. Run `db/supabase-recommendations.sql` in the Supabase SQL editor.
-3. Add `LR_SUPABASE_URL` and `LR_SUPABASE_ANON_KEY` as GitHub repository secrets.
-4. Run the “Sync Supabase Config” workflow.
-5. Configure `https://thelootradar.com/login.html` as an allowed authentication redirect.
+1. Create a Supabase project and apply the complete, idempotent
+   `db/supabase-recommendations.sql` migration in its SQL editor.
+2. In Authentication → URL Configuration, set the Site URL to exactly
+   `https://thelootradar.com`.
+3. Set the Redirect allowlist to exactly
+   `https://thelootradar.com/login.html`. Do not add a wildcard callback.
+4. In Authentication → Providers, enable the Google provider with the
+   production Google client ID and client secret. In the Google Cloud console,
+   use the callback URL Supabase shows for that provider.
+5. Enable Manual identity linking in Supabase Authentication so an existing
+   passwordless email account can add Google without creating a second profile.
+6. Deploy the account-deletion function:
+
+   ```bash
+   supabase functions deploy delete-account
+   ```
+
+   Configure its server-side Supabase secrets in the function environment;
+   privileged credentials must never enter browser code, repository variables,
+   or generated static files.
+7. Add `LR_SUPABASE_URL` and `LR_SUPABASE_ANON_KEY` as GitHub repository
+   secrets, then run the “Sync Supabase Config” workflow. These are public
+   browser values protected by Row Level Security, not privileged credentials.
+
+Email controls use the public `LR_ALERTS_ENABLED` repository variable as a
+release gate. Leave it unset or `false` until the Resend sending domain, alert
+processor, unsubscribe endpoint, scheduled invocation, and end-to-end delivery
+have all been verified. Setting it to `true` makes controls available; it does
+not opt any existing account into email.
+
+After configuration, verify Google and passwordless email sign-in, manual
+identity linking, cross-device watchlist sync, and self-service deletion with a
+disposable account before publishing.
 
 `db/schema.sql` is a forward-looking normalized catalog schema and is not required by the current static site.
 

@@ -44,6 +44,7 @@
         <a href="recommendations.html">For you</a>
         <a href="blog.html">Guides</a>
         <a class="active" href="about.html">About</a>
+        <a data-account-link href="login.html">Sign in</a>
       </div>
     </div>
   </nav>
@@ -74,7 +75,8 @@
     </ul>
 
     <h2>Accounts, privacy, and saved preferences</h2>
-    <p>You do not need an account to browse. Watchlist targets and some preferences can stay on the device you are using. Optional sign-in can sync recommendation preferences through Supabase. LootRadar also uses aggregate analytics and may display advertising; the <a href="privacy.html">privacy policy</a> explains those services and the choices available to you.</p>
+    <p>Accounts are optional and private. You can browse, search, open deals, and keep a device-local watchlist without signing in. Google is the quickest sign-in option, with passwordless email available as a fallback.</p>
+    <p>When you do sign in, Supabase can sync your watchlist targets, recommendation choices, and feedback across devices. Deal email preferences are off by default, linking Google to an existing email account is optional, and you can delete the account from its private dashboard. The <a href="privacy.html">privacy policy</a> explains the local cache, service providers, and your choices.</p>
 
     <h2>How the site is funded</h2>
     <p>LootRadar is free to use. It may earn revenue from advertising or eligible affiliate links. Those relationships do not change prices, Deal Scores, collection eligibility, or ranking order.</p>
@@ -99,6 +101,7 @@
         <a href="methodology.html">Scoring</a>
         <a href="recommendations.html">For you</a>
         <a href="blog.html">Guides</a>
+        <a data-account-link href="login.html">Sign in</a>
         <a href="privacy.html">Privacy</a>
         <a href="terms.html">Terms</a>
       </div>
@@ -106,6 +109,9 @@
     <p class="footer-disclosure">Some retailer links may earn LootRadar a commission. Price listings come from CheapShark and may change after you leave LootRadar. Affiliate relationships never affect Deal Scores.</p>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="lib/auth-nav.js?v=1"></script>
   <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

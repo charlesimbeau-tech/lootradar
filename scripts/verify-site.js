@@ -16,7 +16,7 @@ const requiredSource = [
   'lib/cheapshark-client.js', 'lib/deal-snapshot-validator.js',
   'lib/alert-snapshot.js',
   'lib/account-data.js', 'lib/account-client.js',
-  'lib/analytics.js', 'lib/auth-controller.js', 'lib/safe-redirect.js', 'lib/rss-feed.js',
+  'lib/analytics.js', 'lib/auth-controller.js', 'lib/auth-nav.js', 'lib/safe-redirect.js', 'lib/rss-feed.js',
   'feed.xml', 'sitemap.xml', 'public/og.png',
   ...brandIconFiles
 ];
@@ -29,6 +29,7 @@ const requiredBuild = [
   'dist/static/lib/alert-snapshot.js', 'dist/static/lib/cheapshark-client.js',
   'dist/static/lib/account-data.js', 'dist/static/lib/account-client.js',
   'dist/static/lib/analytics.js', 'dist/static/lib/auth-controller.js',
+  'dist/static/lib/auth-nav.js',
   'dist/static/lib/safe-redirect.js',
   'dist/static/lib/rss-feed.js', 'dist/static/recommendations.js',
   'dist/static/feed.xml', 'dist/static/sitemap.xml', 'dist/static/public/og.png',
