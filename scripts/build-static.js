@@ -10,12 +10,12 @@ const rootFiles = [
   'about.html', 'account.html', 'account.js', 'ads.txt', 'app.js', 'blog.html', 'CNAME', 'deals.json',
   'alert-deals.json', 'enriched-deals.json', 'games-catalog.json', 'games.html', 'index.html',
   'favicon.ico', 'feed.xml', 'login.html', 'login.js', 'manifest.json', 'methodology.html', 'privacy.html',
-  'guides.css',
+  'guides.css', 'game-pages.css',
   'recommendations.css', 'recommendations.html', 'recommendations.js',
   'robots.txt', 'sitemap.xml', 'style.css', 'supabase-config.js', 'terms.html',
   'unsubscribe.html', 'unsubscribe.js'
 ];
-const publicDirectories = ['blog', 'config', 'deals', 'icons', 'lib', 'public'];
+const publicDirectories = ['blog', 'config', 'deals', 'games', 'icons', 'lib', 'public'];
 
 fs.rmSync(dist, { recursive: true, force: true });
 fs.mkdirSync(staticDir, { recursive: true });

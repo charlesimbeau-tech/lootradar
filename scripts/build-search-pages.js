@@ -3,6 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { buildDealDataset } = require('../lib/deal-dataset.js');
+const { gamePageRoute, selectGamePageDeals } = require('../lib/game-pages.js');
 const config = require('../config/editorial-config.js');
 const { MIN_INDEXABLE_DEALS, renderLandingPage } = require('./templates/deal-landing.js');
 
@@ -201,6 +202,10 @@ function buildSearchPages(options = {}) {
     deals = buildDealDataset(base, enriched, options.config || config);
   }
 
+  const gameRoutes = new Map(
+    selectGamePageDeals(deals).map(deal => [deal.key, gamePageRoute(deal)])
+  );
+
   fs.mkdirSync(outputDir, { recursive: true });
 
   const counts = {};
@@ -208,7 +213,10 @@ function buildSearchPages(options = {}) {
   const collections = Object.values(PAGE_DEFINITIONS).map(definition => {
     const selected = selectLandingDeals(deals, definition.id);
     counts[definition.id] = selected.length;
-    selectedById[definition.id] = selected.slice(0, definition.limit);
+    selectedById[definition.id] = selected.slice(0, definition.limit).map(deal => ({
+      ...deal,
+      gamePageRoute: gameRoutes.get(deal.key) || ''
+    }));
     return {
       ...definition,
       count: selected.length,

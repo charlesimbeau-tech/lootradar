@@ -4,6 +4,11 @@ const { loadWeeklyIssues, weeklyGuideRelativePath } = require('../lib/weekly-gui
 
 const root = path.resolve(__dirname, '..');
 const weeklyGuidePages = loadWeeklyIssues(root).map(weeklyGuideRelativePath);
+const gamesDir = path.join(root, 'games');
+const generatedGamePages = fs.existsSync(gamesDir)
+  ? fs.readdirSync(gamesDir).filter(file => file.endsWith('.html')).sort().map(file => `games/${file}`)
+  : [];
+
 const brandIconFiles = [
   'icons/icon.svg', 'icons/logo.svg', 'icons/icon.png',
   'icons/favicon-16.png', 'icons/favicon-32.png', 'icons/favicon-48.png',
@@ -12,9 +17,9 @@ const brandIconFiles = [
 ];
 const requiredSource = [
   'index.html', 'favicon.ico', 'account.html', 'account.js', 'unsubscribe.html', 'unsubscribe.js',
-  'methodology.html', 'app.js', 'login.js', 'style.css', 'guides.css', 'manifest.json',
+  'methodology.html', 'app.js', 'login.js', 'style.css', 'guides.css', 'game-pages.css', 'manifest.json',
   'alert-deals.json', 'deals.json', 'enriched-deals.json', 'config/editorial-config.js',
-  'lib/deal-normalizer.js', 'lib/deal-score.js', 'lib/deal-filters.js',
+  'lib/deal-normalizer.js', 'lib/deal-score.js', 'lib/deal-filters.js', 'lib/game-pages.js',
   'lib/cheapshark-client.js', 'lib/deal-snapshot-validator.js',
   'lib/alert-snapshot.js',
   'lib/account-data.js', 'lib/account-client.js',
@@ -35,8 +40,9 @@ const requiredBuild = [
   'dist/static/lib/safe-redirect.js',
   'dist/static/lib/rss-feed.js', 'dist/static/recommendations.js',
   'dist/static/feed.xml', 'dist/static/sitemap.xml', 'dist/static/public/og.png',
-  'dist/static/guides.css', 'dist/static/lib/weekly-guide.js',
-  ...brandIconFiles.map(file => path.join('dist', 'static', file))
+  'dist/static/guides.css', 'dist/static/game-pages.css', 'dist/static/lib/weekly-guide.js',
+  ...brandIconFiles.map(file => path.join('dist', 'static', file)),
+  ...generatedGamePages.map(file => path.join('dist', 'static', file))
 ];
 const editorialPages = [
   'index.html', 'games.html', 'recommendations.html', 'login.html',
@@ -64,14 +70,15 @@ const generatedDealPages = [
   'deals/deep-discounts.html',
   'deals/hidden-gems.html'
 ];
-const publicPages = [...editorialPages, ...generatedDealPages];
-const adsensePages = [...adsenseEditorialPages, ...generatedDealPages];
+const publicPages = [...editorialPages, ...generatedDealPages, ...generatedGamePages];
+const adsensePages = [...adsenseEditorialPages, ...generatedDealPages, ...generatedGamePages];
 const analyticsPages = [
   'index.html', 'games.html', 'recommendations.html', 'login.html',
   ...weeklyGuidePages,
-  ...generatedDealPages
+  ...generatedDealPages,
+  ...generatedGamePages
 ];
-const goatCounterPages = [...editorialPages, ...generatedDealPages];
+const goatCounterPages = [...editorialPages, ...generatedDealPages, ...generatedGamePages];
 
 const failures = [];
 for (const file of [...requiredSource, ...requiredBuild]) {
@@ -95,6 +102,29 @@ for (const file of generatedDealPages) {
       failures.push(path.relative(root, target));
     }
   }
+
+if (generatedGamePages.length < 2 || !generatedGamePages.includes('games/index.html')) {
+  failures.push('games must include a hub and at least one generated price page');
+}
+for (const file of generatedGamePages) {
+  for (const base of [root, path.join(root, 'dist', 'static')]) {
+    const target = path.join(base, file);
+    if (!fs.existsSync(target) || fs.statSync(target).size === 0) {
+      failures.push(path.relative(root, target));
+      continue;
+    }
+    const source = fs.readFileSync(target, 'utf8');
+    const h1Count = (source.match(/<h1\b/g) || []).length;
+    for (const token of ['application/ld+json', 'game-pages.css', 'Prices checked']) {
+      if (!source.includes(token)) failures.push(`${path.relative(root, target)} missing ${token}`);
+    }
+    if (h1Count !== 1) failures.push(`${path.relative(root, target)} must contain one h1`);
+    if (file !== 'games/index.html' && !source.includes('"@type":"Product"')) {
+      failures.push(`${path.relative(root, target)} missing Product structured data`);
+    }
+    if (source.includes('\u2014')) failures.push(`${path.relative(root, target)} contains an em dash`);
+  }
+}
 }
 
 for (const file of publicPages) {
@@ -291,7 +321,8 @@ const indexableDealPages = generatedDealPages.filter(file => {
 });
 const indexablePages = [
   ...editorialPages.filter(file => file !== 'login.html'),
-  ...indexableDealPages
+  ...indexableDealPages,
+  ...generatedGamePages
 ];
 const canonicalUrl = file => file === 'index.html'
   ? 'https://thelootradar.com/'

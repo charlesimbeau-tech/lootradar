@@ -21,6 +21,7 @@ const fixtures = [
 function generatedFixture(index) {
   return {
     key: `steam:${index}`,
+    steamAppID: String(index),
     title: `Co-op Indie Pick ${index}`,
     storeID: '1',
     storeName: 'Steam',
@@ -196,6 +197,7 @@ test('generator writes a crawlable hub and six unique collection pages', () => {
   assert.match(bestPage, /Some retailer links may earn LootRadar a commission/);
   assert.match(bestPage, /dealID=abc%2Fdef%3D/);
   assert.doesNotMatch(bestPage, /dealID=abc%252Fdef%253D/);
+  assert.match(bestPage, /href="\.\.\/games\/co-op-indie-pick-14-14\.html"/);
 });
 
 test('quiet collections remain useful but are marked noindex', () => {

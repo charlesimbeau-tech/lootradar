@@ -35,6 +35,9 @@ jobs:
         run: node scripts/build-alert-snapshot.js
 
       - name: Build search landing pages
+      - name: Build permanent game price pages
+        run: node scripts/build-game-pages.js
+
         run: node scripts/build-search-pages.js
 
       - name: Generate RSS feed
@@ -59,6 +62,7 @@ jobs:
           [ -f games-catalog.json ] && git add games-catalog.json || true
           [ -f games-catalog-large.json ] && git add games-catalog-large.json || true
           [ -d deals ] && git add deals || true
+          [ -d games ] && git add games || true
           [ -f feed.xml ] && git add feed.xml || true
           [ -f sitemap.xml ] && git add sitemap.xml || true
 

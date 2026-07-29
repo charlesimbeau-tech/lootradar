@@ -122,6 +122,22 @@ function indexableDealPaths(baseDir = root) {
   return paths;
 }
 
+function indexableGamePaths(baseDir = root) {
+  const gamesDir = path.join(baseDir, 'games');
+  if (!fs.existsSync(gamesDir)) throw new Error('Missing generated games directory.');
+  const files = fs.readdirSync(gamesDir).filter(file => file.endsWith('.html')).sort();
+  if (!files.includes('index.html')) throw new Error('Missing generated game hub: games/index.html');
+  return files.filter(file => {
+    const source = fs.readFileSync(path.join(gamesDir, file), 'utf8');
+    if (/<meta\s+name="robots"\s+content="noindex,follow">/i.test(source)) return false;
+    const canonical = `${SITE_ORIGIN}/games/${file}`;
+    if (!source.includes(`rel="canonical" href="${canonical}"`)) {
+      throw new Error(`Generated game page has the wrong canonical: games/${file}`);
+    }
+    return true;
+  }).map(file => `/games/${file}`);
+}
+
 function generateSitemap(options = {}) {
   const base = options.base || JSON.parse(
     fs.readFileSync(path.join(root, 'deals.json'), 'utf8')
@@ -132,7 +148,10 @@ function generateSitemap(options = {}) {
     editorialEntries: options.editorialEntries,
     baseDir: options.baseDir || root,
     snapshotUpdatedAt: options.snapshotUpdatedAt || base.updatedAt,
-    dealPaths: options.dealPaths || indexableDealPaths(options.baseDir || root)
+    dealPaths: options.dealPaths || [
+      ...indexableDealPaths(options.baseDir || root),
+      ...indexableGamePaths(options.baseDir || root)
+    ]
   });
   const output = path.resolve(options.output || path.join(root, 'sitemap.xml'));
   fs.writeFileSync(output, xml);
@@ -151,5 +170,6 @@ module.exports = {
   createSitemap,
   editorialEntries,
   generateSitemap,
-  indexableDealPaths
+  indexableDealPaths,
+  indexableGamePaths
 };

@@ -80,6 +80,7 @@ function renderDealCard(deal) {
       <p class="landing-reason">${escapeHTML(recommendationFor(deal))}</p>
       <div class="landing-price"><s>${formatPrice(deal.normalPrice)}</s><strong>${formatPrice(deal.salePrice)}</strong></div>
       <a href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(deal.dealID))}" target="_blank" rel="sponsored noopener noreferrer" data-track-deal data-track-surface="search_landing" data-track-store="${escapeHTML(deal.storeName)}" data-track-price="${escapeHTML(deal.salePrice)}">View at ${escapeHTML(deal.storeName)}</a>
+${deal.gamePageRoute ? `      <a class="landing-detail-link" href="../games/${escapeHTML(deal.gamePageRoute)}">Price and quality details</a>` : ''}
     </div>
   </article>`;
 }
@@ -233,6 +234,7 @@ ${indexable ? '' : '  <meta name="robots" content="noindex,follow">\n'}  <link r
     .landing-review,.landing-reason{color:var(--text-3);font-size:.76rem;line-height:1.55}.landing-reason{min-height:3.1em}
     .landing-price{display:flex;align-items:baseline;gap:.7rem;margin:1rem 0}.landing-price s{color:var(--text-3)}.landing-price strong{font:800 1.25rem/1 var(--display)}
     .landing-deal-body>a{display:inline-flex;padding:.6rem .8rem;border:1px solid var(--line);border-radius:8px;color:var(--text);text-decoration:none;font-size:.75rem;font-weight:800}
+    .landing-deal-body>a.landing-detail-link{margin-left:.35rem;border-color:transparent;color:var(--mint);text-decoration:underline}
     .landing-hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.landing-hub-card{padding:1.5rem}
     .landing-hub-card>p:first-child{color:var(--mint);font-size:.7rem;text-transform:uppercase;letter-spacing:.07em}.landing-hub-card h2{font:800 1.35rem/1.2 var(--display)}
     .landing-hub-card h2 a{color:var(--text);text-decoration:none}.landing-hub-card p,.landing-hub-card span{color:var(--text-3);line-height:1.6}.landing-hub-card span{font-size:.75rem}

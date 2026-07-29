@@ -3,10 +3,13 @@ const assert = require('node:assert/strict');
 const {
   EDITORIAL_PATHS,
   createSitemap,
-  editorialEntries
+  editorialEntries,
+  indexableGamePaths
 } = require('../scripts/generate-sitemap.js');
 const { loadCurrentWeeklyIssue, weeklyGuideRelativePath } = require('../lib/weekly-guide.js');
 const path = require('node:path');
+const fs = require('node:fs');
+const os = require('node:os');
 
 const root = path.resolve(__dirname, '..');
 
@@ -65,4 +68,17 @@ test('rejects insecure origins and invalid dates', () => {
     }),
     /valid date/
   );
+});
+
+test('discovers canonical generated game pages for the sitemap', () => {
+  const baseDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-sitemap-games-'));
+  const gamesDir = path.join(baseDir, 'games');
+  fs.mkdirSync(gamesDir);
+  for (const file of ['index.html', 'quality-game-123.html']) {
+    fs.writeFileSync(
+      path.join(gamesDir, file),
+      `<link rel="canonical" href="https://thelootradar.com/games/${file}">`
+    );
+  }
+  assert.deepEqual(indexableGamePaths(baseDir), ['/games/index.html', '/games/quality-game-123.html']);
 });

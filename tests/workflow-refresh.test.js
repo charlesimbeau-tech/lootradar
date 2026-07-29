@@ -15,6 +15,20 @@ test('the refresh workflow stages every generated catalog before rebasing', () =
     'build-games-catalog-large.js modifies games-catalog-large.json, so the workflow must stage it before git pull --rebase'
   );
 });
+test('the refresh workflow rebuilds and stages permanent game pages', () => {
+  const workflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github', 'workflows', 'update-deals.yml'),
+    'utf8'
+  );
+  const gamesBuild = workflow.indexOf('node scripts/build-game-pages.js');
+  const searchBuild = workflow.indexOf('node scripts/build-search-pages.js');
+  const sitemapBuild = workflow.indexOf('node scripts/generate-sitemap.js');
+  assert.ok(gamesBuild > -1);
+  assert.ok(gamesBuild < searchBuild);
+  assert.ok(searchBuild < sitemapBuild);
+  assert.match(workflow, /\[ -d games \] && git add games/);
+});
+
 
 test('the refresh workflow limits automated CheapShark pressure', () => {
   const workflow = fs.readFileSync(
