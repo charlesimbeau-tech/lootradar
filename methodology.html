@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=23">
+  <link rel="stylesheet" href="style.css?v=25">
   <link rel="icon" href="icons/icon.svg?v=2" type="image/svg+xml">
   <link rel="icon" href="icons/favicon-32.png?v=2" sizes="32x32" type="image/png">
   <link rel="icon" href="icons/favicon.ico?v=2" sizes="any">
@@ -53,7 +53,64 @@
       <p class="eyebrow"><span></span> The ranking, without the mystery</p>
       <h1>A good price only matters<br>when the game is worth playing.</h1>
       <p>LootRadar&rsquo;s Deal Score is a ranking aid, not a review score. It combines signals from the current listing and available game metadata; a giant discount cannot rescue a poorly reviewed game.</p>
-      <div class="method-callout"><strong>Deal Score</strong><span>Quality × 35% + Price value × 25% + Discount × 20% + Review confidence × 10% + Player interest × 10% − penalties</span></div>
+      <section class="score-formula" aria-labelledby="scoreFormulaTitle">
+        <div class="score-formula-head">
+          <div>
+            <p class="score-formula-kicker">LootRadar scoring model</p>
+            <h2 id="scoreFormulaTitle">Five signals. One clear score.</h2>
+          </div>
+          <div class="score-formula-result" aria-label="Deal Score ranges from 0 to 100">
+            <strong>0<span>–</span>100</strong>
+            <small>Deal Score</small>
+          </div>
+        </div>
+
+        <div class="score-formula-bar" aria-hidden="true">
+          <span class="score-quality" style="--share: 35"><b>35%</b></span>
+          <span class="score-price" style="--share: 25"><b>25%</b></span>
+          <span class="score-discount" style="--share: 20"><b>20%</b></span>
+          <span class="score-confidence" style="--share: 10"><b>10%</b></span>
+          <span class="score-interest" style="--share: 10"><b>10%</b></span>
+        </div>
+
+        <div class="score-formula-legend">
+          <article class="score-quality">
+            <span class="score-signal-mark">Q</span>
+            <div><strong>Quality</strong><small>35% of score</small></div>
+          </article>
+          <article class="score-price">
+            <span class="score-signal-mark">P</span>
+            <div><strong>Price value</strong><small>25% of score</small></div>
+          </article>
+          <article class="score-discount">
+            <span class="score-signal-mark">D</span>
+            <div><strong>Discount</strong><small>20% of score</small></div>
+          </article>
+          <article class="score-confidence">
+            <span class="score-signal-mark">C</span>
+            <div><strong>Review confidence</strong><small>10% of score</small></div>
+          </article>
+          <article class="score-interest">
+            <span class="score-signal-mark">I</span>
+            <div><strong>Player interest</strong><small>10% of score</small></div>
+          </article>
+        </div>
+
+        <div class="score-formula-finish">
+          <div class="score-penalty">
+            <span aria-hidden="true">−</span>
+            <div><strong>Guardrail penalties</strong><small>Weak evidence and poor sentiment reduce the total.</small></div>
+          </div>
+          <span class="score-formula-arrow" aria-hidden="true"></span>
+          <div class="score-final">
+            <span class="brand-mark" aria-hidden="true"><i></i></span>
+            <div><small>Final result</small><strong>Deal Score</strong></div>
+          </div>
+        </div>
+
+        <p class="score-formula-note"><strong>Quality leads.</strong> Discount strength is capped, so a loud sale badge cannot carry a weak game.</p>
+        <p class="sr-only">Deal Score equals quality weighted at 35 percent, price value at 25 percent, discount at 20 percent, review confidence at 10 percent, and player interest at 10 percent, minus any guardrail penalties.</p>
+      </section>
     </header>
 
     <section class="method-section" aria-labelledby="weightsTitle">
@@ -112,7 +169,7 @@
     </section>
 
     <section class="method-section source-section">
-      <div><p class="section-kicker">Sources &amp; limits</p><h2>What the score can—and cannot—say</h2></div>
+      <div><p class="section-kicker">Sources &amp; limits</p><h2>What the score can tell you, and what it cannot</h2></div>
       <div>
         <p>Third-party pricing data supplies current store and price listings. Steam and SteamSpy metadata may add review, popularity, and game-detail context. LootRadar applies its own eligibility rules and Deal Score to those inputs.</p>
         <p>The published snapshot refreshes every three hours. Prices, availability, and metadata can change between snapshots, and the retailer&rsquo;s checkout page controls the final amount.</p>
