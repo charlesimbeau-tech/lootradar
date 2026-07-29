@@ -48,6 +48,19 @@ test('the article enhancer builds accessible navigation and reading context', ()
   assert.match(source, /prefers-reduced-motion/);
 });
 
+test('the filled guide button keeps a readable dark label', () => {
+  const index = read('blog.html');
+  const guideStyles = read('guides.css');
+  const globalStyles = read('style.css');
+
+  assert.match(globalStyles, /body:not\(\.home-page\) main a\s*\{[^}]*color:\s*var\(--mint\)/);
+  assert.match(index, /class="button button-primary"[^>]*>Read this week's shortlist<\/a>/);
+  assert.match(
+    guideStyles,
+    /\.guides-index \.guides-hero-actions \.button-primary\s*\{[^}]*color:\s*#0a0d0c/
+  );
+});
+
 test('the guide system keeps current URLs and avoids em dashes', () => {
   const index = read('blog.html');
   for (const file of guideFiles) {

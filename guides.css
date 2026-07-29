@@ -80,6 +80,10 @@
   text-decoration: none;
 }
 
+.guides-index .guides-hero-actions .button-primary {
+  color: #0a0d0c;
+}
+
 .guides-brief {
   padding: 1.5rem;
   border: 1px solid var(--line-bright);
