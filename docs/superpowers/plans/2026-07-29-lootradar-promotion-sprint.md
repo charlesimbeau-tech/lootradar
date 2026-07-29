@@ -15,8 +15,8 @@
 - [x] Open the `https://thelootradar.com/` URL-prefix property in Google Search Console.
 - [x] Confirm ownership is verified.
 - [x] Confirm `/sitemap.xml` is submitted successfully.
-- [ ] Re-submit the sitemap after the new article is live.
-- [ ] Request indexing for the homepage and new roundup.
+- [x] Re-submit the sitemap after the new article is live.
+- [x] Request indexing for the homepage and new roundup.
 
 ## Task 2: Add privacy-safe campaign attribution
 
@@ -61,7 +61,7 @@
 - [x] Run Supabase function tests.
 - [x] Run the static build and site verification.
 - [x] Run `git diff --check`.
-- [ ] Commit and push only the promotion sprint files.
-- [ ] Wait for the exact GitHub Pages commit to become live.
-- [ ] Publish the same validated source to the connected Sites project.
-- [ ] Verify the live article, campaign tracking assets, sitemap, and homepage CTA.
+- [x] Commit and push only the promotion sprint files.
+- [x] Wait for the exact GitHub Pages commit to become live.
+- [ ] Publish the same validated source to the connected Sites project (deployment capability unavailable in this session).
+- [x] Verify the live article, campaign tracking assets, sitemap, and homepage CTA.
