@@ -15,6 +15,7 @@ test('creates canonical sitemap entries without advisory priority fields', () =>
 
   assert.equal((xml.match(/<url>/g) || []).length, EDITORIAL_PATHS.length + 2);
   assert.match(xml, /<loc>https:\/\/thelootradar\.com\/<\/loc>/);
+  assert.match(xml, /<loc>https:\/\/thelootradar\.com\/blog\/5-pc-game-deals-worth-buying-2026-07-29\.html<\/loc>/);
   assert.match(xml, /<loc>https:\/\/thelootradar\.com\/deals\/best-pc-game-deals\.html<\/loc>/);
   assert.doesNotMatch(xml, /login\.html/);
   assert.doesNotMatch(xml, /<priority>|<changefreq>/);

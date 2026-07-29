@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const {
   sanitizeEvent,
   sanitizeProperties,
+  campaignProperties,
   resultBucket,
   priceBucket,
   track
@@ -39,6 +40,78 @@ test('drops sensitive and unknown properties', () => {
     { surface: 'games' }
   );
   assert.equal(sanitizeEvent('page_view'), null);
+});
+
+test('accepts only stable privacy-safe campaign attribution values', () => {
+  assert.deepEqual(
+    sanitizeProperties({
+      surface: 'weekly_roundup',
+      campaignSource: 'discord',
+      campaignMedium: 'community',
+      campaignName: 'weekly-deals-2026-07-29'
+    }),
+    {
+      surface: 'weekly_roundup',
+      campaignSource: 'discord',
+      campaignMedium: 'community',
+      campaignName: 'weekly-deals-2026-07-29'
+    }
+  );
+  assert.deepEqual(
+    sanitizeProperties({
+      campaignSource: 'person@example.com',
+      campaignMedium: 'private-message',
+      campaignName: 'charles-private-campaign'
+    }),
+    {}
+  );
+});
+
+test('captures a valid first-touch campaign and keeps it for later actions', () => {
+  const storage = new Map();
+  const fakeRoot = {
+    location: {
+      search: '?utm_source=bluesky&utm_medium=social&utm_campaign=weekly-deals-2026-07-29'
+    },
+    sessionStorage: {
+      getItem(key) {
+        return storage.has(key) ? storage.get(key) : null;
+      },
+      setItem(key, value) {
+        storage.set(key, value);
+      }
+    }
+  };
+
+  assert.deepEqual(campaignProperties(fakeRoot), {
+    campaignSource: 'bluesky',
+    campaignMedium: 'social',
+    campaignName: 'weekly-deals-2026-07-29'
+  });
+
+  fakeRoot.location.search = '?utm_source=reddit&utm_medium=community&utm_campaign=site-launch';
+  assert.deepEqual(campaignProperties(fakeRoot), {
+    campaignSource: 'bluesky',
+    campaignMedium: 'social',
+    campaignName: 'weekly-deals-2026-07-29'
+  });
+});
+
+test('ignores incomplete, unknown, and malformed campaign parameters', () => {
+  assert.deepEqual(campaignProperties({
+    location: { search: '?utm_source=discord&utm_campaign=weekly-deals-2026-07-29' },
+    sessionStorage: { getItem: () => null, setItem: () => {} }
+  }), {});
+  assert.deepEqual(campaignProperties({
+    location: {
+      search: '?utm_source=person%40example.com&utm_medium=social&utm_campaign=weekly-deals-2026-07-29'
+    },
+    sessionStorage: { getItem: () => null, setItem: () => {} }
+  }), {});
+  assert.deepEqual(campaignProperties({
+    location: { search: '?utm_source=%E0%A4%A' },
+    sessionStorage: { getItem: () => null, setItem: () => {} }
+  }), {});
 });
 
 test('allows only privacy-safe account sync outcomes', () => {

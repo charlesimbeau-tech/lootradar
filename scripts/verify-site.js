@@ -38,6 +38,7 @@ const requiredBuild = [
 const editorialPages = [
   'index.html', 'games.html', 'recommendations.html', 'login.html',
   'about.html', 'methodology.html', 'blog.html', 'privacy.html', 'terms.html',
+  'blog/5-pc-game-deals-worth-buying-2026-07-29.html',
   'blog/best-free-pc-games.html', 'blog/cheapest-steam-games.html',
   'blog/game-price-comparison.html', 'blog/how-to-get-free-games.html',
   'blog/indie-games-under-five.html', 'blog/steam-sale-guide.html'
@@ -46,6 +47,7 @@ const adsensePublisher = 'ca-pub-3845680227675655';
 const adsenseEditorialPages = [
   'index.html', 'games.html', 'recommendations.html', 'methodology.html',
   'about.html', 'blog.html',
+  'blog/5-pc-game-deals-worth-buying-2026-07-29.html',
   'blog/best-free-pc-games.html', 'blog/cheapest-steam-games.html',
   'blog/game-price-comparison.html', 'blog/how-to-get-free-games.html',
   'blog/indie-games-under-five.html', 'blog/steam-sale-guide.html'
@@ -63,6 +65,7 @@ const publicPages = [...editorialPages, ...generatedDealPages];
 const adsensePages = [...adsenseEditorialPages, ...generatedDealPages];
 const analyticsPages = [
   'index.html', 'games.html', 'recommendations.html', 'login.html',
+  'blog/5-pc-game-deals-worth-buying-2026-07-29.html',
   ...generatedDealPages
 ];
 const goatCounterPages = [...editorialPages, ...generatedDealPages];

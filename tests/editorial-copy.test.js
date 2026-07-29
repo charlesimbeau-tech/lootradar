@@ -16,6 +16,7 @@ const PUBLIC_HTML = [
   'blog.html',
   'privacy.html',
   'terms.html',
+  'blog/5-pc-game-deals-worth-buying-2026-07-29.html',
   'blog/best-free-pc-games.html',
   'blog/cheapest-steam-games.html',
   'blog/game-price-comparison.html',
@@ -210,4 +211,19 @@ test('pricing provider stays in fine print instead of promotional copy', () => {
       `${file} should not advertise the provider with an outbound link`
     );
   }
+});
+
+test('weekly promotion has current evidence and a truthful account path', () => {
+  const roundup = read('blog/5-pc-game-deals-worth-buying-2026-07-29.html');
+  const homepage = read('index.html');
+  const blog = read('blog.html');
+
+  assert.match(roundup, /Prices checked July 29, 2026/i);
+  assert.equal((roundup.match(/class="weekly-pick"/g) || []).length, 5);
+  assert.equal((roundup.match(/data-track-deal data-track-store/g) || []).length, 5);
+  assert.match(roundup, /price and availability can change/i);
+  assert.match(blog, /5-pc-game-deals-worth-buying-2026-07-29\.html/);
+  assert.match(homepage, /sync your watchlist and ranking preferences across devices/i);
+  assert.match(homepage, /login\.html\?next=\//);
+  assert.doesNotMatch(homepage, /email alerts|price-drop alerts/i);
 });

@@ -16,7 +16,7 @@ The browser helper accepts only these events:
 - `recommendation_skip`
 - `auth_request`
 
-An event may contain only `surface`, `store`, `priceBucket`, `resultBucket`, `action`, and `signedIn`. Values are stripped of control characters and limited to 80 printable characters.
+An event may contain only the approved product properties plus `campaignSource`, `campaignMedium`, and `campaignName`. Campaign values are accepted only from the fixed source, medium, and campaign patterns in `lib/analytics.js`; arbitrary values are discarded. All values are stripped of control characters and limited to 80 printable characters.
 
 Search events use only these result-count buckets:
 
@@ -56,6 +56,15 @@ GoatCounter recognizes campaign parameters on the first page a visitor opens. Us
 | Discord | `utm_source=discord&utm_medium=community&utm_campaign=<server-or-topic>` |
 | Newsletter | `utm_source=newsletter&utm_medium=email&utm_campaign=<issue>` |
 | Social | `utm_source=<network>&utm_medium=social&utm_campaign=<post-series>` |
+
+The first complete, approved campaign triplet in a browser session is attached to later high-value actions. A later tagged link does not overwrite it. This makes campaign-to-deal-click comparisons possible without storing a person's search, email address, account ID, or game list.
+
+Approved campaign sources are `bluesky`, `discord`, `facebook`, `instagram`, `newsletter`, `reddit`, `tiktok`, `x`, and `youtube`. Approved media are `community`, `email`, `social`, and `video`. Campaign names must use one of these stable forms:
+
+- `weekly-deals-YYYY-MM-DD`
+- `weekly-deal-roundup`
+- `site-launch`
+- `evergreen-guides`
 
 Example:
 

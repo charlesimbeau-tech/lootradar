@@ -6,7 +6,7 @@ const { PAGE_DEFINITIONS } = require('./build-search-pages.js');
 
 const root = path.resolve(__dirname, '..');
 const SITE_ORIGIN = 'https://thelootradar.com';
-const EDITORIAL_LASTMOD = '2026-07-27';
+const EDITORIAL_LASTMOD = '2026-07-29';
 
 const EDITORIAL_PATHS = Object.freeze([
   '/',
@@ -17,6 +17,7 @@ const EDITORIAL_PATHS = Object.freeze([
   '/blog.html',
   '/privacy.html',
   '/terms.html',
+  '/blog/5-pc-game-deals-worth-buying-2026-07-29.html',
   '/blog/best-free-pc-games.html',
   '/blog/cheapest-steam-games.html',
   '/blog/game-price-comparison.html',

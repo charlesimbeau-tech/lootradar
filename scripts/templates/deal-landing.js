@@ -275,7 +275,7 @@ ${quietNotice ? `    ${quietNotice}\n` : ''}    ${mainContent}
   <script src="../supabase-config.js"></script>
   <script src="../lib/site-nav.js?v=1"></script>
   <script src="../lib/auth-nav.js?v=1"></script>
-  <script src="../lib/analytics.js?v=1"></script>
+  <script src="../lib/analytics.js?v=2"></script>
   <script>
     document.addEventListener('click', function (event) {
       var link = event.target.closest('[data-track-deal]');
