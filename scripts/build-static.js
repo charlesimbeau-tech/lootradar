@@ -10,6 +10,7 @@ const rootFiles = [
   'about.html', 'account.html', 'account.js', 'ads.txt', 'app.js', 'blog.html', 'CNAME', 'deals.json',
   'alert-deals.json', 'enriched-deals.json', 'games-catalog.json', 'games.html', 'index.html',
   'favicon.ico', 'feed.xml', 'login.html', 'login.js', 'manifest.json', 'methodology.html', 'privacy.html',
+  'guides.css',
   'recommendations.css', 'recommendations.html', 'recommendations.js',
   'robots.txt', 'sitemap.xml', 'style.css', 'supabase-config.js', 'terms.html',
   'unsubscribe.html', 'unsubscribe.js'

@@ -2,10 +2,14 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const {
+  loadCurrentWeeklyIssue,
+  loadWeeklyIssues,
+  weeklyGuideRelativePath
+} = require('../lib/weekly-guide.js');
 
 const root = path.resolve(__dirname, '..');
-const guideFiles = [
-  'blog/5-pc-game-deals-worth-buying-2026-07-29.html',
+const evergreenGuideFiles = [
   'blog/best-free-pc-games.html',
   'blog/cheapest-steam-games.html',
   'blog/game-price-comparison.html',
@@ -13,6 +17,8 @@ const guideFiles = [
   'blog/indie-games-under-five.html',
   'blog/steam-sale-guide.html'
 ];
+const weeklyGuideFiles = loadWeeklyIssues(root).map(weeklyGuideRelativePath);
+const guideFiles = [...weeklyGuideFiles, ...evergreenGuideFiles];
 
 function read(file) {
   return fs.readFileSync(path.join(root, file), 'utf8');
@@ -63,7 +69,8 @@ test('the filled guide button keeps a readable dark label', () => {
 
 test('the guide system keeps current URLs and avoids em dashes', () => {
   const index = read('blog.html');
-  for (const file of guideFiles) {
+  const currentWeekly = weeklyGuideRelativePath(loadCurrentWeeklyIssue(root));
+  for (const file of [...evergreenGuideFiles, currentWeekly]) {
     assert.match(index, new RegExp(file.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
 

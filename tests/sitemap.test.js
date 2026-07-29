@@ -2,8 +2,13 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
   EDITORIAL_PATHS,
-  createSitemap
+  createSitemap,
+  editorialEntries
 } = require('../scripts/generate-sitemap.js');
+const { loadCurrentWeeklyIssue, weeklyGuideRelativePath } = require('../lib/weekly-guide.js');
+const path = require('node:path');
+
+const root = path.resolve(__dirname, '..');
 
 test('creates canonical sitemap entries without advisory priority fields', () => {
   const xml = createSitemap({
@@ -15,10 +20,20 @@ test('creates canonical sitemap entries without advisory priority fields', () =>
 
   assert.equal((xml.match(/<url>/g) || []).length, EDITORIAL_PATHS.length + 2);
   assert.match(xml, /<loc>https:\/\/thelootradar\.com\/<\/loc>/);
-  assert.match(xml, /<loc>https:\/\/thelootradar\.com\/blog\/5-pc-game-deals-worth-buying-2026-07-29\.html<\/loc>/);
+  const weeklyPath = weeklyGuideRelativePath(loadCurrentWeeklyIssue(root));
+  assert.match(xml, new RegExp(`<loc>https:\\/\\/thelootradar\\.com\\/${weeklyPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<\\/loc>`));
   assert.match(xml, /<loc>https:\/\/thelootradar\.com\/deals\/best-pc-game-deals\.html<\/loc>/);
   assert.doesNotMatch(xml, /login\.html/);
   assert.doesNotMatch(xml, /<priority>|<changefreq>/);
+});
+
+test('keeps each weekly issue date on its own sitemap entry', () => {
+  const entries = editorialEntries(root, '2026-07-27');
+  const weekly = loadCurrentWeeklyIssue(root);
+  assert.deepEqual(
+    entries.find(entry => entry.path === `/${weeklyGuideRelativePath(weekly)}`),
+    { path: `/${weeklyGuideRelativePath(weekly)}`, lastmod: weekly.publishedDate }
+  );
 });
 
 test('uses editorial and snapshot modification dates for their respective pages', () => {

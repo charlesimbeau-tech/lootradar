@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+const { loadWeeklyIssues, weeklyGuideRelativePath } = require('../lib/weekly-guide.js');
 
 const root = path.resolve(__dirname, '..');
+const weeklyGuidePages = loadWeeklyIssues(root).map(weeklyGuideRelativePath);
 const brandIconFiles = [
   'icons/icon.svg', 'icons/logo.svg', 'icons/icon.png',
   'icons/favicon-16.png', 'icons/favicon-32.png', 'icons/favicon-48.png',
@@ -10,14 +12,14 @@ const brandIconFiles = [
 ];
 const requiredSource = [
   'index.html', 'favicon.ico', 'account.html', 'account.js', 'unsubscribe.html', 'unsubscribe.js',
-  'methodology.html', 'app.js', 'login.js', 'style.css', 'manifest.json',
+  'methodology.html', 'app.js', 'login.js', 'style.css', 'guides.css', 'manifest.json',
   'alert-deals.json', 'deals.json', 'enriched-deals.json', 'config/editorial-config.js',
   'lib/deal-normalizer.js', 'lib/deal-score.js', 'lib/deal-filters.js',
   'lib/cheapshark-client.js', 'lib/deal-snapshot-validator.js',
   'lib/alert-snapshot.js',
   'lib/account-data.js', 'lib/account-client.js',
   'lib/analytics.js', 'lib/auth-controller.js', 'lib/auth-nav.js', 'lib/safe-redirect.js', 'lib/rss-feed.js',
-  'feed.xml', 'sitemap.xml', 'public/og.png',
+  'feed.xml', 'sitemap.xml', 'public/og.png', 'lib/weekly-guide.js',
   ...brandIconFiles
 ];
 const requiredBuild = [
@@ -33,12 +35,13 @@ const requiredBuild = [
   'dist/static/lib/safe-redirect.js',
   'dist/static/lib/rss-feed.js', 'dist/static/recommendations.js',
   'dist/static/feed.xml', 'dist/static/sitemap.xml', 'dist/static/public/og.png',
+  'dist/static/guides.css', 'dist/static/lib/weekly-guide.js',
   ...brandIconFiles.map(file => path.join('dist', 'static', file))
 ];
 const editorialPages = [
   'index.html', 'games.html', 'recommendations.html', 'login.html',
   'about.html', 'methodology.html', 'blog.html', 'privacy.html', 'terms.html',
-  'blog/5-pc-game-deals-worth-buying-2026-07-29.html',
+  ...weeklyGuidePages,
   'blog/best-free-pc-games.html', 'blog/cheapest-steam-games.html',
   'blog/game-price-comparison.html', 'blog/how-to-get-free-games.html',
   'blog/indie-games-under-five.html', 'blog/steam-sale-guide.html'
@@ -47,7 +50,7 @@ const adsensePublisher = 'ca-pub-3845680227675655';
 const adsenseEditorialPages = [
   'index.html', 'games.html', 'recommendations.html', 'methodology.html',
   'about.html', 'blog.html',
-  'blog/5-pc-game-deals-worth-buying-2026-07-29.html',
+  ...weeklyGuidePages,
   'blog/best-free-pc-games.html', 'blog/cheapest-steam-games.html',
   'blog/game-price-comparison.html', 'blog/how-to-get-free-games.html',
   'blog/indie-games-under-five.html', 'blog/steam-sale-guide.html'
@@ -65,7 +68,7 @@ const publicPages = [...editorialPages, ...generatedDealPages];
 const adsensePages = [...adsenseEditorialPages, ...generatedDealPages];
 const analyticsPages = [
   'index.html', 'games.html', 'recommendations.html', 'login.html',
-  'blog/5-pc-game-deals-worth-buying-2026-07-29.html',
+  ...weeklyGuidePages,
   ...generatedDealPages
 ];
 const goatCounterPages = [...editorialPages, ...generatedDealPages];

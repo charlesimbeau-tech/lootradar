@@ -3,12 +3,13 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { PAGE_DEFINITIONS } = require('./build-search-pages.js');
+const { loadWeeklyIssues, weeklyGuideRelativePath } = require('../lib/weekly-guide.js');
 
 const root = path.resolve(__dirname, '..');
 const SITE_ORIGIN = 'https://thelootradar.com';
 const EDITORIAL_LASTMOD = '2026-07-29';
 
-const EDITORIAL_PATHS = Object.freeze([
+const STATIC_EDITORIAL_PATHS = Object.freeze([
   '/',
   '/games.html',
   '/recommendations.html',
@@ -17,7 +18,6 @@ const EDITORIAL_PATHS = Object.freeze([
   '/blog.html',
   '/privacy.html',
   '/terms.html',
-  '/blog/5-pc-game-deals-worth-buying-2026-07-29.html',
   '/blog/best-free-pc-games.html',
   '/blog/cheapest-steam-games.html',
   '/blog/game-price-comparison.html',
@@ -25,6 +25,20 @@ const EDITORIAL_PATHS = Object.freeze([
   '/blog/indie-games-under-five.html',
   '/blog/steam-sale-guide.html'
 ]);
+
+function editorialEntries(baseDir = root, editorialLastmod = EDITORIAL_LASTMOD) {
+  const lastmod = dateOnly(editorialLastmod, 'Editorial lastmod');
+  const weekly = loadWeeklyIssues(baseDir).map(issue => ({
+    path: `/${weeklyGuideRelativePath(issue)}`,
+    lastmod: issue.publishedDate
+  }));
+  return [
+    ...STATIC_EDITORIAL_PATHS.map(urlPath => ({ path: urlPath, lastmod })),
+    ...weekly
+  ];
+}
+
+const EDITORIAL_PATHS = Object.freeze(editorialEntries().map(entry => entry.path));
 
 function escapeXml(value) {
   return String(value)
@@ -60,8 +74,15 @@ function createSitemap(options = {}) {
   );
   const snapshotLastmod = dateOnly(options.snapshotUpdatedAt, 'Snapshot updatedAt');
   const dealPaths = Array.isArray(options.dealPaths) ? options.dealPaths : [];
+  const editorial = options.editorialEntries || editorialEntries(
+    options.baseDir || root,
+    editorialLastmod
+  );
   const entries = [
-    ...EDITORIAL_PATHS.map(urlPath => ({ path: urlPath, lastmod: editorialLastmod })),
+    ...editorial.map(entry => ({
+      path: entry.path,
+      lastmod: dateOnly(entry.lastmod, `Lastmod for ${entry.path}`)
+    })),
     ...dealPaths.map(urlPath => ({ path: urlPath, lastmod: snapshotLastmod }))
   ];
   const seen = new Set();
@@ -108,6 +129,8 @@ function generateSitemap(options = {}) {
   const xml = createSitemap({
     origin: options.origin,
     editorialLastmod: options.editorialLastmod,
+    editorialEntries: options.editorialEntries,
+    baseDir: options.baseDir || root,
     snapshotUpdatedAt: options.snapshotUpdatedAt || base.updatedAt,
     dealPaths: options.dealPaths || indexableDealPaths(options.baseDir || root)
   });
@@ -124,7 +147,9 @@ if (require.main === module) {
 module.exports = {
   EDITORIAL_LASTMOD,
   EDITORIAL_PATHS,
+  STATIC_EDITORIAL_PATHS,
   createSitemap,
+  editorialEntries,
   generateSitemap,
   indexableDealPaths
 };
