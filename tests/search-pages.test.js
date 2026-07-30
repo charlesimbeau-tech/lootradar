@@ -234,7 +234,7 @@ test('generator writes a crawlable hub and seven unique collection pages', () =>
   );
   assert.match(bestPage, /data-track-deal/);
   assert.match(bestPage, /LootRadarAnalytics\.track\('deal_click'/);
-  assert.match(bestPage, /Some retailer links may earn LootRadar a commission/);
+  assert.match(bestPage, /LootRadar is funded by advertising/);
   assert.match(bestPage, /dealID=abc%2Fdef%3D/);
   assert.doesNotMatch(bestPage, /dealID=abc%252Fdef%253D/);
   assert.match(bestPage, /href="\.\.\/games\/co-op-indie-pick-14-14\.html"/);

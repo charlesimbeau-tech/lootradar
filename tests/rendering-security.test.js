@@ -82,7 +82,8 @@ test('relevant guides link to permanent deal collections', () => {
 
 test('monetized content uses a plain, consistent affiliate disclosure', () => {
   const pages = navigationPages.filter((file) => file !== 'login.html');
-  const disclosure = 'Some retailer links may earn LootRadar a commission.';
+  // The site holds no affiliate deals; the disclosure must not imply otherwise.
+  const disclosure = 'LootRadar is funded by advertising.';
   for (const relativePath of pages) {
     const html = fs.readFileSync(path.join(root, relativePath), 'utf8');
     assert.match(html, new RegExp(disclosure.replace(/\./g, '\\.')), relativePath);

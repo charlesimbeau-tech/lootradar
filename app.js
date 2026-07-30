@@ -474,7 +474,7 @@
       </section>
       <div class="detail-actions">
         <a class="button button-primary button-full" href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(deal.dealID))}" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="detail_primary" data-store="${escapeHTML(deal.storeName)}" data-price="${deal.salePrice}">View deal at ${escapeHTML(deal.storeName)} · ${money(deal.salePrice)}</a>
-        <p>Eligible links may earn LootRadar a commission. That has never moved a Deal Score and never will.</p>
+        <p>This link routes through the pricing provider, which may earn a commission from the store. That has never moved a Deal Score and never will.</p>
       </div>
     </div>`;
   }

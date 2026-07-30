@@ -238,3 +238,26 @@ test('weekly promotion has current evidence and a truthful account path', () => 
   assert.match(homepage, /login\.html\?next=\//);
   assert.doesNotMatch(homepage, /email alerts|price-drop alerts/i);
 });
+
+test('the site does not claim affiliate income it does not have', () => {
+  // Every outbound link is a CheapShark redirect and no affiliate tag exists in
+  // the codebase, so copy promising LootRadar a commission would be untrue.
+  const claims = [
+    /retailer links may earn LootRadar a commission/i,
+    /eligible links may earn LootRadar a commission/i,
+    /may earn LootRadar a commission/i
+  ];
+  const violations = [];
+  for (const file of [...PUBLIC_HTML, ...INTERFACE_SCRIPTS]) {
+    const source = read(file);
+    for (const claim of claims) {
+      if (claim.test(source)) violations.push(`${file}: ${claim}`);
+    }
+  }
+  assert.deepEqual(violations, []);
+
+  // And the trust pages must say plainly where the money does come from.
+  for (const file of ['about.html', 'terms.html']) {
+    assert.match(read(file), /no affiliate relationship|holds no affiliate/i, `${file}`);
+  }
+});

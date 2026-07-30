@@ -79,7 +79,7 @@ test('renders a unique evidence-based game price page', () => {
     '<h1>Disco Elysium: The Final Cut PC deal and price check</h1>',
     'rel="canonical" href="https://thelootradar.com/games/disco-elysium-the-final-cut-632470.html"',
     'application/ld+json', 'AggregateRating', 'Offer', 'Why it made the cut',
-    'Some retailer links may earn LootRadar a commission', '../lib/analytics.js',
+    'LootRadar is funded by advertising', '../lib/analytics.js',
     'data-track-surface="game_price_page"'
   ]) assert.ok(source.includes(token), `page is missing ${token}`);
   assert.doesNotMatch(source, /all-time low/i);
