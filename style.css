@@ -800,8 +800,8 @@ body:not(.home-page) .hero-inner { display: block; min-height: 0; padding: 2.5re
   .hero-inner { grid-template-columns: 1fr; min-height: 0; padding: 4rem 0; }
   .hero-pick { width: min(100%, 480px); transform: none; }
   .hero h1 { font-size: clamp(3rem, 13vw, 5.2rem); }
-  .trust-row { overflow-x: auto; }
-  .trust-row div { min-width: 125px; padding-right: 1.1rem; margin-right: 1.1rem; }
+  .trust-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .trust-row div { min-width: 0; padding-right: 1rem; margin-right: 1rem; }
   .discovery-shell { padding: 4rem 0; }
   .discovery-top { align-items: flex-start; flex-direction: column; gap: 1rem; }
   .search-row { grid-template-columns: 1fr 105px; }
@@ -833,6 +833,9 @@ body:not(.home-page) .hero-inner { display: block; min-height: 0; padding: 2.5re
   .hero h1 { font-size: clamp(2.7rem, 15vw, 4.2rem); }
   .hero-lede { font-size: .98rem; }
   .hero-actions { align-items: flex-start; flex-direction: column; gap: 1rem; }
+  .trust-row div { padding-right: .7rem; margin-right: .7rem; }
+  .trust-row dt { font-size: 1.05rem; }
+  .trust-row dd { font-size: .65rem; letter-spacing: .05em; }
   .pick-image { height: 190px; }
   .deal-grid, .loading-grid { grid-template-columns: 1fr; }
   .filter-grid { grid-template-columns: 1fr; }

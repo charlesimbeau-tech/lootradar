@@ -44,13 +44,13 @@
   };
 
   const collections = {
-    best: { label: 'Best right now', title: 'Best deals right now', summary: 'Well-reviewed games with prices that stand out in the current snapshot.' },
-    under10: { label: 'Under $10', title: 'Great games under $10', summary: 'Strong player reviews, credible review volume, and a single-digit price.' },
-    deep: { label: 'Deep discounts', title: 'Deep discounts worth a look', summary: 'Big price cuts that still clear LootRadar’s quality checks.' },
-    indie: { label: 'Indie standouts', title: 'Indie deals worth discovering', summary: 'Smaller games with strong player feedback and prices worth noticing.' },
-    multiplayer: { label: 'Co-op & multiplayer', title: 'Deals worth sharing', summary: 'Well-reviewed games built for a couch, party, or squad.' },
-    hidden: { label: 'Hidden gems', title: 'Less-famous games with strong reviews', summary: 'Smaller audiences, unusually positive feedback, and enough reviews to count.' },
-    all: { label: 'All deals', title: 'Browse all qualifying deals', summary: 'Current listings that clear the selected quality and content filters.' }
+    best: { label: 'Best right now', title: 'The best of what is live right now', summary: 'Games people actually rate, at prices that actually moved.' },
+    under10: { label: 'Under $10', title: 'Great games under $10', summary: 'Single-digit prices with thousands of happy players behind them.' },
+    deep: { label: 'Deep discounts', title: 'Deep discounts worth a look', summary: 'Enormous price cuts that still survived the quality checks.' },
+    indie: { label: 'Indie standouts', title: 'Indie deals worth discovering', summary: 'Small studios, big ideas, prices that make the risk basically free.' },
+    multiplayer: { label: 'Co-op & multiplayer', title: 'Games worth dragging a friend into', summary: 'Well-reviewed games built for a couch, a party, or a squad.' },
+    hidden: { label: 'Hidden gems', title: 'Adored by everyone who found them', summary: 'Smaller crowds, unusually happy ones, and enough reviews to trust.' },
+    all: { label: 'All deals', title: 'Everything that qualifies', summary: 'Every listing that clears the filters you have set.' }
   };
 
   const $ = selector => document.querySelector(selector);
@@ -365,14 +365,14 @@
     if (!top) return;
     const image = safeImage(top.image);
     $('#heroPick').innerHTML = `
-      <div class="pick-image">${image ? `<img src="${image}" alt="${escapeHTML(top.title)} cover art" loading="eager" decoding="async">` : ''}<span>Top-ranked deal</span></div>
+      <div class="pick-image">${image ? `<img src="${image}" alt="${escapeHTML(top.title)} cover art" loading="eager" decoding="async">` : ''}<span>Pick of the day</span></div>
       <div class="pick-content">
         <div class="pick-head"><div><p>${escapeHTML(top.storeName)}</p><h2>${escapeHTML(top.title)}</h2></div>
           <div class="score-ring ${scoreTone(top.dealScore)}" style="--score:${top.dealScore}"><strong>${top.dealScore}</strong><span>score</span></div>
         </div>
         <p>${escapeHTML(top.recommendation)}</p>
         <div class="pick-price"><span><s>${money(top.normalPrice)}</s><strong>${money(top.salePrice)}</strong></span><span>−${top.discount}%</span></div>
-        <button type="button" class="button button-primary button-full" data-details="${escapeHTML(top.key)}">See why it ranks first</button>
+        <button type="button" class="button button-primary button-full" data-details="${escapeHTML(top.key)}">See why it beat everything else</button>
       </div>`;
   }
 
@@ -420,7 +420,7 @@
   function renderWatchlist() {
     const items = Object.values(state.watchlist);
     if (!items.length) {
-      $('#watchlistContent').innerHTML = '<div class="watch-empty"><span>◎</span><h3>No saved games yet</h3><p>Add a game to compare its target price with the latest snapshot when you return.</p></div>';
+      $('#watchlistContent').innerHTML = '<div class="watch-empty"><span>◎</span><h3>Nothing on the watchlist yet</h3><p>Save a game with a target price and we will check it against the latest sweep next time you drop by.</p></div>';
       return;
     }
     $('#watchlistContent').innerHTML = items.map(item => {
@@ -455,7 +455,7 @@
         <div class="detail-price"><s>${money(deal.normalPrice)}</s><strong>${money(deal.salePrice)}</strong><span>−${deal.discount}%</span></div>
       </div>
       <section class="detail-section">
-        <div class="detail-section-head"><div><p class="section-kicker">Deal Score</p><h3>Why this listing ranks here</h3></div><a href="methodology.html">Read the methodology ↗</a></div>
+        <div class="detail-section-head"><div><p class="section-kicker">Deal Score</p><h3>Here is exactly how it got that number</h3></div><a href="methodology.html">Read the methodology ↗</a></div>
         <div class="score-components">
           ${componentRow('Game quality', deal.scoreBreakdown.components.quality, deal.scoreBreakdown.weights.quality)}
           ${componentRow('Price value', deal.scoreBreakdown.components.priceValue, deal.scoreBreakdown.weights.priceValue)}
@@ -467,13 +467,13 @@
       </section>
       <section class="detail-section" id="livePriceContext"><div class="detail-loading"><span></span><p>Checking current price context&hellip;</p></div></section>
       <section class="detail-section watch-target">
-        <div><p class="section-kicker">Target price</p><h3>Save a price worth waiting for</h3><p>Saved on this device. LootRadar checks the target when you return; it does not send alerts yet.</p></div>
+        <div><p class="section-kicker">Target price</p><h3>Name the price you would actually pay</h3><p>Saved on this device. We check your target against the newest sweep when you come back. No alerts yet, so no inbox to dread.</p></div>
         <label><span>Target price</span><div><span>$</span><input id="targetPriceInput" type="number" min="0" step="0.01" value="${Number(watched?.targetPrice ?? deal.salePrice).toFixed(2)}"></div></label>
         <button class="button button-secondary" type="button" data-save-target="${escapeHTML(deal.key)}">${watched ? 'Update target' : 'Add to watchlist'}</button>
       </section>
       <div class="detail-actions">
         <a class="button button-primary button-full" href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(deal.dealID))}" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="detail_primary" data-store="${escapeHTML(deal.storeName)}" data-price="${deal.salePrice}">View deal at ${escapeHTML(deal.storeName)} · ${money(deal.salePrice)}</a>
-        <p>LootRadar may earn a commission from eligible links. Commissions never affect Deal Scores.</p>
+        <p>Eligible links may earn LootRadar a commission. That has never moved a Deal Score and never will.</p>
       </div>
     </div>`;
   }
@@ -497,7 +497,7 @@
     } catch (error) {
       if (error.name === 'AbortError') return;
       const target = $('#livePriceContext');
-      if (target) target.innerHTML = '<div class="inline-error"><strong>Current price details are unavailable.</strong><p>The saved listing is still shown above. Confirm the final price with the retailer.</p></div>';
+      if (target) target.innerHTML = '<div class="inline-error"><strong>Could not pull the live price details.</strong><p>The saved listing above still stands. Confirm the final price at the store.</p></div>';
     }
   }
 
@@ -524,8 +524,8 @@
         <div><span>Current price</span><i class="current" style="width:${currentWidth}%"></i><strong>${money(livePrice)}</strong></div>
         <div><span>Full retail</span><i class="retail" style="width:${fullWidth}%"></i><strong>${money(retail)}</strong></div>
       </div>
-      <p class="source-note">Recorded-low coverage is incomplete. Treat it as useful context, not a complete price-history chart.</p>
-      ${alternateRows ? `<div class="alternate-stores"><h4>Lower current listings</h4>${alternateRows}</div>` : '<p class="best-store-note">No lower current listing was returned for this game.</p>'}`;
+      <p class="source-note">Recorded-low coverage has gaps in it. Useful context, not a full price history.</p>
+      ${alternateRows ? `<div class="alternate-stores"><h4>Cheaper elsewhere right now</h4>${alternateRows}</div>` : '<p class="best-store-note">Nowhere cheaper turned up for this one.</p>'}`;
   }
 
   function closeDialog(dialog, controller) {

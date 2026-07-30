@@ -18,16 +18,16 @@ const PAGE_DEFINITIONS = {
     shortLabel: 'Best today',
     kicker: 'Best right now',
     title: 'Best PC game deals today | LootRadar',
-    description: 'Browse today’s strongest PC game deals, selected from current store listings using quality, value, and review confidence.',
+    description: 'The strongest PC game deals live right now, pulled from current store listings and ranked on how good the game is before how big the discount looks.',
     heading: 'Best PC game deals today',
-    lede: 'A short list of well-reviewed games whose current prices deserve a closer look.',
+    lede: 'A short list of games people actually love, at prices that just got interesting.',
     introduction: [
-      'The largest discount badge is rarely the whole story. This page starts with the latest store listings, then applies LootRadar’s quality and content checks before ranking what remains. The result favors games with credible player feedback and prices that look meaningful in the current snapshot.',
-      'Use the list as a focused starting point, not a command to buy. Genre, playtime, and taste still matter more than any score. Each card shows the store, current listed price, review confidence, Deal Score, and the specific signal that helped the offer rank.'
+      'The biggest badge on the page is almost never the best deal on the page. This one starts with the latest store listings, runs them through the quality and content checks, and only then ranks what is left standing. What rises to the top are games with real player feedback attached to prices that genuinely moved.',
+      'It is a starting point, not an instruction. Genre, mood, and how much time you actually have still matter more than any number we can calculate. Every card tells you the store, the current price, how solid the review evidence is, the Deal Score, and the specific reason this offer climbed.'
     ],
-    criteria: 'Listings must clear LootRadar’s default eligibility rules and earn a Deal Score of at least 55. Scores combine game quality, price value, discount strength, review confidence, and player interest. Obvious add-ons, soundtracks, demos, currency packs, and lower-confidence entries are filtered before ranking. The top results are ordered by Deal Score, with review volume breaking ties.',
-    caveat: 'LootRadar supplies the filtering and score; the retailer controls the final price and availability. Listings can change after the snapshot or after you leave this page.',
-    cardSummary: 'The strongest balance of game quality, price value, and review confidence in the latest snapshot.',
+    criteria: 'A listing has to clear the default eligibility rules and score at least 55. That score mixes game quality, price value, discount strength, review confidence, and player interest. Add-ons, soundtracks, demos, currency packs, and anything with thin evidence get filtered out before ranking even starts. What remains is ordered by Deal Score, with review volume breaking the ties.',
+    caveat: 'We do the filtering and the scoring. The store decides what you actually pay and whether it is still in stock. Listings can change after the snapshot, or in the time it takes you to click through.',
+    cardSummary: 'The best balance of great game, good price, and real review evidence in the latest sweep.',
     relatedGuide: { path: 'blog/game-price-comparison.html', label: 'How to compare PC game prices' }
   },
   'steam-under-10': {
@@ -38,16 +38,16 @@ const PAGE_DEFINITIONS = {
     shortLabel: 'Steam under $10',
     kicker: 'Single-digit prices',
     title: 'Steam deals under $10 | LootRadar',
-    description: 'Find well-reviewed Steam storefront deals under $10, ranked by LootRadar using current prices and review confidence.',
+    description: 'Steam storefront games under ten dollars that are actually worth the download, ranked on current price and how much the reviews really prove.',
     heading: 'Steam deals under $10',
-    lede: 'Steam storefront listings with single-digit prices and enough quality evidence to make the shortlist.',
+    lede: 'Single-digit prices on Steam, minus the bargain-bin shovelware.',
     introduction: [
-      'A low price is useful only when the game still looks worth your time. These picks are Steam storefront listings priced at $10 or less in the current LootRadar snapshot. They also have to clear LootRadar’s normal quality and content checks, so the page does not become a bin of cheap add-ons and low-confidence releases.',
-      'The order reflects Deal Score rather than price alone. A $9 game with strong player feedback can rank above a $2 game with weaker evidence. Check the review count beside the rating, read the reason on each card, and confirm the final price on Steam before buying.'
+      'A cheap game you never open is not a bargain, it is clutter. Everything here is a Steam storefront listing at $10 or less in the current snapshot, and every one of them still had to pass the normal quality and content checks. That is what keeps this page from turning into a bin of five-dollar regrets.',
+      'The order is Deal Score, not price. A $9 game with thousands of happy players will sit above a $2 game nobody has reviewed, and that is deliberate. Look at the review count next to the rating, read the reason on the card, and let Steam confirm the price before you buy.'
     ],
-    criteria: 'A listing must come from the Steam storefront, cost no more than $10, and pass LootRadar’s default eligibility rules. Eligible entries are ranked by Deal Score, which weighs player and critic signals, the strength of the current price, discount depth, review volume, and player interest. DLC, soundtracks, demos, currency packs, and other excluded content do not qualify.',
-    caveat: 'This page covers Steam’s storefront listing returned in the snapshot. Other sellers may offer Steam keys at different prices, and participating-store inventory can change.',
-    cardSummary: 'Quality-qualified Steam storefront listings at $10 or less.',
+    criteria: 'To appear here a listing must come from the Steam storefront, cost $10 or less, and pass the default eligibility rules. Whatever qualifies is ranked by Deal Score, which weighs player and critic signals, how strong the price is, how deep the cut goes, review volume, and player interest. DLC, soundtracks, demos, and currency packs are not invited.',
+    caveat: 'This page covers the Steam storefront listing in the snapshot. Other sellers may have Steam keys at other prices, and store inventory moves around.',
+    cardSummary: 'Steam listings at $10 or less that still cleared the quality bar.',
     relatedGuide: { path: 'blog/cheapest-steam-games.html', label: 'A practical guide to inexpensive Steam games' }
   },
   coop: {
@@ -58,16 +58,16 @@ const PAGE_DEFINITIONS = {
     shortLabel: 'Co-op',
     kicker: 'Better with company',
     title: 'Co-op game deals worth sharing | LootRadar',
-    description: 'Browse quality-qualified co-op PC game deals with explicit co-op metadata, current prices, and transparent LootRadar ranking reasons.',
+    description: 'Games explicitly tagged for co-op, filtered for quality first, so the thing you talk a friend into buying is actually good. Current prices and reasons attached.',
     heading: 'Co-op game deals worth sharing',
-    lede: 'Games explicitly tagged for co-op play, filtered for quality before price cuts enter the conversation.',
+    lede: 'Games you can drag a friend into, checked for quality before anyone mentions the price.',
     introduction: [
-      '“Multiplayer” can mean a competitive ladder, a crowded server, or a mode that has little to do with playing alongside a friend. This collection is narrower. A game needs an explicit online, local, shared-screen, or general co-op tag in the available Steam metadata before it can appear here.',
-      'After that metadata check, the same quality-first rules apply as elsewhere on LootRadar. Strong player feedback, credible review volume, and a worthwhile current price help a listing rise. The cards cannot tell you whether a game supports cross-play, how many players it accepts, or whether remote play is comfortable, so confirm those details on the store page.'
+      'Multiplayer is a famously slippery word. It can mean a ranked ladder, a server full of strangers, or a mode that has nothing to do with sitting on a call with your friend for four hours. This page is stricter than that. A game needs an actual online, local, shared-screen, or general co-op tag in the available Steam metadata before it gets in.',
+      'After that, the usual rules apply. Real player feedback, enough reviews to trust, and a price worth acting on all push a listing up. What the cards cannot tell you is whether cross-play works, how many players it takes, or whether remote play will hold up on your connection. Check the store page for that.'
     ],
-    criteria: 'Listings must pass the default quality and content filters and include an explicit co-op tag in the available metadata. A generic multiplayer tag is not enough. Qualifying games are ordered by Deal Score, combining quality, price value, discount strength, review confidence, and player interest. This keeps a large discount from carrying a poorly supported game into the list.',
-    caveat: 'Co-op classification depends on available Steam metadata, which does not cover every price listing. Treat this as a curated set of supported matches rather than a complete market catalog.',
-    cardSummary: 'Explicitly tagged co-op games that also clear the normal quality bar.',
+    criteria: 'A listing must pass the default quality and content filters and carry an explicit co-op tag in its metadata. A generic multiplayer tag will not do. Whatever qualifies is ranked by Deal Score, combining quality, price value, discount strength, review confidence, and player interest, which stops a big discount from dragging a poorly supported game onto the list.',
+    caveat: 'Co-op classification depends on Steam metadata, and that metadata does not cover every listing. Treat this as a good curated set rather than a complete catalog of every co-op game on sale.',
+    cardSummary: 'Properly tagged co-op games that also cleared the normal quality bar.',
     relatedGuide: { path: 'blog/game-price-comparison.html', label: 'How to compare PC game prices' }
   },
   indie: {
@@ -78,16 +78,16 @@ const PAGE_DEFINITIONS = {
     shortLabel: 'Indie',
     kicker: 'Smaller games, strong signals',
     title: 'Indie game deals worth discovering | LootRadar',
-    description: 'Discover well-reviewed indie PC game deals selected from current store listings using available Steam metadata and LootRadar’s Deal Score.',
+    description: 'Independent games with the player reviews to back them up and prices that just dropped. Where the weird, brilliant, unexpectedly enormous stuff lives.',
     heading: 'Indie game deals worth discovering',
-    lede: 'Independent games with strong player feedback and current prices that stand out.',
+    lede: 'Small studios, big ideas, and prices that make the risk basically free.',
     introduction: [
-      'Indie is not a promise of quality, and a familiar publisher is not a reason to dismiss a smaller game. This page uses available Steam genre and tag metadata to identify independent releases, then applies the same review, content, and value checks used across LootRadar.',
-      'The shortlist favors games with convincing player sentiment and enough reviews to make that sentiment useful. Price still matters, but it cannot do all the work. Each card explains the rating, review volume, store, current listed price, and recommendation signal so you can judge whether a less-familiar title deserves space in your backlog.'
+      'Indie is not a quality guarantee and a famous publisher is not a reason to skip a smaller game. Some of the best things anyone has made in the last decade came from teams of three people. This page uses Steam genre and tag metadata to find independent releases, then runs the same review, content, and value checks as everywhere else on the site.',
+      'What floats to the top are games with convincing player sentiment and enough reviews to make that sentiment mean something. Price matters, but it cannot carry a listing alone. Each card gives you the rating, the review count, the store, the current price, and the reason it is here, so you can decide whether an unfamiliar name is worth a spot in the backlog.'
     ],
-    criteria: 'A listing needs Indie in its available genre or tag metadata, must pass the default quality and content rules, and is then ranked by Deal Score. That score combines game quality, current price value, discount strength, review confidence, and player interest. Excluded add-ons and low-confidence entries remain out even when their percentage discounts look dramatic.',
-    caveat: 'Steam metadata enrichment is incomplete, so some independent games will not be classified for this page. Prices come from the current snapshot and may change.',
-    cardSummary: 'Indie-tagged games backed by useful review evidence and a worthwhile current listing.',
+    criteria: 'A listing needs Indie in its genre or tag metadata, has to pass the default quality and content rules, and then gets ranked by Deal Score. That combines game quality, price value, discount strength, review confidence, and player interest. Excluded add-ons and thin-evidence entries stay out no matter how dramatic their percentages look.',
+    caveat: 'Steam metadata is incomplete, so some genuinely independent games never get classified for this page. Prices come from the current snapshot and will move.',
+    cardSummary: 'Indie-tagged games with real review evidence and a price worth acting on.',
     relatedGuide: { path: 'blog/indie-games-under-five.html', label: 'How to find inexpensive indie games' }
   },
   deep: {
@@ -98,16 +98,16 @@ const PAGE_DEFINITIONS = {
     shortLabel: 'Deep discounts',
     kicker: 'Big cuts, quality intact',
     title: 'Deep PC game discounts worth a look | LootRadar',
-    description: 'See PC game discounts of 70% or more that still clear LootRadar’s quality checks, ranked from the latest price snapshot.',
+    description: 'Discounts of 70% or more that survived the quality checks. All the drama of a huge price cut, none of the shovelware that usually comes with it.',
     heading: 'Deep discounts that clear the quality bar',
-    lede: 'Price cuts of at least 70% where the game evidence remains stronger than the sale badge.',
+    lede: 'Cuts of 70% and up, where the game is still stronger than the sale badge.',
     introduction: [
-      'A 90% discount can make almost anything look urgent. It does not make the underlying game better, and it does not prove that the list price reflects ordinary market value. This collection starts with discounts of at least 70%, then keeps only listings that pass LootRadar’s quality and content rules.',
-      'That second step matters. Player sentiment, review volume, current price value, and other score components can lift or lower a deal after the discount is counted. The page is useful when you want a substantial sale without abandoning evidence, but the final decision should still account for genre, edition, and whether you will actually play it.'
+      'A 90% badge can make almost anything feel urgent. What it cannot do is improve the game, and it certainly does not prove the original price meant anything. So this page starts at 70% off, and then throws out everything that fails the usual quality and content rules.',
+      'That second step is the entire value of the page. After the discount is counted, player sentiment, review volume, and price value can still lift a deal or sink it. Come here when you want a genuinely big sale without switching your brain off, then let genre, edition, and the honest question of whether you will play it make the final call.'
     ],
-    criteria: 'Every listing must be at least 70% below its stated normal price, pass the default eligibility checks, and earn a Deal Score of 65 or higher. The higher score floor prevents discount depth from dominating the collection. Obvious non-game content and lower-confidence listings are excluded before qualifying offers are ordered by Deal Score.',
-    caveat: 'Normal prices and discounts come from participating-store data. A large percentage is not proof of an all-time low, and LootRadar does not label it that way without verified history.',
-    cardSummary: 'Discounts of at least 70% that also earn a stronger Deal Score.',
+    criteria: 'Every listing must be at least 70% below its stated normal price, clear the default eligibility checks, and score 65 or higher. That raised floor is deliberate: it stops discount depth from taking over the page. Non-game content and thin-evidence listings are removed before what qualifies is ranked by Deal Score.',
+    caveat: 'Normal prices and discount percentages come from store data. A giant percentage is not proof of an all-time low, and we will not call it one without verified history to back it up.',
+    cardSummary: 'Cuts of 70% or deeper that also earned a strong Deal Score.',
     relatedGuide: { path: 'blog/game-price-comparison.html', label: 'How to judge a PC game discount' }
   },
   hidden: {
@@ -118,16 +118,16 @@ const PAGE_DEFINITIONS = {
     shortLabel: 'Hidden gems',
     kicker: 'Strong reviews, smaller audience',
     title: 'Hidden-gem PC game deals | LootRadar',
-    description: 'Find lesser-known PC game deals with at least 85% positive reviews, credible review volume, and a strong LootRadar Deal Score.',
+    description: 'Games adored by a few thousand people instead of a few million. At least 85% positive, small enough to have missed you, and cheap enough to gamble on.',
     heading: 'Hidden-gem deals with strong player reviews',
-    lede: 'Less-visible games with unusually positive feedback and enough reviews to support the signal.',
+    lede: 'Beloved by everyone who played them. Which so far is not very many people.',
     introduction: [
-      '“Hidden gem” is often used as a substitute for “game I like.” LootRadar gives the phrase a narrower job. These listings need unusually positive player feedback, a meaningful but not blockbuster-sized review history, and a current Deal Score strong enough to survive the normal value and content checks.',
-      'The review ceiling keeps the collection focused on games outside the largest audiences; the review floor prevents a handful of early ratings from looking definitive. It is still a discovery aid, not a claim that every game is obscure or right for every player. Use the genre and store details to narrow the list before adding another hopeful purchase to the backlog.'
+      'Hidden gem usually just means a game the writer happened to enjoy. We gave the phrase an actual job. To land here a listing needs unusually positive player feedback, a review history that is meaningful without being blockbuster-sized, and a Deal Score good enough to survive the normal value and content checks.',
+      'The upper review limit keeps the biggest names out. The lower one stops a handful of launch-week ratings from posing as a consensus. It is a discovery tool, not a promise that every game here is obscure or right for you, so use the genre and store details before you add yet another hopeful to the backlog.'
     ],
-    criteria: 'A game must be at least 85% positive, have 100 to 4,999 recorded player reviews, pass the default eligibility rules, and earn a Deal Score of at least 60. Qualifying listings are ranked by Deal Score and then review volume. These boundaries favor strong but reasonably supported sentiment without turning the page into another list of the most famous PC games.',
-    caveat: 'Review counts and ratings come from available enrichment and listing data. Missing metadata can keep a game out, and “hidden” refers to the collection boundaries rather than a universal popularity claim.',
-    cardSummary: 'Games with at least 85% positive reviews and a smaller, credible review base.',
+    criteria: 'A game needs at least 85% positive feedback, between 100 and 4,999 recorded player reviews, a pass on the default eligibility rules, and a Deal Score of 60 or better. Qualifying listings are ranked by Deal Score and then review volume. Those boundaries chase strong, well-supported sentiment instead of producing another list of the most famous games on PC.',
+    caveat: 'Review counts and ratings come from the enrichment and listing data available. Missing metadata can keep a good game out, and hidden here means the boundaries of this collection rather than any universal claim about fame.',
+    cardSummary: 'At least 85% positive, from a smaller but entirely credible crowd.',
     relatedGuide: { path: 'blog/indie-games-under-five.html', label: 'Finding smaller games on a budget' }
   }
 };
@@ -139,15 +139,15 @@ const HUB_DEFINITION = {
   shortLabel: 'All collections',
   kicker: 'Browse with a purpose',
   title: 'Browse quality-first PC game deals | LootRadar',
-  description: 'Browse LootRadar’s permanent PC game deal collections, each built from current store listings with clear quality and selection rules.',
+  description: 'Every LootRadar deal collection in one place, each built from live store listings with its selection rules written out where you can read them.',
   heading: 'Browse quality-first PC game deals',
-  lede: 'Permanent collections for finding worthwhile prices without treating every large discount as a recommendation.',
+  lede: 'Permanent collections for finding a good price without treating every big number as advice.',
   introduction: [
-    'LootRadar’s homepage is useful for searching and changing filters. This hub gives the strongest collections a permanent address, so you can return to the same kind of shortlist without rebuilding it each time. Choose by budget, play style, visibility, or discount depth.',
-      'Every collection begins with the current LootRadar price snapshot and applies a published rule set. The pages show listings, prices, review context, and ranking reasons before JavaScript runs. That makes a shared link immediately useful, even when scripts do not run, and gives a friend something more specific than another vague sale page.'
+    'The homepage is where you search and fiddle with filters. This hub is where the strongest collections live at a permanent address, so you can come back to the same kind of shortlist without rebuilding it from scratch. Pick by budget, by how you play, by how obscure you want to go, or by how deep the cut is.',
+      'Every collection starts from the current price snapshot and applies a published set of rules. Listings, prices, review context, and ranking reasons are all in the page before any JavaScript runs, which means a link you send someone works immediately and shows them something specific rather than another vague sale page.'
   ],
-  criteria: 'All collection pages exclude listings that fail LootRadar’s default content and quality rules unless a page states a stricter boundary. Each page explains its own price, metadata, rating, review-count, discount, or Deal Score requirements. Collections with fewer than 6 matches remain available as a useful fallback but are marked not to appear in search results until inventory recovers.',
-  caveat: 'The published price snapshot refreshes every three hours. A listing may change before the next snapshot or after you follow its store link.',
+  criteria: 'Every collection drops listings that fail the default content and quality rules, and several add stricter boundaries of their own, which each page spells out: price, metadata, rating, review count, discount, or Deal Score. A collection with fewer than 6 matches stays online as a fallback but is marked to stay out of search results until the inventory recovers.',
+  caveat: 'The published snapshot refreshes every three hours. A listing can change before the next one lands, or between you clicking a store link and reaching the checkout page.',
   isHub: true
 };
 

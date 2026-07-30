@@ -95,30 +95,30 @@ function createGuideModules({ snapshot, deals, permanentDeals }) {
   return {
     comparison: moduleShell(
       'comparison',
-      'Current listings worth comparing',
+      'Live listings worth putting side by side',
       checked,
       comparisonDeals.length
         ? renderDealGrid(comparisonDeals)
-        : quietState('No listings currently meet the evidence threshold for this module.', '../deals/index.html', 'Browse all live deal lists'),
-      'These are examples from participating stores, not a complete market comparison. Confirm the edition and final price with the retailer.'
+        : quietState('Nothing in this sweep cleared the evidence bar for this module. It happens.', '../deals/index.html', 'Browse all live deal lists'),
+      'A few examples from participating stores, not the whole market. Check the edition and the final price at the store before you buy.'
     ),
     steam: moduleShell(
       'steam',
-      'Steam listings under $10 with review support',
+      'Steam listings under $10 that have the reviews to back it up',
       checked,
       steamDeals.length
         ? renderDealGrid(steamDeals)
-        : quietState('No quality-qualified Steam listing under $10 is available in this snapshot.', '../deals/steam-deals-under-10.html', 'Check the full under-$10 list'),
-      'Listings qualify here only when the game has at least 80% positive feedback and 1,000 player reviews. Prices can change.'
+        : quietState('No Steam listing under $10 made it through the quality filter this time.', '../deals/steam-deals-under-10.html', 'Check the full under-$10 list'),
+      'Nothing gets in here without at least 80% positive feedback and 1,000 player reviews behind it. Prices move, so check before you buy.'
     ),
     free: moduleShell(
       'free',
-      'Zero-price offers in the current snapshot',
+      'Free right now, according to the latest sweep',
       checked,
       freeDeals.length
         ? renderDealGrid(freeDeals)
-        : quietState('No quality-qualified zero-price listing is available in this snapshot.', '../deals/index.html', 'Browse current deal lists'),
-      'A zero price can describe a temporary promotion or a free-to-play product. Read the retailer terms before claiming or installing.'
+        : quietState('No quality-qualified zero-price listing turned up in this sweep. Check back after the next one.', '../deals/index.html', 'Browse current deal lists'),
+      'A price of zero can mean a limited giveaway or a free-to-play game. Read the store terms before you claim or install anything.'
     )
   };
 }
@@ -133,9 +133,9 @@ function replaceLiveModule(source, moduleHTML) {
 function evidenceSentence(analysis) {
   const deep = analysis.deepDiscount;
   if (!deep.count) {
-    return 'The current snapshot did not contain a qualifying 90%-off listing, so there is no useful deep-discount cohort to judge today.';
+    return 'This snapshot turned up no qualifying 90%-off listings at all, so there is nothing to judge today. Come back after the next sweep.';
   }
-  return `${deep.qualityBackedCount} of ${deep.count} qualifying listings at 90% off or more had at least 80% positive feedback and 1,000 player reviews.`;
+  return `Only ${deep.qualityBackedCount} of ${deep.count} listings at 90% off or more had at least 80% positive feedback and 1,000 player reviews behind them.`;
 }
 
 function renderDiscountArticle({ snapshot, deals, permanentDeals }) {
@@ -157,18 +157,18 @@ function renderDiscountArticle({ snapshot, deals, permanentDeals }) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Do 90% discounts mean good PC game deals? | LootRadar</title>
-  <meta name="description" content="LootRadar analyzes current PC game listings to see how often a 90% discount is backed by strong player reviews and a worthwhile Deal Score.">
+  <meta name="description" content="We counted every 90%-off listing in the current snapshot to see how many are actually backed by real player reviews. The answer surprises people.">
   <link rel="canonical" href="https://thelootradar.com/blog/are-90-percent-discounts-good.html">
   <link rel="alternate" type="application/rss+xml" title="LootRadar deals worth attention" href="/feed.xml">
   <meta property="og:title" content="Does a 90% discount actually mean a good PC game deal?">
-  <meta property="og:description" content="A current-snapshot test of the biggest discount badges using player feedback, review volume, and LootRadar Deal Scores.">
+  <meta property="og:description" content="We counted the biggest discount badges in PC gaming and checked which ones have the reviews to back them.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://thelootradar.com/blog/are-90-percent-discounts-good.html">
   <meta property="og:site_name" content="LootRadar">
   <meta property="og:image" content="https://thelootradar.com/public/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Does 90% off mean a good PC game deal?">
-  <meta name="twitter:description" content="We checked the current evidence behind PC gaming's loudest discount badge.">
+  <meta name="twitter:description" content="We counted the 90%-off listings and checked which ones have the reviews to justify it.">
   <meta name="twitter:image" content="https://thelootradar.com/public/og.png">
   <script type="application/ld+json">
   ${JSON.stringify({
@@ -210,40 +210,40 @@ function renderDiscountArticle({ snapshot, deals, permanentDeals }) {
   <article class="blog-content">
     <h1>Does a 90% discount actually mean a good PC game deal?</h1>
     <p class="meta">Prices checked ${escapeHTML(checked)} &middot; LootRadar analysis</p>
-    <p>A 90% discount gets attention. It also answers only one question: how far the current price sits below the listed full price. It does not tell you whether players like the game, whether enough people have reviewed it, or whether the sale price buys something worth playing.</p>
-    <p>We tested the biggest discount badge against the current LootRadar snapshot. The result is more useful than either praising every steep cut or dismissing all of them.</p>
+    <p>Nothing in a storefront grabs the eye like 90% off. But look at what that number is actually telling you: the distance between today&rsquo;s price and a full price somebody typed in at some point. That is it. It says nothing about whether players liked the game, whether enough of them showed up to say so, or whether you will still be playing in an hour.</p>
+    <p>So we pointed the current LootRadar snapshot at PC gaming&rsquo;s loudest badge and counted. The answer is more interesting than either &ldquo;deep discounts are great&rdquo; or &ldquo;deep discounts are junk.&rdquo;</p>
     <section class="guide-data-hero" aria-labelledby="snapshot-result">
       <span class="guide-live-kicker">Snapshot result</span>
       <h2 id="snapshot-result">${escapeHTML(evidenceSentence(analysis))}</h2>
       <div class="guide-data-grid">
-        <div><strong>${formatNumber(analysis.deepDiscount.count)}</strong><span>listings at 90% off or more</span></div>
-        <div><strong>${formatMetric(analysis.deepDiscount.qualityBackedShare, '%')}</strong><span>met the review-evidence bar</span></div>
+        <div><strong>${formatNumber(analysis.deepDiscount.count)}</strong><span>listings shouting 90% off or more</span></div>
+        <div><strong>${formatMetric(analysis.deepDiscount.qualityBackedShare, '%')}</strong><span>that cleared the review bar</span></div>
         <div><strong>${formatMetric(analysis.deepDiscount.medianRating, '%')}</strong><span>median player rating</span></div>
         <div><strong>${formatMetric(analysis.deepDiscount.medianDealScore)}</strong><span>median Deal Score</span></div>
       </div>
     </section>
-    <h2>What we counted</h2>
-    <p>The analysis began with ${formatNumber(analysis.analyzedCount)} qualifying game listings in the published snapshot. We excluded add-ons, bundles, early-access titles, filtered content, and rows without usable price or review data. A listing met the review-evidence bar when it had at least 80% positive player feedback and 1,000 reviews.</p>
-    <p>This is a snapshot analysis, not a study of every PC game sale. Participating-store coverage and available metadata shape the sample, and prices can change after the snapshot is built.</p>
-    <h2>How the next discount band compared</h2>
+    <h2>How we counted</h2>
+    <p>We started with ${formatNumber(analysis.analyzedCount)} qualifying game listings in the published snapshot, then threw out add-ons, bundles, early access, filtered content, and anything missing usable price or review data. To clear the review-evidence bar a listing needed at least 80% positive player feedback and 1,000 reviews. Not a high bar. Just a real one.</p>
+    <p>This is a snapshot analysis rather than a study of every PC game sale ever run. Which stores we can see and what metadata exists both shape the sample, and prices keep moving after the snapshot is built.</p>
+    <h2>What the shallower discounts did</h2>
     <div class="guide-data-comparison">
       <div><span>90% off or more</span><strong>${formatMetric(analysis.deepDiscount.qualityBackedShare, '%')}</strong><p>met the review-evidence bar across ${formatNumber(analysis.deepDiscount.count)} listings.</p></div>
       <div><span>50% to 89% off</span><strong>${formatMetric(analysis.comparison.qualityBackedShare, '%')}</strong><p>met the same bar across ${formatNumber(analysis.comparison.count)} listings.</p></div>
     </div>
-    <p>The discount size can help a worthwhile game become a stronger value. It cannot supply quality or confidence that the underlying game does not have. That is why LootRadar gives player response and review volume separate weight in the <a href="../methodology.html">Deal Score</a>.</p>
+    <p>There it is. A big cut can take a good game and make it a great buy. What it cannot do is manufacture quality or confidence that was never there. That is exactly why player response and review volume get their own weighting in the <a href="../methodology.html">Deal Score</a> instead of being folded into the discount.</p>
     <div class="ad-zone ad-zone-mid"><span class="ad-label">Advertisement</span><div class="ad-zone-inner"></div></div>
-    <h2>Deep discounts with stronger current evidence</h2>
+    <h2>The deep discounts that do have the receipts</h2>
     ${examplesHTML}
-    <p class="guide-method-note">Examples are drawn from the same snapshot and link to permanent LootRadar price checks. Confirm the edition, activation terms, and final price with the retailer.</p>
-    <h2>A better way to judge the badge</h2>
+    <p class="guide-method-note">These come from the same snapshot and link to permanent LootRadar price checks. Confirm the edition, the activation terms, and the final price at the store.</p>
+    <h2>Five questions worth more than the badge</h2>
     <ol>
-      <li>Ask whether you wanted the game before seeing the percentage.</li>
-      <li>Check recent player feedback and the number of reviews behind it.</li>
-      <li>Compare the sale price with the amount of game you expect to play.</li>
-      <li>Confirm the edition, region, launcher, and final checkout amount.</li>
-      <li>Let a strong discount improve the case, not create the case.</li>
+      <li>Did you want this game before you saw the percentage? Be honest.</li>
+      <li>What do recent reviews say, and how many people wrote them?</li>
+      <li>Does the price match how much game you will realistically get through?</li>
+      <li>Is the edition, region, launcher, and checkout total what you expected?</li>
+      <li>Is the discount improving a case that already existed, or inventing one?</li>
     </ol>
-    <div class="cta-box"><p>Start with the evidence, then decide whether the price earns your attention.</p><a href="../deals/deep-discounts.html">Browse current deep discounts &rarr;</a></div>
+    <div class="cta-box"><p>Start with the evidence. Then let the price make its argument.</p><a href="../deals/deep-discounts.html">Browse current deep discounts &rarr;</a></div>
     <p>Related: <a href="game-price-comparison.html">How to compare PC game prices</a> | <a href="steam-sale-guide.html">How to shop a Steam sale</a></p>
   </article>
   <div class="ad-zone ad-zone-bottom"><span class="ad-label">Advertisement</span><div class="ad-zone-inner"></div></div>

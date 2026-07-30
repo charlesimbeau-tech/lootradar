@@ -421,7 +421,7 @@ function updateGenreHint() {
   var hint = document.getElementById('genreHint');
   if (!hint) return;
   if (!profile.genres.length) {
-    hint.textContent = 'No genres selected. Showing matches from every genre.';
+    hint.textContent = 'No genres picked, so you are getting everything.';
     return;
   }
   if (profile.genres.length === GENRES.length) {
@@ -466,7 +466,7 @@ function renderBecause(scored) {
   if (!grid || !reason) return;
   var likedIds = Object.keys(profile.likes || {});
   if (!likedIds.length) {
-    reason.textContent = 'Like a few games to make these recommendations more relevant.';
+    reason.textContent = 'Hit like on a few games and this section starts learning what you are into.';
     grid.innerHTML = '';
     return;
   }
@@ -759,7 +759,7 @@ function init() {
       var empty = document.getElementById('emptyState');
       if (empty) {
         empty.style.display = 'block';
-        empty.innerHTML = '<p>Recommendations could not be loaded. Please refresh the page.</p>';
+        empty.innerHTML = '<p>Could not load your recommendations. Give the page a refresh.</p>';
       }
   });
 }

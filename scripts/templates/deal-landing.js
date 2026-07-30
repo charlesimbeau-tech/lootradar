@@ -59,15 +59,15 @@ function formatSnapshot(updatedAt) {
 function recommendationFor(deal) {
   if (deal.recommendation) return deal.recommendation;
   if (Number(deal.userRating) > 0 && Number(deal.reviewCount) > 0) {
-    return `${deal.userRating}% positive from ${formatCount(deal.reviewCount)} reviews, with a ${deal.discount}% price cut in this snapshot.`;
+    return `${deal.userRating}% positive across ${formatCount(deal.reviewCount)} reviews, and it is ${deal.discount}% off in this snapshot.`;
   }
-  return `${deal.discount}% off at ${deal.storeName}; review confidence is limited.`;
+  return `${deal.discount}% off at ${deal.storeName}, though there is not much review evidence behind it yet.`;
 }
 
 function renderDealCard(deal) {
   const review = Number(deal.userRating) > 0
     ? `${deal.userRating}% positive from ${formatCount(deal.reviewCount)} reviews`
-    : 'Limited player-review data';
+    : 'Not enough player reviews to say';
   const image = /^https?:\/\//i.test(String(deal.image || ''))
     ? `<img src="${escapeHTML(deal.image)}" alt="${escapeHTML(deal.title)} cover art" loading="lazy" decoding="async">`
     : '<span class="landing-image-fallback" aria-hidden="true">LR</span>';
@@ -80,7 +80,7 @@ function renderDealCard(deal) {
       <p class="landing-reason">${escapeHTML(recommendationFor(deal))}</p>
       <div class="landing-price"><s>${formatPrice(deal.normalPrice)}</s><strong>${formatPrice(deal.salePrice)}</strong></div>
       <a href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(deal.dealID))}" target="_blank" rel="sponsored noopener noreferrer" data-track-deal data-track-surface="search_landing" data-track-store="${escapeHTML(deal.storeName)}" data-track-price="${escapeHTML(deal.salePrice)}">View at ${escapeHTML(deal.storeName)}</a>
-${deal.gamePageRoute ? `      <a class="landing-detail-link" href="../games/${escapeHTML(deal.gamePageRoute)}">Price and quality details</a>` : ''}
+${deal.gamePageRoute ? `      <a class="landing-detail-link" href="../games/${escapeHTML(deal.gamePageRoute)}">See the full breakdown</a>` : ''}
     </div>
   </article>`;
 }
@@ -97,7 +97,7 @@ function renderHubCards(collections) {
     <p>${escapeHTML(item.kicker)}</p>
     <h2><a href="${escapeHTML(item.route)}">${escapeHTML(item.heading)}</a></h2>
     <p>${escapeHTML(item.cardSummary)}</p>
-    <span>${escapeHTML(item.count)} qualifying ${item.count === 1 ? 'deal' : 'deals'} in this snapshot</span>
+    <span>${escapeHTML(item.count)} ${item.count === 1 ? 'deal has' : 'deals have'} made the cut in this snapshot</span>
   </article>`).join('');
 }
 
@@ -168,7 +168,7 @@ function renderLandingPage(definition, deals, snapshotInput) {
   const indexable = definition.isHub || deals.length >= MIN_INDEXABLE_DEALS;
   const canonical = `${SITE_ORIGIN}${definition.canonicalPath}`;
   const quietNotice = !indexable
-    ? `<aside class="landing-quiet"><strong>A quiet collection</strong><p>This collection is unusually quiet in the current snapshot. Browse today&rsquo;s best deals while the next refresh is on its way.</p><a href="best-pc-game-deals.html">Browse today&rsquo;s best deals</a></aside>`
+    ? `<aside class="landing-quiet"><strong>Slim pickings today</strong><p>This collection is unusually quiet in the current snapshot. Have a look at today&rsquo;s best deals while the next refresh works its way over.</p><a href="best-pc-game-deals.html">Browse today&rsquo;s best deals</a></aside>`
     : '';
   const mainContent = definition.isHub
     ? `<section class="landing-hub-grid" aria-label="Deal collections">${renderHubCards(definition.collections)}</section>`
@@ -267,7 +267,7 @@ ${indexable ? '' : '  <meta name="robots" content="noindex,follow">\n'}  <link r
       <div><h2>How these deals qualify</h2><p>${escapeHTML(definition.criteria)}</p><p class="landing-caveat">${escapeHTML(definition.caveat)}</p></div>
     </section>
 ${quietNotice ? `    ${quietNotice}\n` : ''}    ${mainContent}
-    <nav class="landing-links" aria-label="Related reading"><a href="index.html">Browse the deals hub</a><a href="../methodology.html">Read the scoring methodology</a>${relatedGuide}<a href="../feed.xml">Deal feed</a></nav>
+    <nav class="landing-links" aria-label="Related reading"><a href="index.html">All the deal collections</a><a href="../methodology.html">How the scoring works</a>${relatedGuide}<a href="../feed.xml">Deal feed</a></nav>
   </main>
   <footer>
     <div class="footer-inner"><div><a class="nav-brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a><p>Games worth playing. Prices worth paying.</p></div><div class="footer-links"><a href="../methodology.html">Scoring</a><a href="../recommendations.html">For you</a><a href="../blog.html">Guides</a><a data-account-link href="../login.html">Sign in</a><a href="../feed.xml">Deal feed</a><a href="../about.html">About</a><a href="../privacy.html">Privacy</a><a href="../terms.html">Terms</a></div></div>

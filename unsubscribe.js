@@ -18,6 +18,6 @@
     message.textContent = labels[category];
   } else {
     title.textContent = 'This link could not be confirmed';
-    message.textContent = 'The unsubscribe link may be invalid or expired. Sign in to review your private email settings.';
+    message.textContent = 'That link looks invalid or expired. Sign in and you can change your email settings directly.';
   }
 })();
