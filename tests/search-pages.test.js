@@ -35,6 +35,7 @@ function generatedFixture(index) {
     tags: ['Online Co-op', 'Indie'],
     genres: ['Indie'],
     isIndie: true,
+    releaseDate: '2026-06-01',
     dealID: `deal-${index}`,
     recommendation: `${90 + (index % 5)}% positive from ${500 + index * 40} reviews, backed by a 75% discount.`
   };
@@ -129,7 +130,8 @@ test('every landing collection applies the default bundle and Early Access exclu
     eligible: true,
     tags: ['Online Co-op', 'Indie'],
     genres: ['Indie'],
-    isIndie: true
+    isIndie: true,
+    releaseDate: '2026-06-01'
   };
   const candidates = [
     qualifying,
@@ -138,16 +140,54 @@ test('every landing collection applies the default bundle and Early Access exclu
     { ...qualifying, title: 'Excluded Content Pick', excludedContent: true }
   ];
 
+  // Pinned so the recency window is measured against the fixture, not the clock.
+  const now = Date.parse('2026-07-27T18:01:07.921Z');
   for (const pageId of Object.keys(PAGE_DEFINITIONS)) {
     assert.deepEqual(
-      selectLandingDeals(candidates, pageId).map(item => item.title),
+      selectLandingDeals(candidates, pageId, now).map(item => item.title),
       ['Qualified Pick'],
       `${pageId} did not apply the default content exclusions`
     );
   }
 });
 
-test('generator writes a crawlable hub and six unique collection pages', () => {
+test('new arrivals require recency and review support, not just a recent date', () => {
+  const now = Date.parse('2026-07-27T18:01:07.921Z');
+  const fresh = {
+    title: 'Recent Hit',
+    storeID: '1',
+    storeName: 'Steam',
+    salePrice: 24,
+    userRating: 88,
+    reviewCount: 900,
+    discount: 30,
+    dealScore: 78,
+    eligible: true,
+    genres: ['Action'],
+    tags: [],
+    releaseDate: '2026-06-01'
+  };
+
+  const cases = [
+    [fresh, true, 'a recent, well-reviewed release qualifies'],
+    [{ ...fresh, releaseDate: '2024-01-01' }, false, 'an older release is not a new arrival'],
+    [{ ...fresh, reviewCount: 120 }, false, 'a thin review count is rejected'],
+    [{ ...fresh, userRating: 62 }, false, 'poor sentiment is rejected'],
+    [{ ...fresh, dealScore: 40 }, false, 'a weak Deal Score is rejected'],
+    [{ ...fresh, releaseDate: null }, false, 'a missing release date is rejected'],
+    [{ ...fresh, releaseDate: '2026-12-01' }, false, 'an unreleased future date is rejected']
+  ];
+
+  for (const [deal, expected, label] of cases) {
+    assert.equal(
+      selectLandingDeals([deal], 'fresh', now).length === 1,
+      expected,
+      label
+    );
+  }
+});
+
+test('generator writes a crawlable hub and seven unique collection pages', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-search-pages-'));
   const deals = Array.from({ length: 14 }, (_, index) => generatedFixture(index + 1));
   deals[0].dealID = 'abc%2Fdef%3D';
@@ -157,7 +197,7 @@ test('generator writes a crawlable hub and six unique collection pages', () => {
     snapshot: { updatedAt: '2026-07-27T18:01:07.921Z' }
   });
 
-  assert.equal(result.routes.length, 7);
+  assert.equal(result.routes.length, 8);
   assert.deepEqual(Object.keys(result.counts).sort(), Object.keys(PAGE_DEFINITIONS).sort());
 
   const titles = new Set();

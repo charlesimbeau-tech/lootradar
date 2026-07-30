@@ -10,6 +10,10 @@ const API = 'https://www.cheapshark.com/api/1.0';
 const MAX_PRICE = Number(process.env.MAX_PRICE || 70);
 const PAGE_SIZE = Math.min(60, Number(process.env.PAGE_SIZE || 60));
 const PAGES_PER_STORE = Number(process.env.PAGES_PER_STORE || 3);
+// Deal Rating sorts deep discounts to the top, which buries recent releases
+// because they rarely discount hard. A short second pass sorted by recent
+// price activity is what keeps the new-arrivals collection stocked.
+const RECENT_PAGES_PER_STORE = Number(process.env.RECENT_PAGES_PER_STORE || 2);
 const outPath = path.join(__dirname, '..', 'deals.json');
 
 const cheapShark = createCheapSharkClient({
@@ -59,42 +63,68 @@ async function main() {
   const allDeals = [];
   const failedStores = [];
 
+  function normalizeDeal(d) {
+    return {
+      title: d.title,
+      salePrice: d.salePrice,
+      normalPrice: d.normalPrice,
+      savings: d.savings,
+      storeID: d.storeID,
+      dealID: d.dealID,
+      thumb: d.thumb,
+      steamAppID: d.steamAppID,
+      metacriticScore: d.metacriticScore,
+      steamRatingPercent: d.steamRatingPercent,
+      steamRatingCount: d.steamRatingCount,
+      steamRatingText: d.steamRatingText,
+      dealRating: d.dealRating,
+      releaseDate: d.releaseDate
+    };
+  }
+
+  async function fetchStorePages(store, sortBy, pageLimit) {
+    const collected = [];
+    for (let page = 0; page < pageLimit; page++) {
+      const deals = await fetchJSON(
+        `/deals?storeID=${store.storeID}&upperPrice=${MAX_PRICE}&pageSize=${PAGE_SIZE}&pageNumber=${page}&steamRating=70&minimumReviewCount=100&onSale=1&sortBy=${sortBy}`
+      );
+
+      if (Array.isArray(deals) && deals.length) collected.push(...deals.map(normalizeDeal));
+      if (!Array.isArray(deals) || deals.length < Math.floor(PAGE_SIZE * 0.25)) break;
+      await sleep(250);
+    }
+    return collected;
+  }
+
   // Fetch deals sequentially so one refresh does not create a request burst.
   for (const store of activeStores) {
     let storeCount = 0;
+    let recentCount = 0;
     try {
-      for (let page = 0; page < PAGES_PER_STORE; page++) {
-        const deals = await fetchJSON(
-          `/deals?storeID=${store.storeID}&upperPrice=${MAX_PRICE}&pageSize=${PAGE_SIZE}&pageNumber=${page}&steamRating=70&minimumReviewCount=100&onSale=1&sortBy=DealRating`
-        );
-
-        if (Array.isArray(deals) && deals.length) {
-          allDeals.push(...deals.map(d => ({
-            title: d.title,
-            salePrice: d.salePrice,
-            normalPrice: d.normalPrice,
-            savings: d.savings,
-            storeID: d.storeID,
-            dealID: d.dealID,
-            thumb: d.thumb,
-            steamAppID: d.steamAppID,
-            metacriticScore: d.metacriticScore,
-            steamRatingPercent: d.steamRatingPercent,
-            steamRatingCount: d.steamRatingCount,
-            steamRatingText: d.steamRatingText,
-            dealRating: d.dealRating
-          })));
-          storeCount += deals.length;
-        }
-
-        if (!Array.isArray(deals) || deals.length < Math.floor(PAGE_SIZE * 0.25)) break;
-        await sleep(250);
-      }
-      console.log(`  ${store.storeName}: ${storeCount} deals`);
+      const ranked = await fetchStorePages(store, 'DealRating', PAGES_PER_STORE);
+      allDeals.push(...ranked);
+      storeCount += ranked.length;
     } catch (error) {
       failedStores.push(store.storeName);
       console.warn(`  ${store.storeName}: FAILED - ${error.message}`);
+      await sleep(350);
+      continue;
     }
+
+    // Best effort only. The primary pass already produced a usable snapshot,
+    // so a failure here must not abort an otherwise healthy refresh.
+    if (RECENT_PAGES_PER_STORE > 0) {
+      await sleep(250);
+      try {
+        const recent = await fetchStorePages(store, 'Recent', RECENT_PAGES_PER_STORE);
+        allDeals.push(...recent);
+        recentCount += recent.length;
+      } catch (error) {
+        console.warn(`  ${store.storeName}: recent pass skipped - ${error.message}`);
+      }
+    }
+
+    console.log(`  ${store.storeName}: ${storeCount} deals (+${recentCount} from recent pass)`);
     await sleep(350);
   }
 

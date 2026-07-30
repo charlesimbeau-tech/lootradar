@@ -3,6 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { buildDealDataset } = require('../lib/deal-dataset.js');
+const { FRESH, isFreshRelease } = require('../lib/deal-filters.js');
 const { gamePageRoute, selectGamePageDeals } = require('../lib/game-pages.js');
 const config = require('../config/editorial-config.js');
 const { MIN_INDEXABLE_DEALS, renderLandingPage } = require('./templates/deal-landing.js');
@@ -29,6 +30,26 @@ const PAGE_DEFINITIONS = {
     caveat: 'We do the filtering and the scoring. The store decides what you actually pay and whether it is still in stock. Listings can change after the snapshot, or in the time it takes you to click through.',
     cardSummary: 'The best balance of great game, good price, and real review evidence in the latest sweep.',
     relatedGuide: { path: 'blog/game-price-comparison.html', label: 'How to compare PC game prices' }
+  },
+  fresh: {
+    id: 'fresh',
+    route: 'new-game-deals.html',
+    canonicalPath: '/deals/new-game-deals.html',
+    limit: 24,
+    shortLabel: 'New arrivals',
+    kicker: 'Recent, and already proven',
+    title: 'New game deals worth buying | LootRadar',
+    description: 'Games released in the last year that are already discounted and already backed by thousands of positive player reviews. New, but not a gamble.',
+    heading: 'New game deals that already have the receipts',
+    lede: 'Released in the last year, discounted now, and already carrying enough reviews to trust.',
+    introduction: [
+      'Most new-release pages are a firehose. Everything that came out, in order, whether anyone liked it or not. This one is the opposite, and it is smaller on purpose. A game gets in only if it launched within the last year, is discounted right now, and has already collected a serious pile of positive player feedback.',
+      'That last part is the hard bit. A game released six weeks ago has not had time to gather years of reviews, so the usual evidence bar would quietly wipe out the entire page. Instead of pretending otherwise, this collection uses its own published threshold and shows you the review count on every card. Recent is the point. Unproven is not.'
+    ],
+    criteria: `A game must have released within the last ${FRESH.windowDays} days, hold at least ${FRESH.minRating}% positive player feedback across ${FRESH.minReviews.toLocaleString('en-US')} or more reviews, pass the default eligibility rules, and earn a Deal Score of at least ${FRESH.minDealScore}. Qualifying listings are ordered by Deal Score, with review volume breaking ties. The review floor is lower than the rest of the site on purpose, because a recent release cannot have a decade of reviews behind it.`,
+    caveat: 'Release dates come from available game metadata, so a title with missing data can be left out even when it is genuinely new. New releases also discount less deeply than back-catalogue games, so expect smaller percentages here.',
+    cardSummary: 'Recent releases that already collected the reviews to justify the risk.',
+    relatedGuide: { path: 'blog/steam-sale-guide.html', label: 'How to shop a sale without overspending' }
   },
   'steam-under-10': {
     id: 'steam-under-10',
@@ -151,12 +172,13 @@ const HUB_DEFINITION = {
   isHub: true
 };
 
-function selectLandingDeals(deals, pageId) {
+function selectLandingDeals(deals, pageId, now = Date.now()) {
   const selected = deals.filter(deal => {
     if (!deal.eligible || deal.excludedContent || deal.isBundle || deal.isEarlyAccess) {
       return false;
     }
     if (pageId === 'best') return Number(deal.dealScore) >= 55;
+    if (pageId === 'fresh') return isFreshRelease(deal, now);
     if (pageId === 'steam-under-10') {
       return String(deal.storeID) === '1' && Number(deal.salePrice) <= 10;
     }
@@ -208,10 +230,15 @@ function buildSearchPages(options = {}) {
 
   fs.mkdirSync(outputDir, { recursive: true });
 
+  // Recency is measured against the snapshot, not the build clock, so a page
+  // rebuilt from an old snapshot still describes the set that snapshot held.
+  const snapshotTime = new Date(snapshot.updatedAt).getTime();
+  const now = Number.isFinite(snapshotTime) ? snapshotTime : Date.now();
+
   const counts = {};
   const selectedById = {};
   const collections = Object.values(PAGE_DEFINITIONS).map(definition => {
-    const selected = selectLandingDeals(deals, definition.id);
+    const selected = selectLandingDeals(deals, definition.id, now);
     counts[definition.id] = selected.length;
     selectedById[definition.id] = selected.slice(0, definition.limit).map(deal => ({
       ...deal,

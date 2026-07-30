@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { filterDeals, readFiltersFromUrl, filtersToSearchParams } = require('../lib/deal-filters.js');
+const { filterDeals, sortDeals, readFiltersFromUrl, filtersToSearchParams } = require('../lib/deal-filters.js');
 
 const fixtures = [
   {
@@ -37,4 +37,40 @@ test('URL filters round-trip', () => {
   const params = filtersToSearchParams(parsed);
   assert.equal(params.get('q'), 'hades');
   assert.equal(params.get('includeDlc'), '1');
+});
+
+test('the new arrivals collection needs recency and review support together', () => {
+  const now = Date.parse('2026-07-29T12:00:00.000Z');
+  const recent = {
+    slug: 'recent-hit', title: 'Recent Hit', storeID: '1', storeName: 'Steam',
+    salePrice: 24, discount: 30, userRating: 88, reviewCount: 900, dealScore: 78,
+    eligible: true, excludedContent: false, isEarlyAccess: false, isBundle: false,
+    genres: ['Action'], tags: [], releaseDate: '2026-06-01'
+  };
+  const pick = deal => filterDeals([deal], { collection: 'fresh', now }).length === 1;
+
+  assert.equal(pick(recent), true);
+  assert.equal(pick({ ...recent, releaseDate: '2023-01-01' }), false);
+  assert.equal(pick({ ...recent, reviewCount: 120 }), false);
+  assert.equal(pick({ ...recent, userRating: 62 }), false);
+  assert.equal(pick({ ...recent, releaseDate: null }), false);
+});
+
+test('newest release sorts by date rather than by year alone', () => {
+  const games = [
+    { slug: 'jan', releaseDate: '2026-01-05', releaseYear: 2026 },
+    { slug: 'jul', releaseDate: '2026-07-20', releaseYear: 2026 },
+    { slug: 'old', releaseDate: '2019-03-02', releaseYear: 2019 },
+    { slug: 'none' }
+  ];
+  assert.deepEqual(
+    sortDeals(games, 'release').map(game => game.slug),
+    ['jul', 'jan', 'old', 'none']
+  );
+});
+
+test('a clock override never leaks into a shareable URL', () => {
+  const params = filtersToSearchParams({ collection: 'fresh', now: 1780000000000 });
+  assert.equal(params.get('now'), null);
+  assert.equal(params.get('collection'), 'fresh');
 });

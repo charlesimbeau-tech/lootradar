@@ -40,3 +40,22 @@ test('flags multi-edition combo listings as bundles', () => {
   });
   assert.equal(normalized.isBundle, true);
 });
+
+test('reconciles unix release timestamps with enrichment release dates', () => {
+  // The pricing feed sends unix seconds and uses 0 for unknown; enrichment
+  // sends an ISO date. Parsing seconds as milliseconds would date games to 1970.
+  const fromFeed = normalizeDeal({ title: 'Feed Only', releaseDate: 1703030400 });
+  assert.equal(fromFeed.releaseDate, '2023-12-20');
+  assert.equal(fromFeed.releaseYear, 2023);
+
+  assert.equal(normalizeDeal({ title: 'Unknown Date', releaseDate: 0 }).releaseDate, null);
+  assert.equal(normalizeDeal({ title: 'No Date' }).releaseDate, null);
+
+  const preferred = normalizeDeal({
+    title: 'Both Sources',
+    releaseDate: 1703030400,
+    rawg: { released: '2026-07-22' }
+  });
+  assert.equal(preferred.releaseDate, '2026-07-22');
+  assert.equal(preferred.releaseYear, 2026);
+});

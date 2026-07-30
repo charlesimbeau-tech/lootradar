@@ -24,6 +24,9 @@ jobs:
           MAX_PRICE: 70
           PAGE_SIZE: 60
           PAGES_PER_STORE: 3
+          # Second pass per store that keeps recent releases in the snapshot.
+          # Set to 0 to disable without touching the fetch script.
+          RECENT_PAGES_PER_STORE: 2
         run: node scripts/fetch-deals.js
 
       - name: Enrich catalog with Steam metadata (no key)

@@ -45,6 +45,7 @@
 
   const collections = {
     best: { label: 'Best right now', title: 'The best of what is live right now', summary: 'Games people actually rate, at prices that actually moved.' },
+    fresh: { label: 'New arrivals', title: 'Out recently, already loved', summary: 'Released in the last year, already discounted, already carrying real reviews.' },
     under10: { label: 'Under $10', title: 'Great games under $10', summary: 'Single-digit prices with thousands of happy players behind them.' },
     deep: { label: 'Deep discounts', title: 'Deep discounts worth a look', summary: 'Enormous price cuts that still survived the quality checks.' },
     indie: { label: 'Indie standouts', title: 'Indie deals worth discovering', summary: 'Small studios, big ideas, prices that make the risk basically free.' },

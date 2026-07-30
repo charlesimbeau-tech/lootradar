@@ -66,6 +66,7 @@ const adsenseEditorialPages = [
 const generatedDealPages = [
   'deals/index.html',
   'deals/best-pc-game-deals.html',
+  'deals/new-game-deals.html',
   'deals/steam-deals-under-10.html',
   'deals/co-op-game-deals.html',
   'deals/indie-game-deals.html',
