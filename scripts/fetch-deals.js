@@ -5,6 +5,9 @@ const fs = require('fs');
 const path = require('path');
 const { createCheapSharkClient } = require('../lib/cheapshark-client.js');
 const { validateSnapshot } = require('../lib/deal-snapshot-validator.js');
+const { normalizeDeal: normalizeForScoring } = require('../lib/deal-normalizer.js');
+const { calculateDealScore, getDefaultEligibility } = require('../lib/deal-score.js');
+const editorialConfig = require('../config/editorial-config.js');
 
 const API = 'https://www.cheapshark.com/api/1.0';
 const MAX_PRICE = Number(process.env.MAX_PRICE || 70);
@@ -14,6 +17,14 @@ const PAGES_PER_STORE = Number(process.env.PAGES_PER_STORE || 3);
 // because they rarely discount hard. A short second pass sorted by recent
 // price activity is what keeps the new-arrivals collection stocked.
 const RECENT_PAGES_PER_STORE = Number(process.env.RECENT_PAGES_PER_STORE || 2);
+// Useful depth varies enormously by store: Steam still yields qualifying games
+// 30 pages in, while Fanatical is mostly noise past page 15. Rather than guess a
+// flat number, keep paging while a page still earns its keep.
+const MAX_PAGES_PER_STORE = Number(process.env.MAX_PAGES_PER_STORE || 10);
+const MIN_PAGE_YIELD = Number(process.env.MIN_PAGE_YIELD || 0.25);
+// CheapShark rate-limits with a one-hour block, so total depth is bounded by a
+// request budget rather than by how much inventory the API claims to have.
+const MAX_REQUESTS = Number(process.env.MAX_REQUESTS || 140);
 const outPath = path.join(__dirname, '..', 'deals.json');
 
 const cheapShark = createCheapSharkClient({
@@ -58,10 +69,14 @@ async function main() {
   });
 
   console.log(`Found ${activeStores.length} active stores. Fetching deals...`);
-  console.log(`Config: upperPrice=${MAX_PRICE}, pageSize=${PAGE_SIZE}, pagesPerStore=${PAGES_PER_STORE}`);
+  console.log(
+    `Config: upperPrice=${MAX_PRICE}, pageSize=${PAGE_SIZE}, ` +
+    `pages=${PAGES_PER_STORE}-${MAX_PAGES_PER_STORE}/store, minYield=${MIN_PAGE_YIELD}, budget=${MAX_REQUESTS}`
+  );
 
   const allDeals = [];
   const failedStores = [];
+  let requestsUsed = 1; // the store list above
 
   function normalizeDeal(d) {
     return {
@@ -82,26 +97,52 @@ async function main() {
     };
   }
 
-  async function fetchStorePages(store, sortBy, pageLimit) {
+  // Share of a page that would actually reach the site. A page of listings that
+  // all fail the quality gate is bandwidth we pay for and nobody ever sees.
+  function pageYield(deals) {
+    if (!deals.length) return 0;
+    const keepers = deals.filter(raw => {
+      const deal = normalizeForScoring(raw, {});
+      const score = calculateDealScore(deal, editorialConfig);
+      return score.score >= editorialConfig.thresholds.minDealScore &&
+        getDefaultEligibility(deal, editorialConfig, score).eligible;
+    }).length;
+    return keepers / deals.length;
+  }
+
+  async function fetchStorePages(store, sortBy, pageLimit, { adaptive = false, ceiling = MAX_REQUESTS } = {}) {
     const collected = [];
     for (let page = 0; page < pageLimit; page++) {
+      if (requestsUsed >= ceiling) break;
       const deals = await fetchJSON(
         `/deals?storeID=${store.storeID}&upperPrice=${MAX_PRICE}&pageSize=${PAGE_SIZE}&pageNumber=${page}&steamRating=70&minimumReviewCount=100&onSale=1&sortBy=${sortBy}`
       );
+      requestsUsed += 1;
 
       if (Array.isArray(deals) && deals.length) collected.push(...deals.map(normalizeDeal));
       if (!Array.isArray(deals) || deals.length < Math.floor(PAGE_SIZE * 0.25)) break;
-      await sleep(250);
+      // Past the guaranteed floor, keep going only while the store is still
+      // returning games worth showing.
+      if (adaptive && page + 1 >= PAGES_PER_STORE && pageYield(deals) < MIN_PAGE_YIELD) break;
+      await sleep(350);
     }
     return collected;
   }
+
+  // Hold back enough budget that a deep primary pass cannot starve the recent
+  // pass, which is the only thing keeping the new-arrivals collection stocked.
+  const recentReserve = activeStores.length * RECENT_PAGES_PER_STORE;
+  const rankedCeiling = Math.max(activeStores.length, MAX_REQUESTS - recentReserve);
 
   // Fetch deals sequentially so one refresh does not create a request burst.
   for (const store of activeStores) {
     let storeCount = 0;
     let recentCount = 0;
     try {
-      const ranked = await fetchStorePages(store, 'DealRating', PAGES_PER_STORE);
+      const ranked = await fetchStorePages(store, 'DealRating', MAX_PAGES_PER_STORE, {
+        adaptive: true,
+        ceiling: rankedCeiling
+      });
       allDeals.push(...ranked);
       storeCount += ranked.length;
     } catch (error) {
@@ -147,6 +188,7 @@ async function main() {
   validateSnapshot(output, previousSnapshot, failedStores);
   fs.writeFileSync(outPath, JSON.stringify(output));
   console.log(`\nSaved ${output.dealCount} deals from ${output.storeCount} stores to deals.json`);
+  console.log(`Used ${requestsUsed} of ${MAX_REQUESTS} budgeted requests.`);
   console.log(`Updated at: ${output.updatedAt}`);
 }
 

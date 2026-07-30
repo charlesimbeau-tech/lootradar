@@ -12,6 +12,9 @@ permissions:
 jobs:
   fetch-deals:
     runs-on: ubuntu-latest
+    # The schedule fires every three hours; never let a stalled run outlive its
+    # own interval and collide with the next one.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
 
@@ -23,10 +26,17 @@ jobs:
         env:
           MAX_PRICE: 70
           PAGE_SIZE: 60
+          # Guaranteed floor per store; adaptive paging may go deeper.
           PAGES_PER_STORE: 3
           # Second pass per store that keeps recent releases in the snapshot.
           # Set to 0 to disable without touching the fetch script.
           RECENT_PAGES_PER_STORE: 2
+          # Raising this grows the snapshot, which visitors download. Watch the
+          # size of deals.json and enriched-deals.json before turning it up.
+          MAX_PAGES_PER_STORE: 10
+          MIN_PAGE_YIELD: 0.25
+          # CheapShark answers a burst with a one-hour block, so cap the spend.
+          MAX_REQUESTS: 140
         run: node scripts/fetch-deals.js
 
       - name: Enrich catalog with Steam metadata (no key)

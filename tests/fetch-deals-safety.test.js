@@ -96,3 +96,44 @@ test('the workflow declares the recent-pass page budget', () => {
   );
   assert.match(workflow, /RECENT_PAGES_PER_STORE: \d+/);
 });
+
+test('depth is bounded by a request budget and a per-page quality floor', () => {
+  const source = fs.readFileSync(
+    path.join(__dirname, '..', 'scripts', 'fetch-deals.js'),
+    'utf8'
+  );
+
+  // Without a budget, deeper paging across 14 stores would trip CheapShark's
+  // rate limiter, which answers with a one-hour block.
+  assert.match(source, /requestsUsed >= ceiling/, 'paging must respect a request ceiling');
+  assert.match(source, /MAX_REQUESTS/, 'a global budget must exist');
+  assert.match(
+    source,
+    /pageYield\(deals\) < MIN_PAGE_YIELD/,
+    'paging must stop when a page stops yielding usable deals'
+  );
+  // The floor guarantees the adaptive path never fetches less than the old fixed depth.
+  assert.match(
+    source,
+    /page \+ 1 >= PAGES_PER_STORE/,
+    'the quality stop must not kick in before the guaranteed page floor'
+  );
+  assert.match(
+    source,
+    /rankedCeiling/,
+    'the recent pass needs reserved budget so a deep primary pass cannot starve it'
+  );
+});
+
+test('the refresh workflow cannot outlive its own schedule', () => {
+  const workflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github', 'workflows', 'update-deals.yml'),
+    'utf8'
+  );
+  const timeout = Number((workflow.match(/timeout-minutes:\s*(\d+)/) || [])[1]);
+  assert.ok(Number.isFinite(timeout), 'the refresh job must declare a timeout');
+  assert.ok(timeout < 180, `timeout ${timeout}m must stay under the 3 hour cron interval`);
+  for (const key of ['MAX_PAGES_PER_STORE', 'MIN_PAGE_YIELD', 'MAX_REQUESTS']) {
+    assert.match(workflow, new RegExp(`${key}:`), `${key} should be tunable from the workflow`);
+  }
+});

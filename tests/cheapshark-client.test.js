@@ -125,3 +125,46 @@ test('does not retry aborted requests', async () => {
   await assert.rejects(client.get('/games?title=portal'), { name: 'AbortError' });
   assert.equal(calls, 1);
 });
+
+test('a rate-limit block longer than the ceiling fails fast instead of stalling', async () => {
+  // CheapShark answers a burst with Retry-After: 3576 (one hour). Sleeping that
+  // out would outlive the three-hourly refresh schedule and overlap the next run.
+  let slept = 0;
+  const client = createCheapSharkClient({
+    fetchImpl: async () => ({
+      ok: false,
+      status: 429,
+      headers: { get: name => (name === 'Retry-After' ? '3576' : null) }
+    }),
+    sleep: async ms => { slept += ms; },
+    maxRetries: 4
+  });
+
+  await assert.rejects(() => client.get('/deals'), error => {
+    assert.equal(error.status, 429);
+    assert.match(error.message, /exceeds the 60s ceiling/);
+    return true;
+  });
+  assert.equal(slept, 0, 'a long block must not be waited out');
+});
+
+test('a short rate-limit block is still retried', async () => {
+  let calls = 0;
+  let slept = 0;
+  const client = createCheapSharkClient({
+    fetchImpl: async () => {
+      calls += 1;
+      if (calls > 2) return { ok: true, json: async () => ['recovered'] };
+      return {
+        ok: false,
+        status: 429,
+        headers: { get: name => (name === 'Retry-After' ? '2' : null) }
+      };
+    },
+    sleep: async ms => { slept += ms; },
+    maxRetries: 4
+  });
+
+  assert.deepEqual(await client.get('/deals'), ['recovered']);
+  assert.equal(slept, 4000, 'two 2s waits');
+});
