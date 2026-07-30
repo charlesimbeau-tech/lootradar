@@ -1034,3 +1034,240 @@
     transition: none;
   }
 }
+
+/* Current evidence modules */
+.guide-live-module,
+.guide-data-hero {
+  position: relative;
+  margin: 3.2rem 0;
+  padding: clamp(1.35rem, 3vw, 2rem);
+  overflow: hidden;
+  border: 1px solid rgba(174, 248, 82, .2);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 90% 0, rgba(174, 248, 82, .1), transparent 34%),
+    #0f1412;
+}
+
+.guide-live-module::before,
+.guide-data-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--mint);
+}
+
+.guide-live-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.35rem;
+}
+
+.guide-live-heading h2,
+.guide-data-hero h2 {
+  max-width: 780px;
+  margin: .35rem 0 0;
+  color: var(--text);
+  font-size: clamp(1.45rem, 3vw, 2.2rem);
+  line-height: 1.15;
+}
+
+.guide-live-heading > p {
+  flex: 0 0 auto;
+  margin: .25rem 0 0;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.guide-live-kicker {
+  color: var(--mint);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.guide-live-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .8rem;
+}
+
+.guide-live-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(8, 12, 10, .72);
+}
+
+.guide-live-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .7rem;
+  color: var(--muted);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.guide-live-card-top strong {
+  color: var(--mint);
+}
+
+.guide-live-card h3 {
+  margin: .8rem 0 .55rem;
+  font-size: 1.06rem;
+  line-height: 1.25;
+}
+
+.guide-live-card h3 a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.guide-live-card p {
+  margin: .2rem 0;
+  color: var(--muted);
+  font-size: .84rem;
+  line-height: 1.5;
+}
+
+.guide-live-card .guide-live-price strong {
+  color: var(--text);
+  font-size: 1.25rem;
+}
+
+.guide-live-card .guide-live-price span {
+  margin-left: .25rem;
+  text-decoration: line-through;
+}
+
+.guide-live-card .guide-live-card-link {
+  margin-top: auto;
+  padding-top: 1rem;
+  color: var(--mint);
+  font-size: .82rem;
+  font-weight: 800;
+}
+
+.guide-method-note {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.55;
+}
+
+.guide-live-empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border: 1px dashed rgba(174, 248, 82, .28);
+  border-radius: 14px;
+}
+
+.guide-live-empty p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.guide-live-empty a {
+  flex: 0 0 auto;
+  color: var(--mint);
+  font-weight: 800;
+}
+
+.guide-data-hero {
+  padding: clamp(1.5rem, 4vw, 2.6rem);
+}
+
+.guide-data-hero h2 {
+  margin-bottom: 1.8rem;
+}
+
+.guide-data-grid,
+.guide-data-comparison {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+.guide-data-grid > div,
+.guide-data-comparison > div {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(8, 12, 10, .7);
+}
+
+.guide-data-grid strong,
+.guide-data-comparison strong {
+  display: block;
+  color: var(--mint);
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2.35rem);
+  line-height: 1;
+}
+
+.guide-data-grid span,
+.guide-data-comparison span {
+  display: block;
+  margin-top: .55rem;
+  color: var(--muted);
+  font-size: .76rem;
+  line-height: 1.35;
+}
+
+.guide-data-comparison {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 1.5rem 0;
+}
+
+.guide-data-comparison > div > span {
+  margin: 0 0 .8rem;
+  color: var(--text);
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.guide-data-comparison p {
+  margin: .7rem 0 0;
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+@media (max-width: 820px) {
+  .guide-live-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .guide-data-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 580px) {
+  .guide-live-heading,
+  .guide-live-empty {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .guide-data-grid,
+  .guide-data-comparison {
+    grid-template-columns: 1fr;
+  }
+}

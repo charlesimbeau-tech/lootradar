@@ -10,6 +10,7 @@ const {
 
 const root = path.resolve(__dirname, '..');
 const evergreenGuideFiles = [
+  'blog/are-90-percent-discounts-good.html',
   'blog/best-free-pc-games.html',
   'blog/cheapest-steam-games.html',
   'blog/game-price-comparison.html',
@@ -31,14 +32,14 @@ test('the guides index uses the editorial landing-page system', () => {
   assert.match(source, /class="guide-feature"/);
   assert.match(source, /class="guide-card-grid"/);
   assert.match(source, /class="guides-principles"/);
-  assert.match(source, /href="guides\.css\?v=1"/);
+  assert.match(source, /href="guides\.css\?v=2"/);
 });
 
 test('every guide article uses the shared responsive reading system', () => {
   for (const file of guideFiles) {
     const source = read(file);
     assert.match(source, /<body class="guide-page">/, file);
-    assert.match(source, /href="\.\.\/guides\.css\?v=1"/, file);
+    assert.match(source, /href="\.\.\/guides\.css\?v=[12]"/, file);
     assert.match(source, /src="\.\.\/lib\/guide-page\.js\?v=1"/, file);
     assert.match(source, /<a class="skip-link" href="#guide-content">Skip to guide<\/a>/, file);
     assert.match(source, /<article class="blog-content/, file);

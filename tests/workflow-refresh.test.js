@@ -21,12 +21,26 @@ test('the refresh workflow rebuilds and stages permanent game pages', () => {
     'utf8'
   );
   const gamesBuild = workflow.indexOf('node scripts/build-game-pages.js');
+  const guideBuild = workflow.indexOf('node scripts/build-guide-deal-modules.js');
   const searchBuild = workflow.indexOf('node scripts/build-search-pages.js');
   const sitemapBuild = workflow.indexOf('node scripts/generate-sitemap.js');
   assert.ok(gamesBuild > -1);
   assert.ok(gamesBuild < searchBuild);
+  assert.ok(gamesBuild < guideBuild);
+  assert.ok(guideBuild < searchBuild);
   assert.ok(searchBuild < sitemapBuild);
   assert.match(workflow, /\[ -d games \] && git add games/);
+  assert.match(workflow, /git add blog\/are-90-percent-discounts-good\.html/);
+});
+
+
+test('the refresh workflow keeps each named step attached to a command', () => {
+  const workflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github', 'workflows', 'update-deals.yml'),
+    'utf8'
+  );
+  assert.doesNotMatch(workflow, /- name:[^\r\n]+\r?\n\s+- name:/);
+  assert.match(workflow, /- name: Refresh guide evidence modules\r?\n\s+run: node scripts\/build-guide-deal-modules\.js/);
 });
 
 

@@ -18,6 +18,7 @@ const STATIC_EDITORIAL_PATHS = Object.freeze([
   '/blog.html',
   '/privacy.html',
   '/terms.html',
+  '/blog/are-90-percent-discounts-good.html',
   '/blog/best-free-pc-games.html',
   '/blog/cheapest-steam-games.html',
   '/blog/game-price-comparison.html',
