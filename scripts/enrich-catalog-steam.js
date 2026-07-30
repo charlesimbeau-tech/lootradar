@@ -122,7 +122,10 @@ async function main() {
       }
     }
 
-    enriched.push(row);
+    // Visitors download this file, and the merge in lib/deal-dataset.js reads
+    // only the metadata plus the two join keys. Everything else here is already
+    // in deals.json, so shipping it again is pure weight on every page load.
+    enriched.push({ dealID: row.dealID, steamAppID: row.steamAppID, rawg: row.rawg });
     if ((i + 1) % 30 === 0) console.log(`Processed ${i + 1}/${deals.length}...`);
   }
 

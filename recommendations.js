@@ -703,28 +703,37 @@ function init() {
   initAccountSync();
   var v = Math.floor(Date.now() / 3600000);
 
-  // Load enriched deals first, fallback to plain deals
-  var dealsPromise = fetch('enriched-deals.json?v=' + v)
-      .then(function(r) { return r.ok ? r.json() : null; })
-      .catch(function() { return null; })
-      .then(function(enriched) {
-        if (enriched && enriched.games && enriched.games.length) {
-          stores = enriched.stores || {};
-          deals = enriched.games.map(function(d) {
-            return Object.assign({}, d, {
-              steamAppID: d.steamAppID || d.appid,
-              title: (d.rawg && d.rawg.name) || d.title
-            });
-          });
-        } else {
-          return fetch('deals.json?v=' + v).then(function(r) { return r.json(); }).then(function(data) {
-            stores = data.stores || {};
-            deals = (data.deals || []).map(function(d) {
-              return Object.assign({}, d, { steamAppID: d.steamAppID || d.appid });
-            });
-          });
-        }
+  // deals.json holds the listings; enriched-deals.json carries only Steam
+  // metadata keyed back to them, so join the two rather than expecting either
+  // file to be complete on its own.
+  var dealsPromise = Promise.all([
+    fetch('deals.json?v=' + v).then(function(r) { return r.json(); }),
+    fetch('enriched-deals.json?v=' + v)
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .catch(function() { return null; })
+  ]).then(function(results) {
+    var base = results[0] || {};
+    var enriched = results[1];
+    stores = base.stores || (enriched && enriched.stores) || {};
+
+    var metaByDeal = {};
+    var metaByApp = {};
+    ((enriched && enriched.games) || []).forEach(function(row) {
+      if (!row || !row.rawg) return;
+      if (row.dealID) metaByDeal[row.dealID] = row.rawg;
+      if (row.steamAppID) metaByApp[String(row.steamAppID)] = row.rawg;
+    });
+
+    deals = (base.deals || []).map(function(d) {
+      var app = d.steamAppID || d.appid;
+      var rawg = metaByDeal[d.dealID] || (app ? metaByApp[String(app)] : null) || null;
+      return Object.assign({}, d, {
+        rawg: rawg,
+        steamAppID: app,
+        title: (rawg && rawg.name) || d.title
       });
+    });
+  });
 
   // Load umbrella catalog
   var catalogPromise = fetch('games-catalog.json?v=' + v)

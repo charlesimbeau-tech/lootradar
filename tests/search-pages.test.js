@@ -253,3 +253,38 @@ test('quiet collections remain useful but are marked noindex', () => {
   assert.match(source, /This collection is unusually quiet in the current snapshot/);
   assert.equal(result.routes.includes(PAGE_DEFINITIONS.coop.route), false);
 });
+
+test('the enriched payload ships only what the merge reads', () => {
+  // Visitors download enriched-deals.json on every page load. buildDealDataset
+  // reads just the metadata and the two join keys, so any extra field here is a
+  // duplicate of deals.json being paid for twice.
+  const enriched = JSON.parse(
+    fs.readFileSync(path.join(__dirname, '..', 'enriched-deals.json'), 'utf8')
+  );
+  const allowed = new Set(['dealID', 'steamAppID', 'rawg']);
+  const offenders = new Set();
+  for (const row of enriched.games) {
+    for (const key of Object.keys(row)) if (!allowed.has(key)) offenders.add(key);
+  }
+  assert.deepEqual([...offenders], [], 'enriched rows must not repeat deal fields');
+
+  // Top-level keys are still needed by the alert snapshot validator.
+  for (const key of ['updatedAt', 'coverage', 'stores', 'games']) {
+    assert.ok(key in enriched, `enriched payload is missing ${key}`);
+  }
+
+  const bytesPerRow = fs.statSync(path.join(__dirname, '..', 'enriched-deals.json')).size /
+    enriched.games.length;
+  assert.ok(bytesPerRow < 700, `enriched payload is ${Math.round(bytesPerRow)} bytes per deal`);
+});
+
+test('the recommendations page joins deals with metadata instead of assuming fat rows', () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'recommendations.js'), 'utf8');
+  assert.match(source, /fetch\('deals\.json/, 'listings must come from deals.json');
+  assert.match(source, /metaByDeal|metaByApp/, 'metadata must be joined by key');
+  assert.doesNotMatch(
+    source,
+    /deals\s*=\s*enriched\.games\.map/,
+    'enriched rows are metadata only and cannot stand in for deals'
+  );
+});
