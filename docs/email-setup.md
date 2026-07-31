@@ -15,7 +15,7 @@ Both worked end to end on 2026-07-31.
 | Resend domain verification | Verified 2026-07-31 |
 | DKIM / SPF / return-path records | Published and resolving |
 | DMARC | Published at `p=none` (monitor only) |
-| Gmail send-as for `contact@` | Working from `charles.imbeau@gmail.com`, first delivery confirmed 2026-07-31 |
+| Gmail send-as for `contact@` | Working from `charlesimbeau7@gmail.com`, the same mailbox the forward lands in |
 | `deals@` alert pipeline | Not enabled; `LR_ALERTS_ENABLED` still false |
 
 Records published to the zone on 2026-07-31, all confirmed against the
@@ -33,10 +33,23 @@ The zone went from 8 to 12 records.
 
 ## Where the mail goes
 
-`contact@thelootradar.com` forwards to `charlesimbeau7@gmail.com` via the
-Email Routing rule. Sending as `contact@` goes out through Resend SMTP from a
-verified Gmail alias. Both directions were confirmed working by the owner on
-2026-07-31.
+Both directions live in `charlesimbeau7@gmail.com`:
+
+- **Receiving** — the Email Routing rule forwards `contact@thelootradar.com`
+  there.
+- **Sending** — a verified Gmail alias in that same mailbox sends as
+  `contact@` over Resend SMTP.
+
+Keeping both in one mailbox is deliberate. Replies to anything sent from
+`contact@` arrive where it was sent from, so threads hold together. An earlier
+setup had the alias in `charles.imbeau@gmail.com` while the forward landed
+elsewhere, which meant carrying Gmail's confirmation code between accounts and
+would have scattered retailer replies across two inboxes.
+
+Note that the Resend account itself is registered under a different address.
+That is only a login. Resend authenticates the API key and checks the From
+address sits on a verified domain; it neither sees nor cares which mailbox
+opened the SMTP connection, so one Resend account serves any number of senders.
 
 If the forwarding destination ever needs changing, add and verify the new
 address under **Destination addresses** first — Cloudflare mails that
