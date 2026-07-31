@@ -108,3 +108,23 @@ test('generator writes the game hub and one page per selected game', () => {
 });
 
 module.exports = { qualifiedDeal };
+
+test('game page titles and headings target how people actually search', () => {
+  const source = renderGamePage(qualifiedDeal, { updatedAt: '2026-07-29T18:00:00Z' });
+  const title = (source.match(/<title>([^<]*)<\/title>/) || [])[1] || '';
+
+  // The game name has to lead, and the query term has to survive truncation.
+  assert.ok(title.startsWith(qualifiedDeal.title), `title does not lead with the game: ${title}`);
+  assert.match(title, /price:/, 'the title should carry the term people search');
+  assert.doesNotMatch(title, /\| LootRadar/, 'the brand suffix spends characters Google appends anyway');
+
+  // Question-shaped headings that name the game can win featured snippets and
+  // stop hundreds of pages sharing one generic outline.
+  for (const heading of [
+    `Is ${qualifiedDeal.title} worth buying at this price?`,
+    `Before you buy ${qualifiedDeal.title}`,
+    `How current is this ${qualifiedDeal.title} price?`
+  ]) {
+    assert.ok(source.includes(heading), `missing heading: ${heading}`);
+  }
+});
