@@ -41,6 +41,52 @@ test('flags multi-edition combo listings as bundles', () => {
   assert.equal(normalized.isBundle, true);
 });
 
+test('a store package with no resolved app metadata stays a bundle', () => {
+  // True multi-packs are store subs: the app lookup returns nothing, so no
+  // genres come back and the review count is summed across the contents.
+  const normalized = normalizeDeal({
+    title: 'Middle-earth: The Shadow Bundle',
+    salePrice: '6.99',
+    normalPrice: '69.99',
+    steamAppID: '648168',
+    steamRatingPercent: '90',
+    steamRatingCount: '151127'
+  });
+  assert.equal(normalized.isBundle, true);
+});
+
+test('a compilation that resolves to one app is a game, not a bundle', () => {
+  // "Collection" in the title is a naming convention, not a multi-pack. A
+  // resolved genre list proves a single app answered for the listing.
+  const normalized = normalizeDeal({
+    title: 'UNCHARTED: Legacy of Thieves Collection',
+    salePrice: '19.99',
+    normalPrice: '49.99',
+    steamAppID: '1659420',
+    rawg: { genres: ['Adventure'], tags: ['Singleplayer'] }
+  });
+  assert.equal(normalized.isBundle, false);
+});
+
+test('resolved metadata never turns an ordinary game into a bundle', () => {
+  // The genre veto only removes the keyword flag; it cannot add one.
+  const plain = normalizeDeal({
+    title: 'Hollow Knight',
+    salePrice: '7.49',
+    normalPrice: '14.99',
+    steamAppID: '367520',
+    rawg: { genres: ['Indie'], tags: ['Metroidvania'] }
+  });
+  const unenriched = normalizeDeal({
+    title: 'Hollow Knight',
+    salePrice: '7.49',
+    normalPrice: '14.99',
+    steamAppID: '367520'
+  });
+  assert.equal(plain.isBundle, false);
+  assert.equal(unenriched.isBundle, false);
+});
+
 test('reconciles unix release timestamps with enrichment release dates', () => {
   // The pricing feed sends unix seconds and uses 0 for unknown; enrichment
   // sends an ISO date. Parsing seconds as milliseconds would date games to 1970.

@@ -372,7 +372,11 @@
   }
 
   function renderHero() {
-    const top = sortDeals(state.allDeals.filter(deal => deal.eligible), 'recommended')[0];
+    // The pick of the day has to clear the same default content rules as the
+    // grid underneath it. Eligibility alone let through the add-ons and
+    // multi-packs the rest of the page exists to throw out, and it ignores the
+    // reader's filters on purpose: this is the site's pick, not their search.
+    const top = sortDeals(filterDeals(state.allDeals, DEFAULT_FILTERS), 'recommended')[0];
     if (!top) return;
     const image = safeImage(top.image);
     $('#heroPick').innerHTML = `

@@ -186,3 +186,31 @@ test('app.js keeps the prerendered grid on the first load', () => {
   assert.match(app, /loadDeals\(\{ keepPrerendered: true \}\)/);
   assert.match(app, /if \(!prerendered\) \$\('#deals'\)\.innerHTML = ''/);
 });
+
+test('the hero pick obeys the same content rules as the grid', () => {
+  const { indexPath, base } = scaffold();
+  // A multi-pack outscores everything but must not become the pick of the day.
+  const bundle = {
+    ...fixture(0),
+    key: 'steam:9999',
+    title: 'Everything Bundle',
+    dealScore: 99,
+    isBundle: true,
+    steamAppID: ''
+  };
+  const deals = [bundle, ...Array.from({ length: 5 }, (unused, i) => fixture(i))];
+  buildHomeFallback({ base, deals, indexPath });
+
+  const html = fs.readFileSync(indexPath, 'utf8');
+  const hero = html.slice(html.indexOf('<!--LR:hero:start-->'), html.indexOf('<!--LR:hero:end-->'));
+  assert.doesNotMatch(hero, /Everything Bundle/);
+  assert.match(hero, /Fallback Pick 0/);
+  // And it must not leak into the grid either.
+  assert.doesNotMatch(html, /class="card-title"[^>]*>Everything Bundle/);
+});
+
+test('app.js picks the hero from the filtered set, not raw eligibility', () => {
+  const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+  assert.match(app, /sortDeals\(filterDeals\(state\.allDeals, DEFAULT_FILTERS\), 'recommended'\)\[0\]/);
+  assert.doesNotMatch(app, /state\.allDeals\.filter\(deal => deal\.eligible\), 'recommended'/);
+});
