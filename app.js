@@ -37,6 +37,7 @@
     stores: {},
     filters: readFiltersFromUrl(window.location.href),
     shown: PAGE_SIZE,
+    heroKey: null,
     selectedDeal: null,
     watchlist: loadWatchlist(),
     lastFocused: null,
@@ -190,8 +191,10 @@
       populateFilters();
       renderCollections();
       syncFormFromState();
-      render();
+      // Hero first: it claims a deal, and render() needs to know which one so
+      // the same game is not repeated as the first card underneath it.
       renderHero();
+      render();
       const updated = new Date(base.updatedAt);
       $('#lastUpdated').textContent = Number.isNaN(updated.getTime())
         ? 'Saved price snapshot'
@@ -358,17 +361,31 @@
     </article>`;
   }
 
+  // The hero is the top of the default view, so in that view it would also be
+  // the first card. Once the reader sorts, searches, or filters, the grid is
+  // answering their question rather than ours, and quietly withholding a match
+  // would be a bug. So the pick is only held back while nothing has been
+  // touched.
+  function isDefaultView(filters) {
+    return Object.keys(DEFAULT_FILTERS).every(name => filters[name] === DEFAULT_FILTERS[name]);
+  }
+
   function render() {
     const filtered = filterDeals(state.allDeals, state.filters);
     state.visibleDeals = sortDeals(filtered, state.filters.sort);
-    const shown = state.visibleDeals.slice(0, state.shown);
+    // The count describes the collection, which still contains the pick; the
+    // grid just pages through the ones not already featured above it.
+    const pool = state.heroKey && isDefaultView(state.filters)
+      ? state.visibleDeals.filter(deal => deal.key !== state.heroKey)
+      : state.visibleDeals;
+    const shown = pool.slice(0, state.shown);
     const collection = collections[state.filters.collection] || collections.best;
     $('#collectionTitle').textContent = state.filters.q ? `Results for “${state.filters.q}”` : collection.title;
     $('#resultSummary').textContent = collection.summary;
     $('#resultCount').textContent = `${state.visibleDeals.length} ${state.visibleDeals.length === 1 ? 'deal' : 'deals'}`;
     $('#deals').innerHTML = shown.map(cardMarkup).join('');
     $('#emptyState').hidden = state.visibleDeals.length > 0 || state.allDeals.length === 0;
-    $('#loadMore').hidden = state.shown >= state.visibleDeals.length;
+    $('#loadMore').hidden = state.shown >= pool.length;
   }
 
   function renderHero() {
@@ -378,6 +395,7 @@
     // reader's filters on purpose: this is the site's pick, not their search.
     const top = sortDeals(filterDeals(state.allDeals, DEFAULT_FILTERS), 'recommended')[0];
     if (!top) return;
+    state.heroKey = top.key;
     const image = safeImage(top.image);
     $('#heroPick').innerHTML = `
       <div class="pick-image">${image ? `<img src="${image}" alt="${escapeHTML(top.title)} cover art" loading="eager" decoding="async">` : ''}<span>Pick of the day</span></div>

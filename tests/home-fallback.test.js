@@ -82,29 +82,33 @@ test('bakes the default homepage view into index.html', () => {
 
 test('static cards carry a working retailer link and no dead controls', () => {
   const { indexPath, base } = scaffold();
-  buildHomeFallback({ base, deals: [fixture(0)], indexPath });
+  // Two deals: the stronger one becomes the pick, the other fills the grid.
+  buildHomeFallback({ base, deals: [fixture(0), fixture(1)], indexPath });
 
   const html = fs.readFileSync(indexPath, 'utf8');
-  assert.match(html, /href="https:\/\/www\.cheapshark\.com\/redirect\?dealID=deal-0"/);
+  assert.match(html, /href="https:\/\/www\.cheapshark\.com\/redirect\?dealID=deal-1"/);
   assert.match(html, /rel="noopener noreferrer sponsored"/);
   // Buttons need JavaScript to do anything; the fallback must not ship any.
   assert.doesNotMatch(html, /<button/);
   assert.doesNotMatch(html, /data-details=/);
   assert.doesNotMatch(html, /data-watch=/);
   // The title and cover link to the permanent game page instead.
-  assert.match(html, /<a class="card-title" href="games\/fallback-pick-0-1000\.html">/);
+  assert.match(html, /<a class="card-title" href="games\/fallback-pick-1-1001\.html">/);
 });
 
 test('a deal without a game page renders inert instead of linking nowhere', () => {
   const { indexPath, base } = scaffold();
   // No steamAppID means no generated page, and too few reviews to earn one.
-  const orphan = { ...fixture(0), steamAppID: '', reviewCount: 150 };
-  buildHomeFallback({ base, deals: [orphan], indexPath });
+  // fixture(0) outranks it and takes the hero slot, leaving the orphan in the
+  // grid where its markup is what this test is about.
+  const orphan = { ...fixture(1), steamAppID: '', reviewCount: 150 };
+  buildHomeFallback({ base, deals: [fixture(0), orphan], indexPath });
 
   const html = fs.readFileSync(indexPath, 'utf8');
-  assert.match(html, /<span class="card-title">Fallback Pick 0<\/span>/);
-  assert.match(html, /<div class="card-image">/);
-  assert.doesNotMatch(html, /href="games\//);
+  const grid = html.slice(html.indexOf('<!--LR:deals:start-->'), html.indexOf('<!--LR:deals:end-->'));
+  assert.match(grid, /<span class="card-title">Fallback Pick 1<\/span>/);
+  assert.match(grid, /<div class="card-image">/);
+  assert.doesNotMatch(grid, /href="games\//);
 });
 
 test('the baked grid matches what the browser renders on first paint', () => {
@@ -112,13 +116,43 @@ test('the baked grid matches what the browser renders on first paint', () => {
   const deals = Array.from({ length: 30 }, (unused, index) => fixture(index));
   buildHomeFallback({ base, deals, indexPath });
 
-  const expected = sortDeals(filterDeals(deals, DEFAULT_FILTERS), DEFAULT_FILTERS.sort)
+  const ranked = sortDeals(filterDeals(deals, DEFAULT_FILTERS), DEFAULT_FILTERS.sort);
+  const hero = sortDeals(filterDeals(deals, DEFAULT_FILTERS), 'recommended')[0];
+  const expected = ranked
+    .filter(deal => deal.key !== hero.key)
     .slice(0, CARD_LIMIT)
     .map(deal => deal.title);
 
   const html = fs.readFileSync(indexPath, 'utf8');
   const rendered = [...html.matchAll(/class="card-title"[^>]*>([^<]+)</g)].map(match => match[1]);
   assert.deepEqual(rendered, expected);
+});
+
+test('the pick of the day is not repeated as the first card', () => {
+  const { indexPath, base } = scaffold();
+  const deals = Array.from({ length: 30 }, (unused, index) => fixture(index));
+  buildHomeFallback({ base, deals, indexPath });
+
+  const html = fs.readFileSync(indexPath, 'utf8');
+  const hero = html.slice(html.indexOf('<!--LR:hero:start-->'), html.indexOf('<!--LR:hero:end-->'));
+  const grid = html.slice(html.indexOf('<!--LR:deals:start-->'), html.indexOf('<!--LR:deals:end-->'));
+  const heroTitle = hero.match(/<h2>(?:<a[^>]*>)?([^<]+)/)[1];
+
+  assert.equal(heroTitle, 'Fallback Pick 0');
+  assert.doesNotMatch(grid, new RegExp(`class="card-title"[^>]*>${heroTitle}<`));
+  // A full page of cards still renders; the grid backfills rather than showing 23.
+  assert.equal((grid.match(/class="deal-card"/g) || []).length, CARD_LIMIT);
+});
+
+test('app.js holds the pick back only while the view is untouched', () => {
+  const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+  assert.match(app, /state\.heroKey = top\.key/);
+  assert.match(app, /state\.heroKey && isDefaultView\(state\.filters\)/);
+  // The pick must be resolved before the grid renders, or the first paint
+  // would show it twice.
+  assert.match(app, /renderHero\(\);\s*\n\s*render\(\);/);
+  // Pagination has to follow the pool the grid actually draws from.
+  assert.match(app, /\$\('#loadMore'\)\.hidden = state\.shown >= pool\.length/);
 });
 
 test('rebuilding replaces the previous bake instead of stacking it', () => {

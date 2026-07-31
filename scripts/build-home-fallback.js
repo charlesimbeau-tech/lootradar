@@ -184,9 +184,11 @@ function buildHomeFallback(options = {}) {
   // The same filter and sort the browser applies on first paint, so the static
   // grid and the hydrated grid agree instead of visibly reshuffling.
   const visible = sortDeals(filterDeals(withRoutes, DEFAULT_FILTERS), DEFAULT_FILTERS.sort);
-  const shown = visible.slice(0, CARD_LIMIT);
   // Mirrors renderHero in app.js: the same default content rules as the grid.
   const hero = sortDeals(filterDeals(withRoutes, DEFAULT_FILTERS), 'recommended')[0];
+  // This is always the default view, so the pick is always held back from the
+  // grid, exactly as render() does before the reader touches anything.
+  const shown = visible.filter(deal => !hero || deal.key !== hero.key).slice(0, CARD_LIMIT);
 
   const stores = base.stores || enriched?.stores || {};
   const qualified = withRoutes.filter(deal => deal.eligible).length;
