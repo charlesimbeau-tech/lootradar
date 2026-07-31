@@ -103,7 +103,11 @@ For optional private account syncing:
 For default-off deal email:
 
 1. Verify `thelootradar.com` as a sending domain in Resend and create a
-   sending-only API key for `LootRadar <deals@thelootradar.com>`.
+   sending-only API key for `LootRadar <deals@thelootradar.com>`. Follow
+   `docs/email-setup.md` for this step. The domain already runs Cloudflare
+   Email Routing on its root `MX` records, and that delivers
+   `contact@thelootradar.com`; the verification has to be added alongside it
+   without replacing those records or adding a second SPF entry.
 2. Generate independent random values of at least 32 bytes for `CRON_SECRET`
    and `UNSUBSCRIBE_SECRET`, then configure the Edge Function secrets:
 
@@ -175,6 +179,32 @@ Penalties include low review counts, mixed/negative sentiment, no reliable quali
 ## Data sources and limitations
 
 - [CheapShark](https://apidocs.cheapshark.com/) provides USD PC-store prices, deal redirects, Deal Rating, current alternate stores, and recorded historical lows. It is public and keyless, rate limited, and requires CheapShark redirect links. Pricing generally refreshes around hourly, but availability can lag.
+
+### CheapShark usage terms, confirmed 2026-07-31
+
+Confirmed directly with CheapShark by email. Both answers are theirs, not
+inference:
+
+- **Request volume.** The current pattern — roughly 70 requests per run, eight
+  runs a day, spaced 350 ms apart, ceiling 90 — was confirmed as "totally
+  fine." They adjust global rate limiting from time to time based on observed
+  behaviour, and ask that anyone unexpectedly blocked contact them rather than
+  guess. Their aim is availability for everyone, not blocking correct use.
+- **Affiliate links.** The rule follows the data, not the link. Anything
+  sourced from the CheapShark API must be linked through a CheapShark redirect.
+  If a store's own affiliate programme is joined *and* that store's pricing is
+  gathered directly from its feed, linking straight to that store with its own
+  tracking is acceptable. They claim no ownership over store pricing itself.
+- **The stated limit.** Swapping out every, or even most, store that offers an
+  affiliate programme — while still using the API for the remaining stores that
+  do not — is the case they would object to. At that point they would expect a
+  third party to source all stores directly.
+
+The practical consequence for this codebase: **a listing's outbound link type
+must follow its data source.** A CheapShark-sourced listing gets a CheapShark
+redirect. A store-feed-sourced listing may get a direct affiliate link. The two
+must never be mixed for one listing, and any future direct integration needs
+its own ingestion path rather than relabelling CheapShark data.
 - Steam Store app details provides genres, categories, platforms, release date, and cover imagery for matching Steam App IDs.
 - SteamSpy provides tags and broad popularity metadata without a key. It is third-party, can be incomplete, and should be treated as approximate.
 - Supabase is optional and stores only owner-scoped profiles, feedback,
@@ -213,11 +243,12 @@ The build produces `dist/static` plus a Cloudflare Worker-compatible `dist/serve
   Vault, schedule, and controlled-delivery configuration before activation.
 - Publisher/developer signals are supported by configuration but metadata coverage is incomplete.
 - Existing personalized recommendations use their older profile score and have not yet been migrated to the new Deal Score.
-- Cached deal generation should be confirmed with CheapShark for long-term automated-volume compliance.
 
 ## Recommended next steps
 
-1. Ask CheapShark to confirm the scheduled caching pattern and preferred request volume.
+1. Keep any direct retailer integration on its own ingestion path. Direct
+   affiliate links are permitted only for stores whose pricing is gathered from
+   their own feed, per the confirmed CheapShark terms above.
 2. Add a licensed price-history/console source behind a replaceable adapter.
 3. Add a normalized offer/score snapshot history for deeper price analysis.
 4. Verify the default-off email pipeline in production before setting
