@@ -31,12 +31,16 @@ jobs:
           # Second pass per store that keeps recent releases in the snapshot.
           # Set to 0 to disable without touching the fetch script.
           RECENT_PAGES_PER_STORE: 2
-          # Raising this grows the snapshot, which visitors download. Watch the
-          # size of deals.json and enriched-deals.json before turning it up.
-          MAX_PAGES_PER_STORE: 10
+          # Held at the floor on purpose. Raising this to 10 tripped CheapShark's
+          # rate limiter in production on 2026-07-30: Steam, GamersGate and GOG
+          # each pulled 10 pages and the runner was blocked for an hour around
+          # request 50, failing 8 of 14 stores. The proven-safe shape is roughly
+          # 70 requests per refresh. Raise this only alongside longer sleeps, and
+          # watch the next run.
+          MAX_PAGES_PER_STORE: 3
           MIN_PAGE_YIELD: 0.25
-          # CheapShark answers a burst with a one-hour block, so cap the spend.
-          MAX_REQUESTS: 140
+          # Hard ceiling well under the ~50 requests that drew a block.
+          MAX_REQUESTS: 90
         run: node scripts/fetch-deals.js
 
       - name: Enrich catalog with Steam metadata (no key)

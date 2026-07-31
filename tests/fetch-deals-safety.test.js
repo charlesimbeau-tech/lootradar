@@ -137,3 +137,30 @@ test('the refresh workflow cannot outlive its own schedule', () => {
     assert.match(workflow, new RegExp(`${key}:`), `${key} should be tunable from the workflow`);
   }
 });
+
+test('refresh depth stays inside the rate limit CheapShark actually enforces', () => {
+  const workflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github', 'workflows', 'update-deals.yml'),
+    'utf8'
+  );
+  const num = key => {
+    const line = workflow.split('\n').find(entry => entry.trim().startsWith(key + ':'));
+    return Number((line || '').split(':')[1]);
+  };
+
+  const stores = 14;
+  const perStore = num('MAX_PAGES_PER_STORE') + num('RECENT_PAGES_PER_STORE');
+  const worstCase = stores * perStore + 1;
+
+  // On 2026-07-30 a refresh at 10 pages per store drew HTTP 429 with a one-hour
+  // block around the fiftieth request, failing 8 of 14 stores. Roughly 70
+  // requests per refresh is the shape that has actually completed.
+  assert.ok(
+    worstCase <= 90,
+    `worst-case ${worstCase} requests per refresh risks the rate limiter`
+  );
+  assert.ok(
+    num('MAX_REQUESTS') <= 90,
+    'the request budget must stay under what has drawn a block'
+  );
+});

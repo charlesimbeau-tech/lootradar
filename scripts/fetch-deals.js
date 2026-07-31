@@ -20,11 +20,12 @@ const RECENT_PAGES_PER_STORE = Number(process.env.RECENT_PAGES_PER_STORE || 2);
 // Useful depth varies enormously by store: Steam still yields qualifying games
 // 30 pages in, while Fanatical is mostly noise past page 15. Rather than guess a
 // flat number, keep paging while a page still earns its keep.
-const MAX_PAGES_PER_STORE = Number(process.env.MAX_PAGES_PER_STORE || 10);
+// Measured the hard way: 10 pages per store drew a one-hour block around the
+// fiftieth request and failed most of the refresh. CheapShark's limiter cares
+// about rate, not just totals, so the default stays at the proven floor.
+const MAX_PAGES_PER_STORE = Number(process.env.MAX_PAGES_PER_STORE || 3);
 const MIN_PAGE_YIELD = Number(process.env.MIN_PAGE_YIELD || 0.25);
-// CheapShark rate-limits with a one-hour block, so total depth is bounded by a
-// request budget rather than by how much inventory the API claims to have.
-const MAX_REQUESTS = Number(process.env.MAX_REQUESTS || 140);
+const MAX_REQUESTS = Number(process.env.MAX_REQUESTS || 90);
 const outPath = path.join(__dirname, '..', 'deals.json');
 
 const cheapShark = createCheapSharkClient({
