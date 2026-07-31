@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=26">
+  <link rel="stylesheet" href="style.css?v=27">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" href="/icons/favicon-48.png" sizes="48x48" type="image/png">
   <link rel="icon" href="icons/icon.svg?v=2" type="image/svg+xml">
@@ -81,17 +81,21 @@
           <a class="text-link" href="methodology.html">How the ranking actually works <span aria-hidden="true">↗</span></a>
         </div>
         <dl class="trust-row">
-          <div><dt id="statQualified">—</dt><dd>deals that made the cut</dd></div>
-          <div><dt id="statStores">—</dt><dd>stores in the sweep</dd></div>
+          <div><dt id="statQualified"><!--LR:qualified:start-->1.2K<!--LR:qualified:end--></dt><dd>deals that made the cut</dd></div>
+          <div><dt id="statStores"><!--LR:stores:start-->14<!--LR:stores:end--></dt><dd>stores in the sweep</dd></div>
           <div><dt>3 hours</dt><dd>between price checks</dd></div>
         </dl>
       </div>
 
-      <aside class="hero-pick" id="heroPick" aria-label="Top deal right now">
-        <div class="hero-pick-skeleton">
-          <span></span><span></span><span></span>
+      <aside class="hero-pick" id="heroPick" aria-label="Top deal right now"><!--LR:hero:start--><div class="pick-image"><img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/subs/648168/capsule_231x87.jpg?t=1773778564" alt="Middle-earth: The Shadow Bundle cover art" loading="eager" decoding="async"><span>Pick of the day</span></div>
+      <div class="pick-content">
+        <div class="pick-head"><div><p>WinGameStore</p><h2>Middle-earth: The Shadow Bundle</h2></div>
+          <div class="score-ring elite" style="--score:95"><strong>95</strong><span>score</span></div>
         </div>
-      </aside>
+        <p>90% positive from 151.1k reviews, and it is a frankly silly 90% off.</p>
+        <div class="pick-price"><span class="old-price">$69.99</span><strong>$6.99</strong><span class="pick-discount">−90%</span></div>
+        <a class="button button-primary" href="https://www.cheapshark.com/redirect?dealID=5u2%2Brrz%2BTcuDR9HAefNkfN%2BJsj6LIP8YpMQLuI%2F%2B16o%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="hero_pick" data-store="WinGameStore" data-price="6.99">View at WinGameStore</a>
+      </div><!--LR:hero:end--></aside>
     </div>
   </header>
 
@@ -102,7 +106,7 @@
           <p class="section-kicker">Fresh from the latest sweep</p>
           <h2 id="discoverTitle">Everything here earned its spot</h2>
         </div>
-        <p class="data-note"><span class="live-dot" aria-hidden="true"></span><span id="lastUpdated">Pulling in the newest prices&hellip;</span></p>
+        <p class="data-note"><span class="live-dot" aria-hidden="true"></span><span id="lastUpdated"><!--LR:updated:start-->Prices checked Jul 31, 2:13 AM EDT<!--LR:updated:end--></span></p>
       </div>
 
       <form class="search-row" id="dealFilters" role="search">
@@ -181,10 +185,14 @@
           <h3 id="collectionTitle">The best of what is live right now</h3>
           <p id="resultSummary">Games people actually rate, at prices that actually moved.</p>
         </div>
-        <span id="resultCount" aria-live="polite"></span>
+        <span id="resultCount" aria-live="polite"><!--LR:count:start-->1152 deals<!--LR:count:end--></span>
       </div>
 
-      <div id="loading" class="loading-grid" aria-label="Loading deals">
+      <noscript>
+        <p class="state-note">These are the prices from the last published sweep. Search, filters, sorting, and the watchlist need JavaScript; the deals below and every collection page do not.</p>
+      </noscript>
+
+      <div id="loading" class="loading-grid" aria-label="Loading deals" hidden>
         <div></div><div></div><div></div><div></div><div></div><div></div>
       </div>
       <div id="errorState" class="state-card" hidden>
@@ -199,7 +207,510 @@
         <p>You have filtered your way into an empty room. Loosen one setting or jump to a wider collection.</p>
         <button class="button button-small" id="clearEmpty" type="button">Reset filters</button>
       </div>
-      <div class="deal-grid" id="deals" aria-live="polite"></div>
+      <div class="deal-grid" id="deals" aria-live="polite"><!--LR:deals:start--><article class="deal-card" data-key="steam:1237970" style="--delay:0ms">
+      <a class="card-image" href="games/titanfall-2-1237970.html" aria-label="Price details for Titanfall 2"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1237970/header.jpg?t=1779987598" alt="Titanfall 2 cover art" loading="lazy" decoding="async"><span class="discount-badge">−85%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>Action</span></div>
+        <a class="card-title" href="games/titanfall-2-1237970.html">Titanfall 2</a>
+        <div class="card-reviews"><span class="review-score">95% positive</span><span>95.8K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$29.99</span><strong>$4.49</strong></div>
+          <span class="history-note">94 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:95" aria-label="Deal Score 95 out of 100">
+            <strong>95</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>95% positive from 95.8k reviews, and it is a frankly silly 85% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=gG2%2Bohshlnn7OrFVMY0XyW%2FmVNngWNdY1auy7L5aOAc%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="4.49">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:205100" style="--delay:28ms">
+      <a class="card-image" href="games/dishonored-205100.html" aria-label="Price details for Dishonored"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/205100/header.jpg?t=1783183937" alt="Dishonored cover art" loading="lazy" decoding="async"><span class="discount-badge">−78%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>GreenManGaming</span><span>Action</span></div>
+        <a class="card-title" href="games/dishonored-205100.html">Dishonored</a>
+        <div class="card-reviews"><span class="review-score">97% positive</span><span>39.3K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$9.99</span><strong>$2.15</strong></div>
+          <span class="history-note">95 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:94" aria-label="Deal Score 94 out of 100">
+            <strong>94</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>97% positive from 39.3k reviews, with a hefty 78% off on top.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=ZRYa%2BGWfo5%2F3V%2FPQVRb1CLfj0ttHmXoRufvglkCgL7I%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="GreenManGaming" data-price="2.15">View at GreenManGaming</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:1238840" style="--delay:56ms">
+      <a class="card-image" href="games/battlefield-1-1238840.html" aria-label="Price details for Battlefield 1"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1238840/header.jpg?t=1777324289" alt="Battlefield 1 cover art" loading="lazy" decoding="async"><span class="discount-badge">−90%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>Action</span></div>
+        <a class="card-title" href="games/battlefield-1-1238840.html">Battlefield 1</a>
+        <div class="card-reviews"><span class="review-score">86% positive</span><span>45.9K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$39.99</span><strong>$3.99</strong></div>
+          <span class="history-note">99 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:93" aria-label="Deal Score 93 out of 100">
+            <strong>93</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>86% positive from 45.9k reviews, and it is a frankly silly 90% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=ICV0L0NmwniVHpc4NjfQsDO5gRILOIkqPz05jfxFtCM%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="3.99">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:990080" style="--delay:84ms">
+      <a class="card-image" href="games/hogwarts-legacy-990080.html" aria-label="Price details for Hogwarts Legacy"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/990080/a3cdc6f40d97df8ac993679c2dd1edeb5222421e/header.jpg?t=1778797474" alt="Hogwarts Legacy cover art" loading="lazy" decoding="async"><span class="discount-badge">−85%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Epic Games Store</span><span>Action</span></div>
+        <a class="card-title" href="games/hogwarts-legacy-990080.html">Hogwarts Legacy</a>
+        <div class="card-reviews"><span class="review-score">91% positive</span><span>142.5K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$59.99</span><strong>$8.99</strong></div>
+          <span class="history-note">86 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:92" aria-label="Deal Score 92 out of 100">
+            <strong>92</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>91% positive from 142.5k reviews, and it is a frankly silly 85% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=%2Fn%2F5x2ClvrvzThtgmxBpOUqhfG1owwHqQE%2FQLlEqczY%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Epic Games Store" data-price="8.99">View at Epic Games Store</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:518699" style="--delay:112ms">
+      <div class="card-image"><img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/subs/518699/capsule_231x87.jpg?t=1780429573" alt="Mortal Kombat 11 Ultimate cover art" loading="lazy" decoding="async"><span class="discount-badge">−85%</span></div>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>PC game</span></div>
+        <span class="card-title">Mortal Kombat 11 Ultimate</span>
+        <div class="card-reviews"><span class="review-score">88% positive</span><span>87.6K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$59.99</span><strong>$8.99</strong></div>
+          <span class="history-note">89 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:92" aria-label="Deal Score 92 out of 100">
+            <strong>92</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>88% positive from 87.6k reviews, and it is a frankly silly 85% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=hBzFkwXV5CCVfkjbLZexRx1fhOrxUk1Idvnte3OGtao%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="8.99">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:220200" style="--delay:140ms">
+      <a class="card-image" href="games/kerbal-space-program-220200.html" aria-label="Price details for Kerbal Space Program"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/220200/header.jpg?t=1738037585" alt="Kerbal Space Program cover art" loading="lazy" decoding="async"><span class="discount-badge">−75%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>Indie</span></div>
+        <a class="card-title" href="games/kerbal-space-program-220200.html">Kerbal Space Program</a>
+        <div class="card-reviews"><span class="review-score">96% positive</span><span>82.9K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$39.99</span><strong>$9.99</strong></div>
+          <span class="history-note">85 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:92" aria-label="Deal Score 92 out of 100">
+            <strong>92</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>96% positive from 82.9k reviews, with a hefty 75% off on top.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=7E%2BHosTsAjJoLf%2BRqHz13tbMvjXTcnLRyWIFlkKv8SE%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="9.99">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:646570" style="--delay:168ms">
+      <a class="card-image" href="games/slay-the-spire-646570.html" aria-label="Price details for Slay the Spire"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/646570/header.jpg?t=1774015376" alt="Slay the Spire cover art" loading="lazy" decoding="async"><span class="discount-badge">−75%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>Indie</span></div>
+        <a class="card-title" href="games/slay-the-spire-646570.html">Slay the Spire</a>
+        <div class="card-reviews"><span class="review-score">97% positive</span><span>76.4K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$24.99</span><strong>$6.24</strong></div>
+          <span class="history-note">80 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:92" aria-label="Deal Score 92 out of 100">
+            <strong>92</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>97% positive from 76.4k reviews, with a hefty 75% off on top.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=aT6le8%2F%2Bg0jydNvrXNLRHxRqZmjcK%2BSKlEr44DBfRws%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="6.24">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:1328670" style="--delay:196ms">
+      <a class="card-image" href="games/mass-effect-legendary-edition-1328670.html" aria-label="Price details for Mass Effect Legendary Edition"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1328670/header.jpg?t=1777395134" alt="Mass Effect Legendary Edition cover art" loading="lazy" decoding="async"><span class="discount-badge">−85%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>Action</span></div>
+        <a class="card-title" href="games/mass-effect-legendary-edition-1328670.html">Mass Effect Legendary Edition</a>
+        <div class="card-reviews"><span class="review-score">91% positive</span><span>41K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$59.99</span><strong>$8.99</strong></div>
+          <span class="history-note">91 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:92" aria-label="Deal Score 92 out of 100">
+            <strong>92</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>91% positive from 41k reviews, and it is a frankly silly 85% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=y3FMzZnEmRe2zOrsfxcD3uHBpntwe%2BE64Ug0enLeGlU%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="8.99">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:1426210" style="--delay:224ms">
+      <a class="card-image" href="games/it-takes-two-1426210.html" aria-label="Price details for It Takes Two"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1426210/header.jpg?t=1777395376" alt="It Takes Two cover art" loading="lazy" decoding="async"><span class="discount-badge">−70%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>Action</span></div>
+        <a class="card-title" href="games/it-takes-two-1426210.html">It Takes Two</a>
+        <div class="card-reviews"><span class="review-score">95% positive</span><span>47.5K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$39.99</span><strong>$11.99</strong></div>
+          <span class="history-note">82 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:91" aria-label="Deal Score 91 out of 100">
+            <strong>91</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>95% positive from 47.5k reviews, and 70% off is a proper cut.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=yK9aqIEJjipAe5hoxP4skEqH3Sp98rdVBdGO7TlkTm4%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="11.99">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:3830" style="--delay:252ms">
+      <a class="card-image" href="games/psychonauts-3830.html" aria-label="Price details for Psychonauts"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3830/header.jpg?t=1776379310" alt="Psychonauts cover art" loading="lazy" decoding="async"><span class="discount-badge">−90%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>Action</span></div>
+        <a class="card-title" href="games/psychonauts-3830.html">Psychonauts</a>
+        <div class="card-reviews"><span class="review-score">95% positive</span><span>8.9K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$9.99</span><strong>$0.99</strong></div>
+          <span class="history-note">97 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:91" aria-label="Deal Score 91 out of 100">
+            <strong>91</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>95% positive from 8.9k reviews, and it is a frankly silly 90% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=%2FUEehLFF%2FwAwtRg9Acvm0%2F0mq9ayqJdh8Ue6CH30eBU%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="0.99">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:1172380" style="--delay:280ms">
+      <a class="card-image" href="games/star-wars-jedi-fallen-order-1172380.html" aria-label="Price details for STAR WARS Jedi: Fallen Order"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1172380/header.jpg?t=1781890314" alt="STAR WARS Jedi: Fallen Order cover art" loading="lazy" decoding="async"><span class="discount-badge">−80%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>Action</span></div>
+        <a class="card-title" href="games/star-wars-jedi-fallen-order-1172380.html">STAR WARS Jedi: Fallen Order</a>
+        <div class="card-reviews"><span class="review-score">88% positive</span><span>83.4K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$39.99</span><strong>$7.99</strong></div>
+          <span class="history-note">85 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:90" aria-label="Deal Score 90 out of 100">
+            <strong>90</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>88% positive from 83.4k reviews, with a hefty 80% off on top.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=DK%2FoOkEGPL9Ze9EcZB%2FExtAP69L66KXLBNIYQq7pP6I%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="7.99">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:1222680" style="--delay:308ms">
+      <a class="card-image" href="games/need-for-speed-heat-1222680.html" aria-label="Price details for Need for Speed Heat"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1222680/header.jpg?t=1777414224" alt="Need for Speed Heat cover art" loading="lazy" decoding="async"><span class="discount-badge">−95%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>Action</span></div>
+        <a class="card-title" href="games/need-for-speed-heat-1222680.html">Need for Speed Heat</a>
+        <div class="card-reviews"><span class="review-score">84% positive</span><span>51.4K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$69.99</span><strong>$3.49</strong></div>
+          <span class="history-note">93 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:90" aria-label="Deal Score 90 out of 100">
+            <strong>90</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>84% positive from 51.4k reviews, and it is a frankly silly 95% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=I%2BKyFHIkqTza%2FEM3EEeICP%2F0UyJGfB%2FXej9zQ%2BxEf6I%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="3.49">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:552500" style="--delay:336ms">
+      <a class="card-image" href="games/warhammer-vermintide-2-552500.html" aria-label="Price details for Warhammer: Vermintide 2"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/552500/header.jpg?t=1764008361" alt="Warhammer: Vermintide 2 cover art" loading="lazy" decoding="async"><span class="discount-badge">−85%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>GamersGate</span><span>Action</span></div>
+        <a class="card-title" href="games/warhammer-vermintide-2-552500.html">Warhammer: Vermintide 2</a>
+        <div class="card-reviews"><span class="review-score">90% positive</span><span>43.9K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$29.99</span><strong>$4.50</strong></div>
+          <span class="history-note">85 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:90" aria-label="Deal Score 90 out of 100">
+            <strong>90</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>90% positive from 43.9k reviews, and it is a frankly silly 85% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=cefzCdccqU80CT5s97kRJit9n5KkmTKUEF7%2FIss6ad0%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="GamersGate" data-price="4.5">View at GamersGate</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:213670" style="--delay:336ms">
+      <a class="card-image" href="games/south-park-the-stick-of-truth-213670.html" aria-label="Price details for South Park: The Stick of Truth"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/213670/header.jpg?t=1777994062" alt="South Park: The Stick of Truth cover art" loading="lazy" decoding="async"><span class="discount-badge">−80%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>Action</span></div>
+        <a class="card-title" href="games/south-park-the-stick-of-truth-213670.html">South Park: The Stick of Truth</a>
+        <div class="card-reviews"><span class="review-score">97% positive</span><span>30.6K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$29.99</span><strong>$5.99</strong></div>
+          <span class="history-note">84 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:90" aria-label="Deal Score 90 out of 100">
+            <strong>90</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>97% positive from 30.6k reviews, with a hefty 80% off on top.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=sOazPDicrSVys0B3QPEZ9VMWnUHCxIPfcDivxpIHMmg%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="5.99">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:1238860" style="--delay:336ms">
+      <a class="card-image" href="games/battlefield-4-1238860.html" aria-label="Price details for Battlefield 4"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1238860/header.jpg?t=1777391884" alt="Battlefield 4 cover art" loading="lazy" decoding="async"><span class="discount-badge">−90%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>Action</span></div>
+        <a class="card-title" href="games/battlefield-4-1238860.html">Battlefield 4</a>
+        <div class="card-reviews"><span class="review-score">83% positive</span><span>29.3K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$39.99</span><strong>$3.99</strong></div>
+          <span class="history-note">94 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:90" aria-label="Deal Score 90 out of 100">
+            <strong>90</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>83% positive from 29.3k reviews, and it is a frankly silly 90% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=jorrBw%2B6tBsGXOvIN8XZmHUu3u3GwkMbrIugL3Qo4rE%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="3.99">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:20920" style="--delay:336ms">
+      <a class="card-image" href="games/the-witcher-2-assassins-of-kings-enhanced-edition-20920.html" aria-label="Price details for The Witcher 2: Assassins of Kings Enhanced Edition"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/20920/header.jpg?t=1761657279" alt="The Witcher 2: Assassins of Kings Enhanced Edition cover art" loading="lazy" decoding="async"><span class="discount-badge">−85%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>RPG</span></div>
+        <a class="card-title" href="games/the-witcher-2-assassins-of-kings-enhanced-edition-20920.html">The Witcher 2: Assassins of Kings Enhanced Edition</a>
+        <div class="card-reviews"><span class="review-score">87% positive</span><span>26K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$19.99</span><strong>$2.99</strong></div>
+          <span class="history-note">92 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:90" aria-label="Deal Score 90 out of 100">
+            <strong>90</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>87% positive from 26k reviews, and it is a frankly silly 85% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=8JWQ51DVapSJnGVviMI0Hgu4YFqxme2sBdLD3vh6dZw%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="2.99">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:480490" style="--delay:336ms">
+      <a class="card-image" href="games/prey-480490.html" aria-label="Price details for Prey"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/480490/9ed715575a2205350e937e5e6d25b3e8a494605e/header.jpg?t=1784141088" alt="Prey cover art" loading="lazy" decoding="async"><span class="discount-badge">−83%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>GreenManGaming</span><span>Action</span></div>
+        <a class="card-title" href="games/prey-480490.html">Prey</a>
+        <div class="card-reviews"><span class="review-score">91% positive</span><span>22.1K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$29.99</span><strong>$5.16</strong></div>
+          <span class="history-note">89 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:90" aria-label="Deal Score 90 out of 100">
+            <strong>90</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>91% positive from 22.1k reviews, with a hefty 83% off on top.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=x4NfDL0riAtO9u7uqgL3yLz8DFuHNM6q72r%2FQx3B2xw%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="GreenManGaming" data-price="5.16">View at GreenManGaming</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:403640" style="--delay:336ms">
+      <a class="card-image" href="games/dishonored-2-403640.html" aria-label="Price details for Dishonored 2"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/403640/header.jpg?t=1750785918" alt="Dishonored 2 cover art" loading="lazy" decoding="async"><span class="discount-badge">−83%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>GreenManGaming</span><span>Action</span></div>
+        <a class="card-title" href="games/dishonored-2-403640.html">Dishonored 2</a>
+        <div class="card-reviews"><span class="review-score">88% positive</span><span>19.7K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$29.99</span><strong>$5.16</strong></div>
+          <span class="history-note">92 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:90" aria-label="Deal Score 90 out of 100">
+            <strong>90</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>88% positive from 19.7k reviews, with a hefty 83% off on top.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=uXABibrHSrtAd9t8Uyw%2FgMbE87l4dQJBY%2Bbghnysj48%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="GreenManGaming" data-price="5.16">View at GreenManGaming</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:47780" style="--delay:336ms">
+      <a class="card-image" href="games/dead-space-2-47780.html" aria-label="Price details for Dead Space 2"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/47780/header.jpg?t=1782255426" alt="Dead Space 2 cover art" loading="lazy" decoding="async"><span class="discount-badge">−80%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Steam</span><span>Action</span></div>
+        <a class="card-title" href="games/dead-space-2-47780.html">Dead Space 2</a>
+        <div class="card-reviews"><span class="review-score">93% positive</span><span>11.8K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$19.99</span><strong>$3.99</strong></div>
+          <span class="history-note">91 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:90" aria-label="Deal Score 90 out of 100">
+            <strong>90</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>93% positive from 11.8k reviews, with a hefty 80% off on top.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=Qo2D1P2lfHX6uag%2FLp6sSJpcxsTBKTHiDRPPsx2%2Fluw%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Steam" data-price="3.99">View at Steam</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:418240" style="--delay:336ms">
+      <a class="card-image" href="games/shadow-tactics-blades-of-the-shogun-418240.html" aria-label="Price details for Shadow Tactics: Blades of the Shogun"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/418240/header.jpg?t=1770912397" alt="Shadow Tactics: Blades of the Shogun cover art" loading="lazy" decoding="async"><span class="discount-badge">−91%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>WinGameStore</span><span>Indie</span></div>
+        <a class="card-title" href="games/shadow-tactics-blades-of-the-shogun-418240.html">Shadow Tactics: Blades of the Shogun</a>
+        <div class="card-reviews"><span class="review-score">94% positive</span><span>9.1K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$39.99</span><strong>$3.49</strong></div>
+          <span class="history-note">91 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:90" aria-label="Deal Score 90 out of 100">
+            <strong>90</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>94% positive from 9.1k reviews, and it is a frankly silly 91% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=n6QCiG9FKdQSNO3qxF9g2yOdez8wpOkbnc%2FhrgVXTDw%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="WinGameStore" data-price="3.49">View at WinGameStore</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:2738490" style="--delay:336ms">
+      <div class="card-image"><img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2738490/ecec1d3be3b0f67955a98dff3788bcdbd63260ba/capsule_231x87.jpg?t=1782554560" alt="Sol Cesto cover art" loading="lazy" decoding="async"><span class="discount-badge">−100%</span></div>
+      <div class="card-content">
+        <div class="card-overline"><span>Epic Games Store</span><span>PC game</span></div>
+        <span class="card-title">Sol Cesto</span>
+        <div class="card-reviews"><span class="review-score">89% positive</span><span>2.1K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$13.99</span><strong>Free</strong></div>
+          <span class="history-note">100 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:90" aria-label="Deal Score 90 out of 100">
+            <strong>90</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>89% positive from 2.1k reviews, and it is a frankly silly 100% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=C%2Ba0NHhHx0ZANJVrFuwoccpMRdhc8Px210FAZDtsQgE%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Epic Games Store" data-price="0">View at Epic Games Store</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:1608640" style="--delay:336ms">
+      <a class="card-image" href="games/otxo-1608640.html" aria-label="Price details for OTXO"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1608640/header.jpg?t=1775071242" alt="OTXO cover art" loading="lazy" decoding="async"><span class="discount-badge">−100%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>Epic Games Store</span><span>Action</span></div>
+        <a class="card-title" href="games/otxo-1608640.html">OTXO</a>
+        <div class="card-reviews"><span class="review-score">94% positive</span><span>1.8K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$14.99</span><strong>Free</strong></div>
+          <span class="history-note">100 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:90" aria-label="Deal Score 90 out of 100">
+            <strong>90</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>94% positive from 1.8k reviews, and it is a frankly silly 100% off.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=HO84tysXUTzWl0KzvLHWFOUhvaGW7EgjmpsP17CO8PI%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Epic Games Store" data-price="0">View at Epic Games Store</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:489830" style="--delay:336ms">
+      <a class="card-image" href="games/the-elder-scrolls-v-skyrim-special-edition-489830.html" aria-label="Price details for The Elder Scrolls V: Skyrim Special Edition"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/489830/header.jpg?t=1753715778" alt="The Elder Scrolls V: Skyrim Special Edition cover art" loading="lazy" decoding="async"><span class="discount-badge">−78%</span></a>
+      <div class="card-content">
+        <div class="card-overline"><span>GreenManGaming</span><span>RPG</span></div>
+        <a class="card-title" href="games/the-elder-scrolls-v-skyrim-special-edition-489830.html">The Elder Scrolls V: Skyrim Special Edition</a>
+        <div class="card-reviews"><span class="review-score">94% positive</span><span>128.9K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$39.99</span><strong>$8.60</strong></div>
+          <span class="history-note">79 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:89" aria-label="Deal Score 89 out of 100">
+            <strong>89</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>94% positive from 128.9k reviews, with a hefty 78% off on top.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=fNGljhuOtZqYaGb%2FtQWWmluGDSsQw5MMoeWI48lW8PM%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="GreenManGaming" data-price="8.6">View at GreenManGaming</a>
+        </div>
+      </div>
+    </article>
+      <article class="deal-card" data-key="steam:244210" style="--delay:336ms">
+      <div class="card-image"><img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/244210/d63fc060c13548861637663b085339a4d9a37781/capsule_231x87.jpg?t=1782208838" alt="Assetto Corsa cover art" loading="lazy" decoding="async"><span class="discount-badge">−79%</span></div>
+      <div class="card-content">
+        <div class="card-overline"><span>Fanatical</span><span>PC game</span></div>
+        <span class="card-title">Assetto Corsa</span>
+        <div class="card-reviews"><span class="review-score">93% positive</span><span>59.9K reviews</span></div>
+        <div class="card-price-row">
+          <div><span class="old-price">$19.99</span><strong>$4.29</strong></div>
+          <span class="history-note">79 price-value signal</span>
+        </div>
+        <div class="score-row">
+          <div class="score-ring elite" style="--score:89" aria-label="Deal Score 89 out of 100">
+            <strong>89</strong><span>score</span>
+          </div>
+          <div><strong>Excellent value</strong><p>93% positive from 59.9k reviews, with a hefty 79% off on top.</p></div>
+        </div>
+        <div class="card-actions">
+          <a class="button button-card" href="https://www.cheapshark.com/redirect?dealID=bpWIIklfTIfOxltewtBvtpdKtEtOl1QP10E9XwhyiZ4%3D" target="_blank" rel="noopener noreferrer sponsored" data-track-deal="homepage_card" data-store="Fanatical" data-price="4.29">View at Fanatical</a>
+        </div>
+      </div>
+    </article><!--LR:deals:end--></div>
       <div class="load-more-wrap"><button class="button button-secondary" id="loadMore" type="button" hidden>Show more deals</button></div>
     </section>
 
@@ -265,7 +776,7 @@
   <script src="lib/redirect.js?v=1"></script>
   <script src="lib/analytics.js?v=2"></script>
   <script src="lib/auth-controller.js?v=1"></script>
-  <script src="app.js?v=25"></script>
+  <script src="app.js?v=26"></script>
   <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

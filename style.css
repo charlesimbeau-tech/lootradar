@@ -408,6 +408,11 @@ select option { background-color: var(--surface); color: var(--text); }
   font: 800 1.12rem/1.25 var(--display); letter-spacing: -.025em;
 }
 .card-title:hover { color: var(--mint); }
+/* The prerendered grid uses links and inert elements where the hydrated grid
+   uses buttons, so they have to inherit the same look. */
+a.card-title, a.card-image { text-decoration: none; color: inherit; }
+span.card-title { cursor: default; }
+div.card-image { cursor: default; }
 .card-reviews { display: flex; flex-wrap: wrap; gap: .45rem; color: var(--text-3); font-size: .72rem; }
 .card-reviews .review-score { color: var(--text-2); font-weight: 700; }
 .card-price-row { display: flex; align-items: flex-end; justify-content: space-between; gap: .5rem; margin: 1rem 0; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }
@@ -434,6 +439,7 @@ select option { background-color: var(--surface); color: var(--text); }
 .state-card .state-icon { display: grid; place-items: center; width: 58px; height: 58px; margin: 0 auto 1rem; border: 1px solid var(--line-bright); border-radius: 50%; color: var(--mint); font-weight: 800; }
 .state-card h3 { margin: 0; font: 800 1.5rem/1.2 var(--display); }
 .state-card p { color: var(--text-3); }
+.state-note { margin: 0 0 1.15rem; padding: .85rem 1rem; border: 1px solid var(--line); border-radius: var(--radius); color: var(--text-3); font-size: .82rem; }
 
 .principles {
   width: min(1320px, calc(100% - 40px)); margin: 0 auto 6rem;

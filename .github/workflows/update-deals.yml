@@ -60,6 +60,9 @@ jobs:
       - name: Build search landing pages
         run: node scripts/build-search-pages.js
 
+      - name: Bake the homepage no-JavaScript fallback
+        run: node scripts/build-home-fallback.js
+
       - name: Generate RSS feed
         run: node scripts/generate-rss.js
 
@@ -83,6 +86,7 @@ jobs:
           [ -f games-catalog-large.json ] && git add games-catalog-large.json || true
           [ -d deals ] && git add deals || true
           [ -d games ] && git add games || true
+          git add index.html
           [ -f feed.xml ] && git add feed.xml || true
           [ -f sitemap.xml ] && git add sitemap.xml || true
           git add blog/game-price-comparison.html

@@ -171,10 +171,14 @@
     }
   }
 
-  async function loadDeals() {
-    $('#loading').hidden = false;
+  // build-home-fallback.js bakes the current default view into index.html. On
+  // first load we leave it on screen instead of clearing to a skeleton, so the
+  // page never flashes empty and a failed fetch still shows real prices.
+  async function loadDeals({ keepPrerendered = false } = {}) {
+    const prerendered = keepPrerendered && $('#deals').children.length > 0;
+    $('#loading').hidden = prerendered;
     $('#errorState').hidden = true;
-    $('#deals').innerHTML = '';
+    if (!prerendered) $('#deals').innerHTML = '';
     try {
       const bucket = Math.floor(Date.now() / 3600000);
       const [base, enriched] = await Promise.all([
@@ -196,6 +200,12 @@
       $('#statStores').textContent = Object.keys(state.stores).length;
     } catch (error) {
       console.error('LootRadar failed to load deal data:', error);
+      if (prerendered) {
+        // The baked-in snapshot is still on screen and still accurate as of the
+        // last publish, so say that rather than claiming nothing loaded.
+        $('#errorState').querySelector('h3').textContent = 'Showing the last published snapshot';
+        $('#errorState').querySelector('p').textContent = 'The live refresh did not come through. These prices are from the most recent published sweep, and search and filters are unavailable until it does.';
+      }
       $('#errorState').hidden = false;
     } finally {
       $('#loading').hidden = true;
@@ -585,7 +595,7 @@
     });
     $('#resetFilters').addEventListener('click', resetFilters);
     $('#clearEmpty').addEventListener('click', resetFilters);
-    $('#retryLoad').addEventListener('click', loadDeals);
+    $('#retryLoad').addEventListener('click', () => loadDeals());
     $('#loadMore').addEventListener('click', () => {
       state.shown += PAGE_SIZE;
       render();
@@ -663,5 +673,5 @@
   bindEvents();
   updateWatchCount();
   initAccountSync();
-  loadDeals();
+  loadDeals({ keepPrerendered: true });
 })();
