@@ -1,0 +1,72 @@
+{
+  "checkedAt": "2026-07-29T17:06:58.7490259Z",
+  "checkedAtEastern": "2026-07-29 1:06:58 PM EDT",
+  "currency": "USD",
+  "source": {
+    "name": "CheapShark API",
+    "dealSearchEndpoint": "https://www.cheapshark.com/api/1.0/deals",
+    "storeEndpoint": "https://www.cheapshark.com/api/1.0/stores",
+    "artworkSource": "Steam app details API",
+    "artworkEndpoint": "https://store.steampowered.com/api/appdetails"
+  },
+  "disclaimer": "Prices checked July 29, 2026 and may change.",
+  "deals": [
+    {
+      "title": "Psychonauts",
+      "displayTitle": "PSYCHONAUTS",
+      "salePrice": 0.99,
+      "normalPrice": 9.99,
+      "savingsPercent": 90,
+      "storeId": "1",
+      "storeName": "Steam",
+      "steamAppId": "3830",
+      "metacriticScore": 87,
+      "steamRatingPercent": 95,
+      "steamRatingCount": 8931,
+      "steamRatingText": "Overwhelmingly Positive",
+      "dealRating": 10.0,
+      "dealId": "%2FUEehLFF%2FwAwtRg9Acvm0%2F0mq9ayqJdh8Ue6CH30eBU%3D",
+      "dealUrl": "https://www.cheapshark.com/redirect?dealID=%2FUEehLFF%2FwAwtRg9Acvm0%2F0mq9ayqJdh8Ue6CH30eBU%3D",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3830/header.jpg?t=1776379310",
+      "backgroundImage": "https://store.akamai.steamstatic.com/images/storepagebackground/app/3830?t=1776379310"
+    },
+    {
+      "title": "The Witcher 3: Wild Hunt",
+      "displayTitle": "THE WITCHER 3",
+      "salePrice": 7.99,
+      "normalPrice": 39.99,
+      "savingsPercent": 80,
+      "storeId": "1",
+      "storeName": "Steam",
+      "steamAppId": "292030",
+      "metacriticScore": 93,
+      "steamRatingPercent": 96,
+      "steamRatingCount": 238778,
+      "steamRatingText": "Overwhelmingly Positive",
+      "dealRating": 9.4,
+      "dealId": "zm2ORJ1RIWrq7UFFCs9J4ps4rgsNUV7FTSnWxzxxj8Q%3D",
+      "dealUrl": "https://www.cheapshark.com/redirect?dealID=zm2ORJ1RIWrq7UFFCs9J4ps4rgsNUV7FTSnWxzxxj8Q%3D",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",
+      "backgroundImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/94a3c7f9db82538b752312f6e17f912f0899ca30/page_bg_raw.jpg?t=1768303991"
+    },
+    {
+      "title": "Disco Elysium - The Final Cut",
+      "displayTitle": "DISCO ELYSIUM",
+      "salePrice": 8.88,
+      "normalPrice": 39.99,
+      "savingsPercent": 78,
+      "storeId": "30",
+      "storeName": "IndieGala",
+      "steamAppId": "632470",
+      "metacriticScore": 97,
+      "steamRatingPercent": 92,
+      "steamRatingCount": 57107,
+      "steamRatingText": "Very Positive",
+      "dealRating": 9.3,
+      "dealId": "3Y%2Fp3MbsSuCo%2FLOFoOL7cnlYwZl1qBKQCMsAaqZHRl8%3D",
+      "dealUrl": "https://www.cheapshark.com/redirect?dealID=3Y%2Fp3MbsSuCo%2FLOFoOL7cnlYwZl1qBKQCMsAaqZHRl8%3D",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632470/816ea59d6d8ac525f79a07c3a7afa94eddb3437c/header.jpg?t=1780913406",
+      "backgroundImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632470/page_bg_raw.jpg?t=1780913406"
+    }
+  ]
+}

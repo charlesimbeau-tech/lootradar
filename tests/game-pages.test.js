@@ -57,7 +57,13 @@ test('keeps only high-confidence indexable games', () => {
   ]);
 
   assert.deepEqual(selected.map(deal => deal.title), ['Disco Elysium: The Final Cut']);
-  assert.equal(GAME_PAGE_LIMIT, 24);
+  // The quality thresholds above decide what deserves a page. The limit is only
+  // a runaway guard, and holding it near the old 24 threw away hundreds of
+  // long-tail pages that had already cleared the bar.
+  assert.ok(
+    GAME_PAGE_LIMIT >= 100,
+    `GAME_PAGE_LIMIT of ${GAME_PAGE_LIMIT} rations pages that already qualify`
+  );
 });
 
 test('sorts candidates by Deal Score and review confidence before applying the limit', () => {

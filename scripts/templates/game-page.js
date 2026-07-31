@@ -1,6 +1,6 @@
 'use strict';
 
-const { gamePageRoute } = require('../../lib/game-pages.js');
+const { GAME_HUB_LIMIT, gamePageRoute } = require('../../lib/game-pages.js');
 const SITE_ORIGIN = 'https://thelootradar.com';
 
 function escapeHTML(value) {
@@ -29,12 +29,87 @@ function formatSnapshot(value) {
     }).format(date)
   };
 }
+
+// Day precision on purpose. These pages are rebuilt eight times a day; stamping
+// the minute would rewrite every one of them on every refresh even when nothing
+// about the deal moved, which is pure git churn for no reader benefit.
+function formatSnapshotDay(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return { iso: '', label: 'the latest saved snapshot' };
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).format(date);
+  return {
+    iso: parts,
+    label: new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric'
+    }).format(date)
+  };
+}
+
+function renderRelated(related) {
+  if (!related || !related.length) return '';
+  const items = related.map(item => `<li><a href="${escapeHTML(gamePageRoute(item))}">${escapeHTML(item.title)}</a> <span>${formatPrice(item.salePrice)}</span></li>`).join('');
+  return `<section class="game-related-games"><h2>Other games that cleared the same bar</h2><ul>${items}</ul></section>`;
+}
 function genreText(deal) {
   const genres = Array.isArray(deal.genres) ? deal.genres.filter(Boolean).slice(0, 4) : [];
   return genres.length ? genres.join(', ') : 'PC game';
 }
+// Hundreds of pages sharing one paragraph reads as filler, to people and to
+// crawlers. Lead with whichever signal is actually doing the work on this deal.
 function selectionReason(deal) {
-  return `A Deal Score of ${deal.dealScore}, backed by ${deal.userRating}% positive player feedback across ${formatCount(deal.reviewCount)} reviews. That is a lot of people agreeing.`;
+  const score = Number(deal.dealScore);
+  const rating = Number(deal.userRating);
+  const reviews = Number(deal.reviewCount);
+  const discount = Number(deal.discount);
+  const year = Number(deal.releaseYear);
+  const count = formatCount(reviews);
+
+  const lead = (() => {
+    if (rating >= 95 && reviews >= 10000) {
+      return `${rating}% of ${count} players rated this positively. Agreement at that scale is rare enough to be worth trusting.`;
+    }
+    if (reviews >= 100000) {
+      return `${count} people have reviewed this and ${rating}% of them came away happy. Whatever else is true, it is not an unknown quantity.`;
+    }
+    if (rating >= 90 && reviews < 5000) {
+      return `${rating}% positive across ${count} reviews. A smaller crowd than the household names get, and a markedly happier one.`;
+    }
+    if (discount >= 85) {
+      return `${discount}% off, and unlike most cuts that size it is attached to a game holding ${rating}% positive from ${count} reviews.`;
+    }
+    if (rating >= 85) {
+      return `${rating}% positive from ${count} reviews, which is the kind of number that survives a few years of people trying to find fault.`;
+    }
+    return `${rating}% positive across ${count} reviews, enough evidence to take the price seriously.`;
+  })();
+
+  const context = (() => {
+    if (Number.isFinite(year) && year > 0 && year <= 2016) {
+      return ` Released in ${year} and still scoring ${score} here, which says more than a launch-week rating would.`;
+    }
+    if (discount <= 30 && score >= 75) {
+      return ` The discount is modest at ${discount}%, so the score of ${score} is carried by the game rather than the price tag.`;
+    }
+    if (score >= 85) {
+      return ` A Deal Score of ${score} puts it near the top of what the current snapshot has to offer.`;
+    }
+    return ` That works out to a Deal Score of ${score}.`;
+  })();
+
+  return lead + context;
+}
+
+// Store type changes what can actually go wrong at checkout, so say the useful
+// thing rather than the generic one.
+function storeCaveat(storeName) {
+  const store = String(storeName || '').toLowerCase();
+  if (store.includes('steam')) return 'Confirm the edition on the Steam page; region pricing and bundle contents vary.';
+  if (store.includes('epic')) return 'This one activates on the Epic Games Store, which means a separate launcher and account.';
+  if (store.includes('gog')) return 'GOG builds are DRM-free, so this copy stays yours independent of any launcher.';
+  if (store.includes('humble')) return 'Humble delivers a key you redeem elsewhere; check which platform it activates on.';
+  return `${storeName} usually delivers a key for another launcher, so check where it activates and how fast the key arrives.`;
 }
 function schemaForGame(deal, canonical) {
   return { '@context': 'https://schema.org', '@graph': [
@@ -70,11 +145,11 @@ function footer() {
   return `<footer><div class="footer-inner"><div><a class="nav-brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a><p>Games worth playing. Prices worth paying.</p></div><div class="footer-links"><a href="../methodology.html">Scoring</a><a href="index.html">Game price checks</a><a href="../deals/index.html">Deals</a><a href="../blog.html">Guides</a><a href="../about.html">About</a><a href="../privacy.html">Privacy</a><a href="../terms.html">Terms</a></div></div><p class="footer-disclosure">LootRadar is funded by advertising. Deal links and prices both come via CheapShark, which may earn a commission from the retailer, and prices can change once you leave. Neither has ever moved a Deal Score.</p></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../supabase-config.js"></script><script src="../lib/site-nav.js?v=1"></script><script src="../lib/auth-nav.js?v=1"></script><script src="../lib/analytics.js?v=2"></script><script>document.addEventListener('click',function(event){var link=event.target.closest('[data-track-deal]');if(!link||!window.LootRadarAnalytics)return;window.LootRadarAnalytics.track('deal_click',{surface:link.dataset.trackSurface,store:link.dataset.trackStore,priceBucket:window.LootRadarAnalytics.priceBucket(link.dataset.trackPrice)});});</script><script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>`;
 }
-function renderGamePage(deal, snapshotInput = {}) {
+function renderGamePage(deal, snapshotInput = {}, related = []) {
   const route = gamePageRoute(deal);
   if (!route) throw new TypeError('A title and Steam app ID are required.');
   const canonical = `${SITE_ORIGIN}/games/${route}`;
-  const snapshot = formatSnapshot(snapshotInput.updatedAt);
+  const snapshot = formatSnapshotDay(snapshotInput.updatedAt);
   const title = `${deal.title} PC deal and price check | LootRadar`;
   const description = `${deal.title} is ${formatPrice(deal.salePrice)} at ${deal.storeName} in the latest LootRadar sweep. Here is the Deal Score, the player rating, and what to check before you buy.`;
   const image = /^https?:\/\//i.test(String(deal.image || '')) ? deal.image : `${SITE_ORIGIN}/public/og.png`;
@@ -85,17 +160,23 @@ function renderGamePage(deal, snapshotInput = {}) {
   <header class="game-hero"><div class="game-art">${art}</div><div class="game-hero-copy"><p class="section-kicker">This one cleared the quality bar</p><h1>${escapeHTML(deal.title)} PC deal and price check</h1><p class="game-lede">Today&rsquo;s price, the review evidence behind it, and the reason it ranked where it did.</p><div class="game-tags">${tags.map(tag => `<span>${escapeHTML(tag)}</span>`).join('')}</div></div></header>
   <section class="offer-panel" aria-labelledby="currentOffer"><div><p class="offer-label">The offer we saved</p><h2 id="currentOffer">${formatPrice(deal.salePrice)} at ${escapeHTML(deal.storeName)}</h2><p>That is ${escapeHTML(deal.discount)}% off the listed normal price of ${formatPrice(deal.normalPrice)}.</p><time${snapshot.iso ? ` datetime="${snapshot.iso}"` : ''}>Prices checked ${escapeHTML(snapshot.label)}</time></div><a class="offer-button" href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(deal.dealID))}" target="_blank" rel="sponsored noopener noreferrer" data-track-deal data-track-surface="game_price_page" data-track-store="${escapeHTML(deal.storeName)}" data-track-price="${escapeHTML(deal.salePrice)}">Check price at ${escapeHTML(deal.storeName)}</a></section>
   <section class="evidence-grid" aria-label="Deal evidence"><article><span>Deal Score</span><strong>${escapeHTML(deal.dealScore)}<small>/100</small></strong><p>Our combined ranking signal. Emphatically not a review score.</p></article><article><span>Player rating</span><strong>${escapeHTML(deal.userRating)}<small>% positive</small></strong><p>Out of ${formatCount(deal.reviewCount)} recorded player reviews.</p></article><article><span>Price cut</span><strong>${escapeHTML(deal.discount)}<small>% off</small></strong><p>Normally ${formatPrice(deal.normalPrice)}, currently ${formatPrice(deal.salePrice)}.</p></article></section>
-  <section class="game-context"><div><p class="section-kicker">Why it made the cut</p><h2>There is real evidence behind this price</h2><p>${escapeHTML(selectionReason(deal))}</p><p>These permanent pages keep out add-ons, bundles, Early Access listings, and anything running on a thin review signal.</p></div><aside><h2>Check these before you buy</h2><ul><li>The final price and the exact edition, on the store page.</li><li>Platform, launcher, region, and activation requirements.</li><li>Whether you will actually play it. The discount cannot answer that one.</li></ul></aside></section>
+  <section class="game-context"><div><p class="section-kicker">Why it made the cut</p><h2>There is real evidence behind this price</h2><p>${escapeHTML(selectionReason(deal))}</p><p>These permanent pages keep out add-ons, bundles, Early Access listings, and anything running on a thin review signal.</p></div><aside><h2>Check these before you buy</h2><ul><li>${escapeHTML(storeCaveat(deal.storeName))}</li><li>The final price and the exact edition, on the store page.</li><li>Whether you will actually play it. The discount cannot answer that one.</li></ul></aside></section>
   <section class="snapshot-note"><h2>About this price check</h2><p>This page shows one saved offer from the latest data refresh. It makes no claim about this being the lowest price the game has ever reached, because we cannot prove that. Store prices and availability both move between refreshes.</p></section>
+  ${renderRelated(related)}
   <nav class="game-related" aria-label="Related pages"><a href="index.html">Browse more game price checks</a><a href="../deals/index.html">Browse live deal lists</a><a href="../methodology.html">See how Deal Scores work</a><a href="../blog.html">Read buying guides</a></nav></main>${footer()}</body></html>`;
 }
-function renderGameHub(deals, snapshotInput = {}) {
+function renderGameHub(allDeals, snapshotInput = {}) {
+  // Listing every page here would ship a third of a megabyte of cards to anyone
+  // opening the hub. The full set stays reachable through the sitemap, the deal
+  // collections, and the related links on each page.
+  const deals = (allDeals || []).slice(0, GAME_HUB_LIMIT);
+  const totalPages = (allDeals || []).length;
   const canonical = `${SITE_ORIGIN}/games/index.html`;
-  const snapshot = formatSnapshot(snapshotInput.updatedAt);
+  const snapshot = formatSnapshotDay(snapshotInput.updatedAt);
   const title = 'PC game deals with price and quality checks | LootRadar';
   const description = 'Permanent price-check pages for games that cleared a stricter bar: strong player ratings, thousands of reviews, and a Deal Score of 70 or better.';
   const schema = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: title, url: canonical, description, ...(snapshot.iso ? { dateModified: snapshot.iso } : {}), mainEntity: { '@type': 'ItemList', numberOfItems: deals.length, itemListElement: deals.map((deal, index) => ({ '@type': 'ListItem', position: index + 1, name: deal.title, url: `${SITE_ORIGIN}/games/${gamePageRoute(deal)}` })) } };
   const cards = deals.map(deal => `<article class="game-card"><p>${escapeHTML(deal.storeName)} <span>${escapeHTML(deal.dealScore)} Deal Score</span></p><h2><a href="${escapeHTML(gamePageRoute(deal))}">${escapeHTML(deal.title)}</a></h2><div><strong>${formatPrice(deal.salePrice)}</strong><s>${formatPrice(deal.normalPrice)}</s><span>${escapeHTML(deal.discount)}% off</span></div><p>${escapeHTML(deal.userRating)}% positive from ${formatCount(deal.reviewCount)} reviews</p><a class="card-detail-link" href="${escapeHTML(gamePageRoute(deal))}">See the full breakdown</a></article>`).join('');
-  return `<!doctype html><html lang="en"><head>${pageHead(title, description, canonical, `${SITE_ORIGIN}/public/og.png`, schema)}</head><body>${header()}<main class="game-shell" id="mainContent"><nav class="game-breadcrumbs" aria-label="Breadcrumb"><a href="../index.html">Home</a><span>/</span><span aria-current="page">Game price checks</span></nav><header class="game-hub-hero"><p class="section-kicker">Permanent game pages</p><h1>PC game deals with the evidence attached</h1><p>Everything here cleared a deliberately harsh bar: at least 80% positive feedback, at least 1,000 player reviews, and a Deal Score of 70 or better. Not many games manage all three.</p><time${snapshot.iso ? ` datetime="${snapshot.iso}"` : ''}>Prices checked ${escapeHTML(snapshot.label)}</time></header><section class="hub-rule"><strong>${deals.length} current price checks</strong><p>Every page is rebuilt from the saved snapshot and says exactly how far the data goes, and where it stops.</p></section><section class="game-card-grid" aria-label="Game price checks">${cards}</section><nav class="game-related" aria-label="Related pages"><a href="../deals/index.html">Browse deal collections</a><a href="../games.html">Search the full catalog</a><a href="../methodology.html">Read the scoring methodology</a><a href="../feed.xml">Follow the deal feed</a></nav></main>${footer()}</body></html>`;
+  return `<!doctype html><html lang="en"><head>${pageHead(title, description, canonical, `${SITE_ORIGIN}/public/og.png`, schema)}</head><body>${header()}<main class="game-shell" id="mainContent"><nav class="game-breadcrumbs" aria-label="Breadcrumb"><a href="../index.html">Home</a><span>/</span><span aria-current="page">Game price checks</span></nav><header class="game-hub-hero"><p class="section-kicker">Permanent game pages</p><h1>PC game deals with the evidence attached</h1><p>Everything here cleared a deliberately harsh bar: at least 80% positive feedback, at least 1,000 player reviews, and a Deal Score of 70 or better. Not many games manage all three.</p><time${snapshot.iso ? ` datetime="${snapshot.iso}"` : ''}>Prices checked ${escapeHTML(snapshot.label)}</time></header><section class="hub-rule"><strong>${totalPages} current price checks</strong><p>Every page is rebuilt from the saved snapshot and says exactly how far the data goes, and where it stops.${totalPages > deals.length ? ` Showing the top ${deals.length} by Deal Score; <a href="../games.html">search the catalog</a> for the rest.` : ''}</p></section><section class="game-card-grid" aria-label="Game price checks">${cards}</section><nav class="game-related" aria-label="Related pages"><a href="../deals/index.html">Browse deal collections</a><a href="../games.html">Search the full catalog</a><a href="../methodology.html">Read the scoring methodology</a><a href="../feed.xml">Follow the deal feed</a></nav></main>${footer()}</body></html>`;
 }
 module.exports = { renderGameHub, renderGamePage };

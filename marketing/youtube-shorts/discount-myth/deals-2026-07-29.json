@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-07-29T19:35:54.924Z",
+  "checkedAtEastern": "2026-07-29 3:35:54 PM EDT",
+  "lootRadarSnapshotAt": "2026-07-29T16:39:20.547Z",
+  "currency": "USD",
+  "source": {
+    "name": "CheapShark API",
+    "dealSearchEndpoint": "https://www.cheapshark.com/api/1.0/deals",
+    "reviewSource": "Steam store product pages",
+    "artworkSource": "Official Steam store artwork"
+  },
+  "disclaimer": "Prices checked July 29, 2026 and may change.",
+  "deals": [
+    {
+      "title": "Marvel's Spider-Man Remastered",
+      "displayTitle": "SPIDER-MAN REMASTERED",
+      "salePrice": 23.99,
+      "normalPrice": 59.99,
+      "savingsPercent": 60,
+      "storeId": "25",
+      "storeName": "Epic Games Store",
+      "steamAppId": "1817070",
+      "dealScore": 85,
+      "steamRatingPercent": 96,
+      "steamRatingCount": 54442,
+      "dealId": "Tqszvo5U8qmUyZMpC%2BGRiVv78NCkCOrRfrBiR4hFra8%3D",
+      "dealUrl": "https://www.cheapshark.com/redirect?dealID=Tqszvo5U8qmUyZMpC%2BGRiVv78NCkCOrRfrBiR4hFra8%3D",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1817070/header.jpg?t=1763569047"
+    },
+    {
+      "title": "Neon White",
+      "displayTitle": "NEON WHITE",
+      "salePrice": 7.88,
+      "normalPrice": 24.99,
+      "savingsPercent": 68,
+      "storeId": "23",
+      "storeName": "GameBillet",
+      "steamAppId": "1533420",
+      "dealScore": 88,
+      "steamRatingPercent": 98,
+      "steamRatingCount": 12543,
+      "dealId": "q7VXMg1kWeoEvjqImjZCpFcAbfrE4nVxSkaxCZOFyKI%3D",
+      "dealUrl": "https://www.cheapshark.com/redirect?dealID=q7VXMg1kWeoEvjqImjZCpFcAbfrE4nVxSkaxCZOFyKI%3D",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1533420/header.jpg?t=1729099604"
+    },
+    {
+      "title": "It Takes Two",
+      "displayTitle": "IT TAKES TWO",
+      "salePrice": 11.99,
+      "normalPrice": 39.99,
+      "savingsPercent": 70,
+      "storeId": "25",
+      "storeName": "Epic Games Store",
+      "steamAppId": "1426210",
+      "dealScore": 87,
+      "steamRatingPercent": 95,
+      "steamRatingCount": 47533,
+      "dealId": "V7nswbdfNqG0wP5Rj0vrikJyAA2MtHfplBkaV4O8w0M%3D",
+      "dealUrl": "https://www.cheapshark.com/redirect?dealID=V7nswbdfNqG0wP5Rj0vrikJyAA2MtHfplBkaV4O8w0M%3D",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1426210/header.jpg?t=1777395376"
+    }
+  ]
+}
