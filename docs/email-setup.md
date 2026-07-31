@@ -2,19 +2,20 @@
 
 Two separate jobs share one DNS session:
 
-1. **Receiving** at `contact@thelootradar.com` — MX records published, but
-   delivery is **failing**. See "Receiving is broken" below.
-2. **Sending** via Resend — domain **verified 2026-07-31**.
+1. **Receiving** at `contact@thelootradar.com` — Cloudflare Email Routing.
+2. **Sending** as `contact@thelootradar.com` — Resend SMTP via a Gmail alias.
+
+Both worked end to end on 2026-07-31.
 
 ## Status
 
 | Piece | State |
 | --- | --- |
-| Receiving at `contact@` | **Broken** — mail bounces, see below |
+| Receiving at `contact@` | Working — forwards to `charlesimbeau7@gmail.com` |
 | Resend domain verification | Verified 2026-07-31 |
 | DKIM / SPF / return-path records | Published and resolving |
 | DMARC | Published at `p=none` (monitor only) |
-| Gmail send-as for `contact@` | **Not done** — needs an API key, see Phase 4 |
+| Gmail send-as for `contact@` | Working from `charles.imbeau@gmail.com`, first delivery confirmed 2026-07-31 |
 | `deals@` alert pipeline | Not enabled; `LR_ALERTS_ENABLED` still false |
 
 Records published to the zone on 2026-07-31, all confirmed against the
@@ -30,31 +31,45 @@ _dmarc.thelootradar.com             TXT  v=DMARC1; p=none;
 The root `MX`, root SPF, and Google verification records were not modified.
 The zone went from 8 to 12 records.
 
-## Receiving is broken
+## Known wrinkle: the two halves live in different accounts
 
-Mail to `contact@thelootradar.com` bounces with:
+Sending and receiving are currently split across two mailboxes:
 
-> Your message wasn't delivered to contact@thelootradar.com because the
-> address couldn't be found, or is unable to receive mail.
+| Direction | Account |
+| --- | --- |
+| `contact@` receives | `charlesimbeau7@gmail.com`, via the Email Routing rule |
+| `contact@` sends | `charles.imbeau@gmail.com`, via the verified Gmail alias |
 
-The root `MX` records resolve correctly, so Cloudflare's mail servers are
-reachable and are rejecting the recipient. That points at Email Routing
-configuration rather than DNS. Two likely causes:
+Mail sent from `contact@` therefore gets its replies delivered to a different
+inbox than the one it was sent from. Replies do not thread, and they are easy
+to miss. `contact@thelootradar.com` is published in the bot User-Agent and used
+for retailer and API correspondence, so this matters.
 
-- The destination address has never been **verified**. Cloudflare sends a
-  confirmation link that must be clicked; until then it forwards nothing.
-  Supporting evidence: a search of the destination mailbox found **no email
-  from Cloudflare at all**, so that confirmation was never received.
-- There is no **routing rule** for `contact@`. Rules are per-address; a rule
-  for some other address, or none at all, leaves `contact@` unroutable.
+To consolidate, either repoint the Email Routing rule at
+`charles.imbeau@gmail.com` (add and verify it as a destination first —
+Cloudflare mails that link directly, not through the forward), or set the Gmail
+alias up in `charlesimbeau7@gmail.com` instead. Either is fine; one of each is
+not.
 
-Diagnosing this needs the Cloudflare dashboard (**Email → Email Routing**) or
-an API token with Email Routing read scope. A `Zone:DNS:Edit` token returns
-403 on the `email/routing` endpoints by design.
+## Diagnostic notes
 
-Note when checking a mailbox for proof of delivery: search `in:inbox to:…`,
-not `to:…`. A bare `to:` query also matches the Sent folder, so outbound test
-messages look like successful deliveries.
+Two things cost real time during setup and are worth remembering:
+
+- **Checking a mailbox for proof of delivery:** search `in:inbox to:…`, never a
+  bare `to:…`. A bare `to:` query also matches the Sent folder, so your own
+  outbound tests read as successful inbound deliveries. This produced a
+  confident and completely wrong "receiving works" conclusion.
+- **Bounces land in Spam.** Delivery Status Notification failures from
+  `Mail Delivery Subsystem` were filtered, so mail appeared to vanish rather
+  than visibly fail. Check Spam before assuming a message was never sent.
+- **A Resend API key showing "No activity" means Gmail never opened an SMTP
+  connection.** Gmail sends its own address-confirmation mail from Google's
+  servers; the configured SMTP credentials are exercised only when a real
+  message is sent as the alias. An unverified alias appears in the From
+  dropdown but silently refuses to send, with no error shown.
+
+Cloudflare's Email Routing configuration cannot be read with a `Zone:DNS:Edit`
+token; those endpoints return 403 by design. Use the dashboard.
 
 ## Current state, verified 2026-07-31
 
