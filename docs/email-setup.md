@@ -31,25 +31,18 @@ _dmarc.thelootradar.com             TXT  v=DMARC1; p=none;
 The root `MX`, root SPF, and Google verification records were not modified.
 The zone went from 8 to 12 records.
 
-## Known wrinkle: the two halves live in different accounts
+## Where the mail goes
 
-Sending and receiving are currently split across two mailboxes:
+`contact@thelootradar.com` forwards to `charlesimbeau7@gmail.com` via the
+Email Routing rule. Sending as `contact@` goes out through Resend SMTP from a
+verified Gmail alias. Both directions were confirmed working by the owner on
+2026-07-31.
 
-| Direction | Account |
-| --- | --- |
-| `contact@` receives | `charlesimbeau7@gmail.com`, via the Email Routing rule |
-| `contact@` sends | `charles.imbeau@gmail.com`, via the verified Gmail alias |
-
-Mail sent from `contact@` therefore gets its replies delivered to a different
-inbox than the one it was sent from. Replies do not thread, and they are easy
-to miss. `contact@thelootradar.com` is published in the bot User-Agent and used
-for retailer and API correspondence, so this matters.
-
-To consolidate, either repoint the Email Routing rule at
-`charles.imbeau@gmail.com` (add and verify it as a destination first —
-Cloudflare mails that link directly, not through the forward), or set the Gmail
-alias up in `charlesimbeau7@gmail.com` instead. Either is fine; one of each is
-not.
+If the forwarding destination ever needs changing, add and verify the new
+address under **Destination addresses** first — Cloudflare mails that
+confirmation link straight to the address rather than through the forward —
+then edit the rule. A rule can carry more than one destination, so a
+switchover can run to both for a while.
 
 ## Diagnostic notes
 
