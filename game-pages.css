@@ -17,3 +17,16 @@
 .game-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.game-card{display:flex;flex-direction:column;padding:1.35rem}.game-card>p:first-child{display:flex;justify-content:space-between;gap:1rem;margin:0;color:var(--text-3);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em}.game-card>p:first-child span{color:var(--mint)}.game-card h2{margin:.8rem 0;min-height:2.5em;font:800 1.15rem/1.25 var(--display)}.game-card h2 a:hover{color:var(--mint)}.game-card>div{display:flex;align-items:baseline;gap:.6rem}.game-card>div strong{font:800 1.35rem/1 var(--display)}.game-card>div s{color:var(--text-3)}.game-card>div span{margin-left:auto;color:var(--mint);font-size:.75rem;font-weight:800}.game-card>p:nth-of-type(2){color:var(--text-3);font-size:.78rem}.card-detail-link{margin-top:auto;padding-top:1rem;color:var(--mint);font-size:.8rem;font-weight:800;text-decoration:underline}
 @media(max-width:900px){.game-hero{grid-template-columns:1fr}.game-art,.game-art img{min-height:260px}.game-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.game-context{grid-template-columns:1fr}.offer-panel{align-items:flex-start;flex-direction:column}.evidence-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.game-shell{width:min(100% - 24px,1160px);padding-top:1.5rem}.game-hero{gap:1.5rem;padding-top:2rem}.game-hero h1,.game-hub-hero h1{font-size:2.65rem}.game-card-grid{grid-template-columns:1fr}.hub-rule{align-items:flex-start;flex-direction:column;gap:.5rem}.offer-panel{padding:1.4rem}.offer-button{width:100%;text-align:center}}
+
+/* Cross-store price comparison. The featured row is the cheapest offer in the
+   snapshot; the rest are the other stores carrying the same game. */
+.store-comparison { margin: 2rem 0; }
+.store-comparison table { width: 100%; border-collapse: collapse; margin-top: .75rem; }
+.store-comparison th, .store-comparison td { padding: .7rem .6rem; text-align: left; border-bottom: 1px solid var(--line); }
+.store-comparison thead th { color: var(--text-3); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; }
+.store-comparison tbody th { font-weight: 700; }
+.store-comparison td:nth-child(2) { font-variant-numeric: tabular-nums; font-weight: 700; }
+.store-row-best { background: rgba(185, 245, 93, .06); }
+.store-badge { display: inline-block; margin-left: .4rem; padding: .15rem .4rem; border-radius: 4px; background: var(--mint); color: #0a0d0c; font-size: .62rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.store-comparison-note { margin-top: .6rem; color: var(--text-3); font-size: .78rem; }
+@media (max-width: 520px) { .store-comparison th, .store-comparison td { padding: .55rem .4rem; font-size: .88rem; } }

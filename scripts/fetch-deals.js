@@ -26,6 +26,9 @@ const RECENT_PAGES_PER_STORE = Number(process.env.RECENT_PAGES_PER_STORE || 2);
 const MAX_PAGES_PER_STORE = Number(process.env.MAX_PAGES_PER_STORE || 3);
 const MIN_PAGE_YIELD = Number(process.env.MIN_PAGE_YIELD || 0.25);
 const MAX_REQUESTS = Number(process.env.MAX_REQUESTS || 90);
+// Alternate stores carried per game. deals.json is committed on every refresh,
+// so this is capped: six covers the realistic spread without doubling the file.
+const MAX_ALTERNATE_STORES = Number(process.env.MAX_ALTERNATE_STORES || 6);
 const outPath = path.join(__dirname, '..', 'deals.json');
 
 const cheapShark = createCheapSharkClient({
@@ -53,6 +56,59 @@ function loadPreviousSnapshot() {
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Exported so the grouping rules can be tested without a network fetch.
+function groupOffersByGame(deals, maxAlternates = MAX_ALTERNATE_STORES) {
+  // One entry per game, but keep the other stores that carry it. Collapsing to
+  // a single listing threw away the comparison this site exists to make: three
+  // stores sell Cyberpunk 2077 and the snapshot remembered one of them.
+  //
+  // Grouping on the Steam app id where there is one also merges listings whose
+  // titles differ only by punctuation or spacing, which exact-title matching
+  // left as separate games.
+  const groups = new Map();
+  for (const deal of deals) {
+    const groupKey = String(deal.steamAppID || '').trim() || String(deal.title || '').trim();
+    if (!groupKey) continue;
+    if (!groups.has(groupKey)) groups.set(groupKey, []);
+    groups.get(groupKey).push(deal);
+  }
+
+  const deduped = {};
+  for (const offers of groups.values()) {
+    // Cheapest wins, not the biggest percentage. Stores publish different
+    // normal prices, so the deepest discount is not reliably the lowest price,
+    // and on a price comparison site the price is the answer. Savings only
+    // breaks ties.
+    const ranked = offers.slice().sort((a, b) =>
+      (parseFloat(a.salePrice) || 0) - (parseFloat(b.salePrice) || 0) ||
+      (parseFloat(b.savings) || 0) - (parseFloat(a.savings) || 0)
+    );
+
+    // One offer per store, cheapest first, so the alternates are a genuine
+    // price comparison rather than the same shop repeated.
+    const perStore = new Map();
+    for (const offer of ranked) {
+      const storeID = String(offer.storeID || '');
+      if (!perStore.has(storeID)) perStore.set(storeID, offer);
+    }
+
+    const featured = ranked[0];
+    const alternates = [...perStore.values()]
+      .filter(offer => offer.dealID !== featured.dealID)
+      .slice(0, maxAlternates)
+      .map(offer => ({
+        storeID: offer.storeID,
+        dealID: offer.dealID,
+        salePrice: offer.salePrice,
+        normalPrice: offer.normalPrice,
+        savings: offer.savings
+      }));
+
+    deduped[featured.title] = alternates.length ? { ...featured, alternates } : featured;
+  }
+  return deduped;
 }
 
 async function main() {
@@ -170,13 +226,7 @@ async function main() {
     await sleep(350);
   }
 
-  const deduped = {};
-  allDeals.forEach(deal => {
-    const savings = parseFloat(deal.savings) || 0;
-    if (!deduped[deal.title] || savings > parseFloat(deduped[deal.title].savings)) {
-      deduped[deal.title] = deal;
-    }
-  });
+  const deduped = groupOffersByGame(allDeals);
 
   const output = {
     stores: storeMap,
@@ -201,6 +251,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  groupOffersByGame,
   loadPreviousSnapshot,
   main
 };

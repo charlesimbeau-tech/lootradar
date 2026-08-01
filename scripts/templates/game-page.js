@@ -47,6 +47,27 @@ function formatSnapshotDay(value) {
   };
 }
 
+// The featured offer is the cheapest we saw, but a reader deciding where to buy
+// wants to see what the alternative costs. Only shown for a live deal: the
+// saved prices go stale with the offer that anchored them.
+function renderStoreComparison(deal) {
+  const alternates = Array.isArray(deal.alternates) ? deal.alternates : [];
+  if (deal.live === false || !alternates.length) return '';
+  const rows = [
+    { storeName: deal.storeName, salePrice: deal.salePrice, dealID: deal.dealID, best: true },
+    ...alternates.map(offer => ({ ...offer, best: false }))
+  ].map(offer => `<tr${offer.best ? ' class="store-row-best"' : ''}>
+      <th scope="row">${escapeHTML(offer.storeName)}${offer.best ? ' <span class="store-badge">Cheapest</span>' : ''}</th>
+      <td>${formatPrice(offer.salePrice)}</td>
+      <td><a href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(offer.dealID))}" target="_blank" rel="sponsored noopener noreferrer" data-track-deal data-track-surface="game_store_table" data-track-store="${escapeHTML(offer.storeName)}" data-track-price="${escapeHTML(offer.salePrice)}">Check</a></td>
+    </tr>`).join('');
+  return `<section class="store-comparison" aria-labelledby="storeCompare">
+    <h2 id="storeCompare">Where else you can buy ${escapeHTML(deal.title)}</h2>
+    <table><thead><tr><th scope="col">Store</th><th scope="col">Price</th><th scope="col"></th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="store-comparison-note">Prices from the same sweep. Stores not listed either did not carry it or were not in this snapshot.</p>
+  </section>`;
+}
+
 function renderRelated(related) {
   if (!related || !related.length) return '';
   const items = related.map(item => `<li><a href="${escapeHTML(gamePageRoute(item))}">${escapeHTML(item.title)}</a> <span>${formatPrice(item.salePrice)}</span></li>`).join('');
@@ -145,7 +166,7 @@ function pageHead(title, description, canonical, image, schema) {
   <meta property="og:title" content="${escapeHTML(title)}"><meta property="og:description" content="${escapeHTML(description)}"><meta property="og:type" content="website"><meta property="og:url" content="${escapeHTML(canonical)}"><meta property="og:site_name" content="LootRadar"><meta property="og:image" content="${escapeHTML(socialImage)}">
   <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escapeHTML(title)}"><meta name="twitter:description" content="${escapeHTML(description)}"><meta name="twitter:image" content="${escapeHTML(socialImage)}">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../style.css?v=27"><link rel="stylesheet" href="../game-pages.css?v=1">
+  <link rel="stylesheet" href="../style.css?v=27"><link rel="stylesheet" href="../game-pages.css?v=2">
   <link rel="icon" href="../icons/icon.svg?v=2" type="image/svg+xml"><link rel="icon" href="../icons/favicon-32.png?v=2" sizes="32x32" type="image/png"><link rel="icon" href="../icons/favicon.ico?v=2" sizes="any"><link rel="apple-touch-icon" href="../icons/apple-touch-icon.png?v=2"><link rel="manifest" href="../manifest.json"><meta name="theme-color" content="#0b0e0d">
   <meta name="google-adsense-account" content="ca-pub-3845680227675655"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3845680227675655" crossorigin="anonymous"></script><script type="application/ld+json">${safeJSON(schema)}</script>`;
 }
@@ -185,6 +206,7 @@ function renderGamePage(deal, snapshotInput = {}, related = []) {
     : `<section class="offer-panel offer-panel-expired" aria-labelledby="currentOffer"><div><p class="offer-label">Not discounted right now</p><h2 id="currentOffer">Last seen at ${formatPrice(deal.salePrice)}</h2><p>That was ${escapeHTML(deal.discount)}% off ${formatPrice(deal.normalPrice)} at ${escapeHTML(deal.storeName)}${lastSeen.label && lastSeen.label !== 'the latest refresh' ? `, on ${escapeHTML(lastSeen.label)}` : ''}. It has not appeared in a sweep since, so treat that figure as history rather than a price you can pay today.</p>${lastSeen.iso ? `<time datetime="${lastSeen.iso}">Last recorded ${escapeHTML(lastSeen.label)}</time>` : ''}</div>${deal.steamAppID ? `<a class="offer-button offer-button-secondary" href="https://store.steampowered.com/app/${escapeHTML(deal.steamAppID)}/" target="_blank" rel="noopener noreferrer">See the current price on Steam</a>` : ''}</section>`}
   <section class="evidence-grid" aria-label="Deal evidence"><article><span>Deal Score</span><strong>${escapeHTML(deal.dealScore)}<small>/100</small></strong><p>${discounted ? 'Our combined ranking signal. Emphatically not a review score.' : 'What it scored when we last recorded an offer. Not a review score.'}</p></article><article><span>Player rating</span><strong>${escapeHTML(deal.userRating)}<small>% positive</small></strong><p>Out of ${formatCount(deal.reviewCount)} recorded player reviews.</p></article><article><span>${discounted ? 'Price cut' : 'Last price cut'}</span><strong>${escapeHTML(deal.discount)}<small>% off</small></strong><p>${discounted ? `Normally ${formatPrice(deal.normalPrice)}, currently ${formatPrice(deal.salePrice)}.` : `Listed at ${formatPrice(deal.normalPrice)}, last recorded at ${formatPrice(deal.salePrice)}.`}</p></article></section>
   <section class="game-context"><div><p class="section-kicker">Why it made the cut</p><h2>Is ${escapeHTML(deal.title)} worth buying at this price?</h2><p>${escapeHTML(selectionReason(deal))}</p><p>These permanent pages keep out add-ons, bundles, Early Access listings, and anything running on a thin review signal.</p></div><aside><h2>Before you buy ${escapeHTML(deal.title)}</h2><ul><li>${escapeHTML(storeCaveat(deal.storeName))}</li><li>The final price and the exact edition, on the store page.</li><li>Whether you will actually play it. The discount cannot answer that one.</li></ul></aside></section>
+  ${renderStoreComparison(deal)}
   <section class="snapshot-note"><h2>How current is this ${escapeHTML(deal.title)} price?</h2><p>This page shows one saved offer from the latest data refresh. It makes no claim about this being the lowest price the game has ever reached, because we cannot prove that. Store prices and availability both move between refreshes.</p></section>
   ${renderRelated(related)}
   <nav class="game-related" aria-label="Related pages"><a href="index.html">Browse more game price checks</a><a href="../deals/index.html">Browse live deal lists</a><a href="../methodology.html">See how Deal Scores work</a><a href="../blog.html">Read buying guides</a></nav></main>${footer()}</body></html>`;
