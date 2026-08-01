@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { PAGE_DEFINITIONS } = require('./build-search-pages.js');
 const { loadWeeklyIssues, weeklyGuideRelativePath } = require('../lib/weekly-guide.js');
+const { gamePageRoute } = require('../lib/game-pages.js');
 
 const root = path.resolve(__dirname, '..');
 const SITE_ORIGIN = 'https://thelootradar.com';
@@ -84,7 +85,13 @@ function createSitemap(options = {}) {
       path: entry.path,
       lastmod: dateOnly(entry.lastmod, `Lastmod for ${entry.path}`)
     })),
-    ...dealPaths.map(urlPath => ({ path: urlPath, lastmod: snapshotLastmod }))
+    // A path may carry its own lastmod. Game pages do, because most of them do
+    // not change on a given refresh and saying otherwise teaches Google to
+    // ignore the field. Collection pages fall back to the snapshot date, which
+    // is honest: their prices really do move every time.
+    ...dealPaths.map(entry => (typeof entry === 'string'
+      ? { path: entry, lastmod: snapshotLastmod }
+      : { path: entry.path, lastmod: dateOnly(entry.lastmod || snapshotLastmod, `Lastmod for ${entry.path}`) }))
   ];
   const seen = new Set();
   const unique = entries.filter(entry => {
@@ -139,6 +146,26 @@ function indexableGamePaths(baseDir = root) {
   }).map(file => `/games/${file}`);
 }
 
+// The archive records when each page's rendered content last changed, which is
+// far less often than the three-hourly refresh. Pages missing an entry, and the
+// hub, fall back to the snapshot date.
+function gamePageLastmods(baseDir = root) {
+  const archivePath = path.join(baseDir, 'game-pages-archive.json');
+  if (!fs.existsSync(archivePath)) return new Map();
+  let archive;
+  try {
+    archive = JSON.parse(fs.readFileSync(archivePath, 'utf8'));
+  } catch {
+    return new Map();
+  }
+  const byRoute = new Map();
+  for (const entry of Object.values(archive?.games || {})) {
+    const route = gamePageRoute(entry);
+    if (route && entry.contentChangedAt) byRoute.set(`/games/${route}`, entry.contentChangedAt);
+  }
+  return byRoute;
+}
+
 function generateSitemap(options = {}) {
   const base = options.base || JSON.parse(
     fs.readFileSync(path.join(root, 'deals.json'), 'utf8')
@@ -149,10 +176,16 @@ function generateSitemap(options = {}) {
     editorialEntries: options.editorialEntries,
     baseDir: options.baseDir || root,
     snapshotUpdatedAt: options.snapshotUpdatedAt || base.updatedAt,
-    dealPaths: options.dealPaths || [
-      ...indexableDealPaths(options.baseDir || root),
-      ...indexableGamePaths(options.baseDir || root)
-    ]
+    dealPaths: options.dealPaths || (() => {
+      const baseDir = options.baseDir || root;
+      const lastmods = gamePageLastmods(baseDir);
+      return [
+        ...indexableDealPaths(baseDir),
+        ...indexableGamePaths(baseDir).map(urlPath => (
+          lastmods.has(urlPath) ? { path: urlPath, lastmod: lastmods.get(urlPath) } : urlPath
+        ))
+      ];
+    })()
   });
   const output = path.resolve(options.output || path.join(root, 'sitemap.xml'));
   fs.writeFileSync(output, xml);

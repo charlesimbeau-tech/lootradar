@@ -49,6 +49,23 @@ function relatedFor(deal, pool) {
   }
   return picks;
 }
+// The figures a reader would notice moving. The snapshot timestamp is
+// deliberately absent: it changes daily on every page and says nothing about
+// whether the offer did.
+function pageSignature(entry) {
+  return [
+    entry.live ? 'live' : 'archived',
+    entry.title,
+    entry.storeName,
+    entry.salePrice,
+    entry.normalPrice,
+    entry.discount,
+    entry.dealScore,
+    entry.userRating,
+    entry.reviewCount
+  ].join('|');
+}
+
 function buildGamePages(options = {}) {
   const outputDir = path.resolve(options.outputDir || path.join(root, 'games'));
   const snapshot = options.snapshot || options.base || readJSON(path.join(root, 'deals.json'));
@@ -95,9 +112,10 @@ function buildGamePages(options = {}) {
   let written = 0;
   const writeIfChanged = (file, contents) => {
     const target = path.join(outputDir, file);
-    if (fs.existsSync(target) && fs.readFileSync(target, 'utf8') === contents) return;
+    if (fs.existsSync(target) && fs.readFileSync(target, 'utf8') === contents) return false;
     fs.writeFileSync(target, contents);
     written += 1;
+    return true;
   };
 
   // Link across the whole archive, not just today's live set. An archived page
@@ -127,8 +145,26 @@ function buildGamePages(options = {}) {
   // The hub stays a list of what is actually discounted; an archived page is
   // worth keeping crawlable but not worth promoting as a live deal.
   writeIfChanged('index.html', renderGameHub(selected, snapshot));
+
+  // Record when a page's substance changed, for the sitemap to report as
+  // lastmod. Telling Google that every page changed on every refresh makes the
+  // field worthless: it discounts lastmod it can show to be unreliable, and
+  // re-crawls unchanged pages using budget the rest of the catalogue needs.
+  //
+  // Comparing rendered bytes does not work, because each page prints the
+  // snapshot date and so differs once a day regardless of its price. Compare
+  // the figures a reader would notice instead.
+  const changedAt = archive.updatedAt;
   for (const entry of pages) {
-    writeIfChanged(gamePageRoute(entry), renderGamePage(entry, snapshot, related.get(entry.key)));
+    const html = renderGamePage(entry, snapshot, related.get(entry.key));
+    writeIfChanged(gamePageRoute(entry), html);
+    const stored = archive.games[entry.key];
+    if (!stored) continue;
+    const signature = pageSignature(entry);
+    if (stored.contentSignature !== signature || !stored.contentChangedAt) {
+      stored.contentSignature = signature;
+      stored.contentChangedAt = changedAt;
+    }
   }
 
   if (!options.skipArchiveWrite) {

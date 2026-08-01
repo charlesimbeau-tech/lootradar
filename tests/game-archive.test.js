@@ -119,6 +119,53 @@ test('generated pages survive their deal ending, and say so honestly', () => {
   assert.match(html, /store\.steampowered\.com\/app\/2\//);
 });
 
+test('lastmod moves only when the figures move', () => {
+  // Every page prints the snapshot date, so its rendered bytes differ once a
+  // day whatever the price did. Reporting that as lastmod tells Google the
+  // whole catalogue changes daily, which is the fastest way to have the field
+  // ignored and the crawl budget spent re-fetching pages that did not change.
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-lastmod-'));
+  const archivePath = path.join(outputDir, 'archive.json');
+  const read = () => JSON.parse(fs.readFileSync(archivePath, 'utf8')).games;
+
+  buildGamePages({
+    outputDir,
+    archivePath,
+    deals: [deal(1, { salePrice: 9.99 }), deal(2, { salePrice: 9.99 })],
+    snapshot: { updatedAt: '2026-08-01T00:00:00Z' }
+  });
+  const first = read();
+  assert.equal(first['steam:1'].contentChangedAt, '2026-08-01T00:00:00.000Z');
+
+  // A later refresh on a different day, where only the first game repriced.
+  buildGamePages({
+    outputDir,
+    archivePath,
+    deals: [deal(1, { salePrice: 4.99 }), deal(2, { salePrice: 9.99 })],
+    snapshot: { updatedAt: '2026-08-05T00:00:00Z' }
+  });
+  const second = read();
+
+  assert.equal(second['steam:1'].contentChangedAt, '2026-08-05T00:00:00.000Z', 'a repriced page should report the new date');
+  assert.equal(second['steam:2'].contentChangedAt, '2026-08-01T00:00:00.000Z', 'an unchanged page must keep its original date');
+});
+
+test('a deal ending counts as a change worth reporting', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-lastmod-expiry-'));
+  const archivePath = path.join(outputDir, 'archive.json');
+
+  buildGamePages({ outputDir, archivePath, deals: [deal(1), deal(2)], snapshot: { updatedAt: '2026-08-01T00:00:00Z' } });
+  buildGamePages({ outputDir, archivePath, deals: [deal(1)], snapshot: { updatedAt: '2026-08-05T00:00:00Z' } });
+
+  const games = JSON.parse(fs.readFileSync(archivePath, 'utf8')).games;
+  assert.equal(games['steam:2'].live, false);
+  assert.equal(
+    games['steam:2'].contentChangedAt,
+    '2026-08-05T00:00:00.000Z',
+    'going from discounted to not discounted rewrites the page, so it is a real change'
+  );
+});
+
 test('archived pages are linked too, not just live ones', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-archive-links-'));
   const archivePath = path.join(outputDir, 'archive.json');
