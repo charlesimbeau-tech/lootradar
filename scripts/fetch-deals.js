@@ -1,5 +1,5 @@
 // Fetch deals from CheapShark API and save to deals.json
-// Run by GitHub Actions every hour
+// Run by GitHub Actions every three hours
 
 const fs = require('fs');
 const path = require('path');
@@ -13,19 +13,23 @@ const API = 'https://www.cheapshark.com/api/1.0';
 const MAX_PRICE = Number(process.env.MAX_PRICE || 70);
 const PAGE_SIZE = Math.min(60, Number(process.env.PAGE_SIZE || 60));
 const PAGES_PER_STORE = Number(process.env.PAGES_PER_STORE || 3);
-// Deal Rating sorts deep discounts to the top, which buries recent releases
-// because they rarely discount hard. A short second pass sorted by recent
-// price activity is what keeps the new-arrivals collection stocked.
-const RECENT_PAGES_PER_STORE = Number(process.env.RECENT_PAGES_PER_STORE || 2);
+// Deal Rating sorts deep discounts to the top, which buries recent releases.
+// Recent is global across the same active stores: fetching it once avoids
+// repeating two overlapping pages for every individual store.
+const GLOBAL_RECENT_PAGES = Number(process.env.GLOBAL_RECENT_PAGES || 8);
 // Useful depth varies enormously by store: Steam still yields qualifying games
 // 30 pages in, while Fanatical is mostly noise past page 15. Rather than guess a
 // flat number, keep paging while a page still earns its keep.
 // Measured the hard way: 10 pages per store drew a one-hour block around the
 // fiftieth request and failed most of the refresh. CheapShark's limiter cares
-// about rate, not just totals, so the default stays at the proven floor.
-const MAX_PAGES_PER_STORE = Number(process.env.MAX_PAGES_PER_STORE || 3);
+// about rate, not just totals. Central pacing now makes it safe to let productive
+// stores compete for a deeper slice of the same fixed global request budget.
+const MAX_PAGES_PER_STORE = Number(process.env.MAX_PAGES_PER_STORE || 5);
 const MIN_PAGE_YIELD = Number(process.env.MIN_PAGE_YIELD || 0.25);
-const MAX_REQUESTS = Number(process.env.MAX_REQUESTS || 90);
+const MAX_REQUESTS = Number(process.env.MAX_REQUESTS || 70);
+// CheapShark temporarily bans clients that pack too many calls into a short
+// window. This is enforced inside the HTTP client so retries cannot bypass it.
+const REQUEST_INTERVAL_MS = Math.max(0, Number(process.env.REQUEST_INTERVAL_MS || 1500));
 // Alternate stores carried per game. deals.json is committed on every refresh,
 // so this is capped: six covers the realistic spread without doubling the file.
 const MAX_ALTERNATE_STORES = Number(process.env.MAX_ALTERNATE_STORES || 6);
@@ -35,6 +39,7 @@ const cheapShark = createCheapSharkClient({
   baseUrl: API,
   maxRetries: 4,
   baseDelayMs: 1000,
+  minRequestIntervalMs: REQUEST_INTERVAL_MS,
   headers: {
     'User-Agent': 'LootRadar-Bot/1.2 (contact@thelootradar.com; https://thelootradar.com)',
     Accept: 'application/json'
@@ -56,6 +61,13 @@ function loadPreviousSnapshot() {
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function calculateStoreCeiling(rankedCeiling, remainingStores, pagesPerStore) {
+  const ceiling = Math.max(0, Number(rankedCeiling) || 0);
+  const waiting = Math.max(0, Number(remainingStores) || 0);
+  const floor = Math.max(0, Number(pagesPerStore) || 0);
+  return Math.max(0, ceiling - waiting * floor);
 }
 
 // Exported so the grouping rules can be tested without a network fetch.
@@ -128,7 +140,9 @@ async function main() {
   console.log(`Found ${activeStores.length} active stores. Fetching deals...`);
   console.log(
     `Config: upperPrice=${MAX_PRICE}, pageSize=${PAGE_SIZE}, ` +
-    `pages=${PAGES_PER_STORE}-${MAX_PAGES_PER_STORE}/store, minYield=${MIN_PAGE_YIELD}, budget=${MAX_REQUESTS}`
+    `pages=${PAGES_PER_STORE}-${MAX_PAGES_PER_STORE}/store, globalRecent=${GLOBAL_RECENT_PAGES}, ` +
+    `minYield=${MIN_PAGE_YIELD}, ` +
+    `budget=${MAX_REQUESTS}, requestInterval=${REQUEST_INTERVAL_MS}ms`
   );
 
   const allDeals = [];
@@ -167,12 +181,13 @@ async function main() {
     return keepers / deals.length;
   }
 
-  async function fetchStorePages(store, sortBy, pageLimit, { adaptive = false, ceiling = MAX_REQUESTS } = {}) {
+  async function fetchDealPages(storeIDs, sortBy, pageLimit, { adaptive = false, ceiling = MAX_REQUESTS } = {}) {
     const collected = [];
+    const storeFilter = storeIDs ? `storeID=${storeIDs}&` : '';
     for (let page = 0; page < pageLimit; page++) {
       if (requestsUsed >= ceiling) break;
       const deals = await fetchJSON(
-        `/deals?storeID=${store.storeID}&upperPrice=${MAX_PRICE}&pageSize=${PAGE_SIZE}&pageNumber=${page}&steamRating=70&minimumReviewCount=100&onSale=1&sortBy=${sortBy}`
+        `/deals?${storeFilter}upperPrice=${MAX_PRICE}&pageSize=${PAGE_SIZE}&pageNumber=${page}&steamRating=70&minimumReviewCount=100&onSale=1&sortBy=${sortBy}`
       );
       requestsUsed += 1;
 
@@ -188,17 +203,26 @@ async function main() {
 
   // Hold back enough budget that a deep primary pass cannot starve the recent
   // pass, which is the only thing keeping the new-arrivals collection stocked.
-  const recentReserve = activeStores.length * RECENT_PAGES_PER_STORE;
-  const rankedCeiling = Math.max(activeStores.length, MAX_REQUESTS - recentReserve);
+  const recentReserve = GLOBAL_RECENT_PAGES;
+  const minimumPrimaryBudget = 1 + activeStores.length * Math.min(PAGES_PER_STORE, MAX_PAGES_PER_STORE);
+  const rankedCeiling = Math.min(
+    MAX_REQUESTS,
+    Math.max(minimumPrimaryBudget, MAX_REQUESTS - recentReserve)
+  );
 
   // Fetch deals sequentially so one refresh does not create a request burst.
-  for (const store of activeStores) {
+  for (const [storeIndex, store] of activeStores.entries()) {
     let storeCount = 0;
-    let recentCount = 0;
+    const remainingStores = activeStores.length - storeIndex - 1;
+    const storeCeiling = calculateStoreCeiling(
+      rankedCeiling,
+      remainingStores,
+      Math.min(PAGES_PER_STORE, MAX_PAGES_PER_STORE)
+    );
     try {
-      const ranked = await fetchStorePages(store, 'DealRating', MAX_PAGES_PER_STORE, {
+      const ranked = await fetchDealPages(String(store.storeID), 'DealRating', MAX_PAGES_PER_STORE, {
         adaptive: true,
-        ceiling: rankedCeiling
+        ceiling: storeCeiling
       });
       allDeals.push(...ranked);
       storeCount += ranked.length;
@@ -209,21 +233,21 @@ async function main() {
       continue;
     }
 
-    // Best effort only. The primary pass already produced a usable snapshot,
-    // so a failure here must not abort an otherwise healthy refresh.
-    if (RECENT_PAGES_PER_STORE > 0) {
-      await sleep(250);
-      try {
-        const recent = await fetchStorePages(store, 'Recent', RECENT_PAGES_PER_STORE);
-        allDeals.push(...recent);
-        recentCount += recent.length;
-      } catch (error) {
-        console.warn(`  ${store.storeName}: recent pass skipped - ${error.message}`);
-      }
-    }
-
-    console.log(`  ${store.storeName}: ${storeCount} deals (+${recentCount} from recent pass)`);
+    console.log(`  ${store.storeName}: ${storeCount} ranked deals`);
     await sleep(350);
+  }
+
+  // Best effort only. One cross-store Recent pass replaces fourteen per-store
+  // passes, freeing budget for deeper ranked pages while preserving new arrivals.
+  if (GLOBAL_RECENT_PAGES > 0 && requestsUsed < MAX_REQUESTS) {
+    const activeStoreIDs = activeStores.map(store => store.storeID).join(',');
+    try {
+      const recent = await fetchDealPages(activeStoreIDs, 'Recent', GLOBAL_RECENT_PAGES);
+      allDeals.push(...recent);
+      console.log(`  Recent across all stores: ${recent.length} deals`);
+    } catch (error) {
+      console.warn(`  Global recent pass skipped - ${error.message}`);
+    }
   }
 
   const deduped = groupOffersByGame(allDeals);
@@ -251,6 +275,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  calculateStoreCeiling,
   groupOffersByGame,
   loadPreviousSnapshot,
   main

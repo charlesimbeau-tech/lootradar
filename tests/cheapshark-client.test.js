@@ -70,6 +70,30 @@ test('retries transient server and network failures with backoff', async () => {
   assert.deepEqual(waits, [100, 200]);
 });
 
+test('paces every outbound attempt, including retries', async () => {
+  let nowMs = 0;
+  let calls = 0;
+  const starts = [];
+  const client = createCheapSharkClient({
+    baseUrl: 'https://example.test/api/1.0',
+    minRequestIntervalMs: 1500,
+    baseDelayMs: 100,
+    now: () => nowMs,
+    sleep: async milliseconds => { nowMs += milliseconds; },
+    fetchImpl: async () => {
+      starts.push(nowMs);
+      calls += 1;
+      return calls === 1
+        ? jsonResponse(null, { ok: false, status: 503 })
+        : jsonResponse({ calls });
+    }
+  });
+
+  assert.deepEqual(await client.get('/stores'), { calls: 2 });
+  assert.deepEqual(await client.get('/deals'), { calls: 3 });
+  assert.deepEqual(starts, [0, 1500, 3000]);
+});
+
 test('does not retry non-rate-limited client errors', async () => {
   let calls = 0;
   const client = createCheapSharkClient({
