@@ -118,8 +118,14 @@ for (const file of generatedGamePages) {
     }
     const source = fs.readFileSync(target, 'utf8');
     const h1Count = (source.match(/<h1\b/g) || []).length;
-    for (const token of ['application/ld+json', 'game-pages.css', 'Prices checked']) {
+    for (const token of ['application/ld+json', 'game-pages.css']) {
       if (!source.includes(token)) failures.push(`${path.relative(root, target)} missing ${token}`);
+    }
+    // A page kept from an earlier sweep has no current price to timestamp, so
+    // it dates the offer it last recorded instead. Either way the page must say
+    // how old its figures are.
+    if (!source.includes('Prices checked') && !source.includes('Last recorded')) {
+      failures.push(`${path.relative(root, target)} missing a price timestamp`);
     }
     if (h1Count !== 1) failures.push(`${path.relative(root, target)} must contain one h1`);
     if (file !== 'games/index.html' && !source.includes('"@type":"Product"')) {

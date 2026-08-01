@@ -104,6 +104,9 @@ jobs:
           [ -d deals ] && git add deals || true
           [ -d games ] && git add games || true
           git add index.html
+          # Without this the archive resets every run, every page reverts to
+          # deal-only, and expired games start 404ing again.
+          [ -f game-pages-archive.json ] && git add game-pages-archive.json || true
           [ -f feed.xml ] && git add feed.xml || true
           [ -f sitemap.xml ] && git add sitemap.xml || true
           git add blog/game-price-comparison.html

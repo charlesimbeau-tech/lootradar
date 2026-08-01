@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { buildDealDataset } = require('../lib/deal-dataset.js');
 const { gamePageRoute, selectGamePageDeals } = require('../lib/game-pages.js');
+const { archiveEntries, emptyArchive, mergeArchive } = require('../lib/game-archive.js');
 const config = require('../config/editorial-config.js');
 const { renderGameHub, renderGamePage } = require('./templates/game-page.js');
 const root = path.resolve(__dirname, '..');
@@ -59,7 +60,32 @@ function buildGamePages(options = {}) {
   const selected = selectGamePageDeals(deals, options.limit);
   fs.mkdirSync(outputDir, { recursive: true });
 
-  const keep = new Set(['index.html', ...selected.map(gamePageRoute)]);
+  // A page has to outlive the sale that created it. Fold today's qualifiers
+  // into the archive and render everything it holds, so a game whose discount
+  // ended keeps its URL and switches to showing the last price we saw.
+  // Keep the archive beside whatever is being written. Defaulting to the repo
+  // copy whenever a caller passed only an outputDir would quietly mix the real
+  // 300-odd entries into an isolated build, which is a trap for tests and for
+  // anyone generating a preview elsewhere.
+  const archivePath = options.archivePath
+    || (options.outputDir
+      ? path.join(outputDir, 'game-pages-archive.json')
+      : path.join(root, 'game-pages-archive.json'));
+  const storedArchive = options.archive
+    || (fs.existsSync(archivePath) ? readJSON(archivePath) : emptyArchive());
+  const archive = mergeArchive(storedArchive, selected, {
+    now: snapshot.updatedAt,
+    retentionDays: options.retentionDays,
+    limit: options.archiveLimit
+  });
+  const pages = archiveEntries(archive)
+    .filter(entry => gamePageRoute(entry))
+    .sort((a, b) => {
+      if (a.live !== b.live) return a.live ? -1 : 1;
+      return Number(b.dealScore) - Number(a.dealScore) || String(a.key).localeCompare(String(b.key));
+    });
+
+  const keep = new Set(['index.html', ...pages.map(gamePageRoute)]);
   for (const file of fs.readdirSync(outputDir)) {
     if (file.endsWith('.html') && !keep.has(file)) fs.unlinkSync(path.join(outputDir, file));
   }
@@ -74,38 +100,58 @@ function buildGamePages(options = {}) {
     written += 1;
   };
 
-  const related = new Map(selected.map(deal => [deal.key, relatedFor(deal, selected)]));
+  // Link across the whole archive, not just today's live set. An archived page
+  // with no inbound links is the orphan problem again by another route.
+  const related = new Map(pages.map(entry => [entry.key, relatedFor(entry, pages)]));
 
   // The ring spreads links well but cannot promise every page is reached: a
   // deal in a thinly populated genre can sit outside everyone's window. Sweep
   // up whatever is left so "no page is reachable only from the sitemap" holds
   // as an invariant rather than as a tendency.
-  const inbound = new Map(selected.map(deal => [deal.key, 0]));
+  const inbound = new Map(pages.map(entry => [entry.key, 0]));
   for (const picks of related.values()) {
     for (const pick of picks) inbound.set(pick.key, (inbound.get(pick.key) || 0) + 1);
   }
-  const byKey = new Map(selected.map(deal => [deal.key, deal]));
+  const byKey = new Map(pages.map(entry => [entry.key, entry]));
   for (const [key, count] of inbound) {
     if (count > 0) continue;
     // Host it on the strongest page that is not this one and does not already
-    // point here. selected is ordered by Deal Score, so this favours the pages
-    // most likely to be crawled often.
-    const host = selected.find(candidate =>
+    // point here. pages is ordered live-first by Deal Score, so this favours
+    // the pages most likely to be crawled often.
+    const host = pages.find(candidate =>
       candidate.key !== key && !related.get(candidate.key).some(pick => pick.key === key)
     );
     if (host) related.get(host.key).push(byKey.get(key));
   }
 
+  // The hub stays a list of what is actually discounted; an archived page is
+  // worth keeping crawlable but not worth promoting as a live deal.
   writeIfChanged('index.html', renderGameHub(selected, snapshot));
-  for (const deal of selected) {
-    writeIfChanged(gamePageRoute(deal), renderGamePage(deal, snapshot, related.get(deal.key)));
+  for (const entry of pages) {
+    writeIfChanged(gamePageRoute(entry), renderGamePage(entry, snapshot, related.get(entry.key)));
   }
 
-  return { outputDir, selected, written, routes: ['index.html', ...selected.map(gamePageRoute)] };
+  if (!options.skipArchiveWrite) {
+    fs.writeFileSync(archivePath, `${JSON.stringify(archive, null, 2)}\n`);
+  }
+
+  return {
+    outputDir,
+    selected,
+    pages,
+    archive,
+    written,
+    live: pages.filter(entry => entry.live).length,
+    archived: pages.filter(entry => !entry.live).length,
+    routes: ['index.html', ...pages.map(gamePageRoute)]
+  };
 }
 
 if (require.main === module) {
   const result = buildGamePages();
-  console.log(`Generated ${result.selected.length} game price checks (${result.written} files written) and the game hub.`);
+  console.log(
+    `Generated ${result.routes.length - 1} game price checks: ${result.live} discounted now, ` +
+    `${result.archived} kept from earlier sweeps (${result.written} files written).`
+  );
 }
 module.exports = { buildGamePages };

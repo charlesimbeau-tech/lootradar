@@ -112,13 +112,24 @@ function storeCaveat(storeName) {
   return `${storeName} usually delivers a key for another launcher, so check where it activates and how fast the key arrives.`;
 }
 function schemaForGame(deal, canonical) {
+  const discounted = deal.live !== false;
+  const product = {
+    '@type': 'Product', '@id': `${canonical}#game`, name: deal.title,
+    description: discounted
+      ? `${deal.title} PC price check from LootRadar, based on a current quality-qualified offer.`
+      : `${deal.title} PC price check from LootRadar. Not discounted in the current sweep; showing the last recorded offer.`,
+    image: /^https?:\/\//i.test(String(deal.image || '')) ? deal.image : `${SITE_ORIGIN}/public/og.png`,
+    category: genreText(deal), sku: `steam-${deal.steamAppID}`,
+    aggregateRating: { '@type': 'AggregateRating', ratingValue: Number(deal.userRating), bestRating: 100, worstRating: 0, reviewCount: Number(deal.reviewCount) }
+  };
+  // No Offer when the deal is gone. Emitting a stale price would put a number
+  // in search results that the store will not honour, which is exactly the
+  // mismatch Google penalises and a reader would rightly call a lie.
+  if (discounted) {
+    product.offers = { '@type': 'Offer', url: `https://www.cheapshark.com/redirect?dealID=${safeDealID(deal.dealID)}`, priceCurrency: 'USD', price: Number(deal.salePrice).toFixed(2), availability: 'https://schema.org/InStock', seller: { '@type': 'Organization', name: deal.storeName } };
+  }
   return { '@context': 'https://schema.org', '@graph': [
-    { '@type': 'Product', '@id': `${canonical}#game`, name: deal.title,
-      description: `${deal.title} PC price check from LootRadar, based on a current quality-qualified offer.`,
-      image: /^https?:\/\//i.test(String(deal.image || '')) ? deal.image : `${SITE_ORIGIN}/public/og.png`,
-      category: genreText(deal), sku: `steam-${deal.steamAppID}`,
-      aggregateRating: { '@type': 'AggregateRating', ratingValue: Number(deal.userRating), bestRating: 100, worstRating: 0, reviewCount: Number(deal.reviewCount) },
-      offers: { '@type': 'Offer', url: `https://www.cheapshark.com/redirect?dealID=${safeDealID(deal.dealID)}`, priceCurrency: 'USD', price: Number(deal.salePrice).toFixed(2), availability: 'https://schema.org/InStock', seller: { '@type': 'Organization', name: deal.storeName } } },
+    product,
     { '@type': 'BreadcrumbList', itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'LootRadar', item: `${SITE_ORIGIN}/` },
       { '@type': 'ListItem', position: 2, name: 'Game price checks', item: `${SITE_ORIGIN}/games/index.html` },
@@ -153,18 +164,26 @@ function renderGamePage(deal, snapshotInput = {}, related = []) {
   // Front-load the game name and the word people actually search for, and skip
   // the brand suffix: Google appends the site name anyway, and 87 of these
   // titles were long enough to truncate before the useful part.
-  const title = Number(deal.salePrice) === 0
-    ? `${deal.title}: free right now at ${deal.storeName}`
-    : `${deal.title} price: ${formatPrice(deal.salePrice)} at ${deal.storeName}`;
-  const description = `${deal.title} is ${formatPrice(deal.salePrice)} at ${deal.storeName} in the latest LootRadar sweep. Here is the Deal Score, the player rating, and what to check before you buy.`;
+  const discounted = deal.live !== false;
+  const lastSeen = formatSnapshotDay(deal.lastSeenAt);
+  const title = !discounted
+    ? `${deal.title} PC price: not discounted right now`
+    : Number(deal.salePrice) === 0
+      ? `${deal.title}: free right now at ${deal.storeName}`
+      : `${deal.title} price: ${formatPrice(deal.salePrice)} at ${deal.storeName}`;
+  const description = discounted
+    ? `${deal.title} is ${formatPrice(deal.salePrice)} at ${deal.storeName} in the latest LootRadar sweep. Here is the Deal Score, the player rating, and what to check before you buy.`
+    : `${deal.title} is not discounted in the current LootRadar sweep. The last offer we recorded was ${formatPrice(deal.salePrice)} at ${deal.storeName}, ${deal.discount}% off. Here is the player rating and what it normally costs.`;
   const image = /^https?:\/\//i.test(String(deal.image || '')) ? deal.image : `${SITE_ORIGIN}/public/og.png`;
   const art = /^https?:\/\//i.test(String(deal.image || '')) ? `<img src="${escapeHTML(deal.image)}" alt="${escapeHTML(deal.title)} artwork" width="920" height="430" decoding="async">` : '<div class="game-art-fallback" aria-hidden="true">LR</div>';
   const tags = [genreText(deal), deal.releaseYear ? String(deal.releaseYear) : '', 'PC'].filter(Boolean);
   return `<!doctype html><html lang="en"><head>${pageHead(title, description, canonical, image, schemaForGame(deal, canonical))}</head><body>${header()}<main class="game-shell" id="mainContent">
   <nav class="game-breadcrumbs" aria-label="Breadcrumb"><a href="../index.html">Home</a><span>/</span><a href="index.html">Game price checks</a><span>/</span><span aria-current="page">${escapeHTML(deal.title)}</span></nav>
   <header class="game-hero"><div class="game-art">${art}</div><div class="game-hero-copy"><p class="section-kicker">This one cleared the quality bar</p><h1>${escapeHTML(deal.title)} PC deal and price check</h1><p class="game-lede">Today&rsquo;s price, the review evidence behind it, and the reason it ranked where it did.</p><div class="game-tags">${tags.map(tag => `<span>${escapeHTML(tag)}</span>`).join('')}</div></div></header>
-  <section class="offer-panel" aria-labelledby="currentOffer"><div><p class="offer-label">The offer we saved</p><h2 id="currentOffer">${formatPrice(deal.salePrice)} at ${escapeHTML(deal.storeName)}</h2><p>That is ${escapeHTML(deal.discount)}% off the listed normal price of ${formatPrice(deal.normalPrice)}.</p><time${snapshot.iso ? ` datetime="${snapshot.iso}"` : ''}>Prices checked ${escapeHTML(snapshot.label)}</time></div><a class="offer-button" href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(deal.dealID))}" target="_blank" rel="sponsored noopener noreferrer" data-track-deal data-track-surface="game_price_page" data-track-store="${escapeHTML(deal.storeName)}" data-track-price="${escapeHTML(deal.salePrice)}">Check price at ${escapeHTML(deal.storeName)}</a></section>
-  <section class="evidence-grid" aria-label="Deal evidence"><article><span>Deal Score</span><strong>${escapeHTML(deal.dealScore)}<small>/100</small></strong><p>Our combined ranking signal. Emphatically not a review score.</p></article><article><span>Player rating</span><strong>${escapeHTML(deal.userRating)}<small>% positive</small></strong><p>Out of ${formatCount(deal.reviewCount)} recorded player reviews.</p></article><article><span>Price cut</span><strong>${escapeHTML(deal.discount)}<small>% off</small></strong><p>Normally ${formatPrice(deal.normalPrice)}, currently ${formatPrice(deal.salePrice)}.</p></article></section>
+  ${discounted
+    ? `<section class="offer-panel" aria-labelledby="currentOffer"><div><p class="offer-label">The offer we saved</p><h2 id="currentOffer">${formatPrice(deal.salePrice)} at ${escapeHTML(deal.storeName)}</h2><p>That is ${escapeHTML(deal.discount)}% off the listed normal price of ${formatPrice(deal.normalPrice)}.</p><time${snapshot.iso ? ` datetime="${snapshot.iso}"` : ''}>Prices checked ${escapeHTML(snapshot.label)}</time></div><a class="offer-button" href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(deal.dealID))}" target="_blank" rel="sponsored noopener noreferrer" data-track-deal data-track-surface="game_price_page" data-track-store="${escapeHTML(deal.storeName)}" data-track-price="${escapeHTML(deal.salePrice)}">Check price at ${escapeHTML(deal.storeName)}</a></section>`
+    : `<section class="offer-panel offer-panel-expired" aria-labelledby="currentOffer"><div><p class="offer-label">Not discounted right now</p><h2 id="currentOffer">Last seen at ${formatPrice(deal.salePrice)}</h2><p>That was ${escapeHTML(deal.discount)}% off ${formatPrice(deal.normalPrice)} at ${escapeHTML(deal.storeName)}${lastSeen.label && lastSeen.label !== 'the latest refresh' ? `, on ${escapeHTML(lastSeen.label)}` : ''}. It has not appeared in a sweep since, so treat that figure as history rather than a price you can pay today.</p>${lastSeen.iso ? `<time datetime="${lastSeen.iso}">Last recorded ${escapeHTML(lastSeen.label)}</time>` : ''}</div>${deal.steamAppID ? `<a class="offer-button offer-button-secondary" href="https://store.steampowered.com/app/${escapeHTML(deal.steamAppID)}/" target="_blank" rel="noopener noreferrer">See the current price on Steam</a>` : ''}</section>`}
+  <section class="evidence-grid" aria-label="Deal evidence"><article><span>Deal Score</span><strong>${escapeHTML(deal.dealScore)}<small>/100</small></strong><p>${discounted ? 'Our combined ranking signal. Emphatically not a review score.' : 'What it scored when we last recorded an offer. Not a review score.'}</p></article><article><span>Player rating</span><strong>${escapeHTML(deal.userRating)}<small>% positive</small></strong><p>Out of ${formatCount(deal.reviewCount)} recorded player reviews.</p></article><article><span>${discounted ? 'Price cut' : 'Last price cut'}</span><strong>${escapeHTML(deal.discount)}<small>% off</small></strong><p>${discounted ? `Normally ${formatPrice(deal.normalPrice)}, currently ${formatPrice(deal.salePrice)}.` : `Listed at ${formatPrice(deal.normalPrice)}, last recorded at ${formatPrice(deal.salePrice)}.`}</p></article></section>
   <section class="game-context"><div><p class="section-kicker">Why it made the cut</p><h2>Is ${escapeHTML(deal.title)} worth buying at this price?</h2><p>${escapeHTML(selectionReason(deal))}</p><p>These permanent pages keep out add-ons, bundles, Early Access listings, and anything running on a thin review signal.</p></div><aside><h2>Before you buy ${escapeHTML(deal.title)}</h2><ul><li>${escapeHTML(storeCaveat(deal.storeName))}</li><li>The final price and the exact edition, on the store page.</li><li>Whether you will actually play it. The discount cannot answer that one.</li></ul></aside></section>
   <section class="snapshot-note"><h2>How current is this ${escapeHTML(deal.title)} price?</h2><p>This page shows one saved offer from the latest data refresh. It makes no claim about this being the lowest price the game has ever reached, because we cannot prove that. Store prices and availability both move between refreshes.</p></section>
   ${renderRelated(related)}

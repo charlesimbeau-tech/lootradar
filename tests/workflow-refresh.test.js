@@ -57,6 +57,17 @@ test('the refresh workflow limits automated CheapShark pressure', () => {
   assert.match(workflow, /node-version: '24'/);
 });
 
+test('the refresh workflow stages the game page archive', () => {
+  // The archive is what keeps a game page alive after its discount ends. If the
+  // workflow does not commit it, every run starts from empty, expired pages are
+  // deleted again, and their URLs go back to 404.
+  const workflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github', 'workflows', 'update-deals.yml'),
+    'utf8'
+  );
+  assert.match(workflow, /git add game-pages-archive\.json/);
+});
+
 test('paging cannot outgrow the request budget', () => {
   // On 2026-07-30 a deeper paging setting was published without checking it
   // against the budget, CheapShark rate limited the runner for an hour, and 8
