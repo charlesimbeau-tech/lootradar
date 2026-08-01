@@ -57,6 +57,19 @@ test('the refresh workflow limits automated CheapShark pressure', () => {
   assert.match(workflow, /node-version: '24'/);
 });
 
+test('the refresh checkout has enough history to rebase a dispatched branch', () => {
+  const workflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github', 'workflows', 'update-deals.yml'),
+    'utf8'
+  );
+
+  assert.match(
+    workflow,
+    /uses: actions\/checkout@v5\r?\n\s+with:\r?\n(?:\s+#[^\r\n]*\r?\n)*\s+fetch-depth: 0/,
+    'a shallow checkout makes git pull --rebase origin main see unrelated histories'
+  );
+});
+
 test('the refresh workflow stages the game page archive', () => {
   // The archive is what keeps a game page alive after its discount ends. If the
   // workflow does not commit it, every run starts from empty, expired pages are
