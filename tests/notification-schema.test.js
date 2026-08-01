@@ -104,7 +104,7 @@ test('requires token-owned snapshot processing leases', () => {
   );
 });
 
-test('disables gateway JWT only for the cron and signed-token public functions', () => {
+test('disables gateway JWT only for functions that perform their own authentication', () => {
   const config = fs.readFileSync(
     path.join(__dirname, '..', 'supabase', 'config.toml'),
     'utf8'
@@ -112,10 +112,11 @@ test('disables gateway JWT only for the cron and signed-token public functions',
 
   assert.match(config, /\[functions\.process-alerts\][\s\S]*verify_jwt\s*=\s*false/);
   assert.match(config, /\[functions\.unsubscribe\][\s\S]*verify_jwt\s*=\s*false/);
+  assert.match(config, /\[functions\.digest-admin\][\s\S]*verify_jwt\s*=\s*false/);
   assert.equal(
     [...config.matchAll(/verify_jwt\s*=\s*false/g)].length,
-    2,
-    'only process-alerts and unsubscribe may bypass the gateway JWT check'
+    3,
+    'only process-alerts, unsubscribe, and self-authenticated digest-admin may bypass the gateway JWT check'
   );
   assert.doesNotMatch(
     config,
@@ -123,13 +124,14 @@ test('disables gateway JWT only for the cron and signed-token public functions',
   );
 });
 
-test('schedules the processor every three hours with the custom cron secret', () => {
+test('schedules the processor hourly for near-10:00 digest delivery', () => {
   const schedule = fs.readFileSync(
     path.join(__dirname, '..', 'db', 'schedule-alerts.sql'),
     'utf8'
   );
 
-  assert.match(schedule, /'47 \*\/3 \* \* \*'/);
+  assert.match(schedule, /'7 \* \* \* \*'/);
+  assert.doesNotMatch(schedule, /'47 \*\/3 \* \* \*'/);
   assert.match(schedule, /x-lootradar-cron-secret/);
   assert.match(schedule, /lootradar_cron_secret/);
 });

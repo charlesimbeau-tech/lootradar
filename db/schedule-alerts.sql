@@ -1,6 +1,6 @@
 -- Run after storing lootradar_project_url and lootradar_cron_secret in Vault.
--- The processor uses a three-hour local scheduling window, keyed by ISO week,
--- so this UTC cadence catches Friday 10:00 in both standard and daylight time.
+-- The processor uses a one-hour local scheduling window, keyed by ISO week,
+-- so this hourly UTC cadence catches Friday 10:00 in every IANA time zone.
 
 select cron.unschedule('lootradar-process-alerts')
 where exists (
@@ -11,7 +11,7 @@ where exists (
 
 select cron.schedule(
   'lootradar-process-alerts',
-  '47 */3 * * *',
+  '7 * * * *',
   $$
   select net.http_post(
     url := (

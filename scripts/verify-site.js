@@ -16,7 +16,7 @@ const brandIconFiles = [
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png'
 ];
 const requiredSource = [
-  'index.html', 'favicon.ico', 'account.html', 'account.js', 'unsubscribe.html', 'unsubscribe.js',
+  'index.html', 'favicon.ico', 'account.html', 'account.js', 'digest-admin.html', 'digest-admin.js', 'unsubscribe.html', 'unsubscribe.js',
   'methodology.html', 'app.js', 'login.js', 'style.css', 'guides.css', 'game-pages.css', 'manifest.json',
   'alert-deals.json', 'deals.json', 'enriched-deals.json', 'config/editorial-config.js',
   'lib/deal-normalizer.js', 'lib/deal-score.js', 'lib/deal-filters.js', 'lib/game-pages.js',
@@ -30,6 +30,7 @@ const requiredSource = [
 const requiredBuild = [
   'dist/server/index.js', 'dist/static/index.html', 'dist/static/favicon.ico', 'dist/static/app.js',
   'dist/static/account.html', 'dist/static/account.js',
+  'dist/static/digest-admin.html', 'dist/static/digest-admin.js',
   'dist/static/unsubscribe.html', 'dist/static/unsubscribe.js',
   'dist/static/login.js',
   'dist/static/alert-deals.json', 'dist/static/deals.json',

@@ -34,7 +34,7 @@ const DEFAULT_PROFILE = {
   popularityMin: 0,
   genreMatchMode: 'any',
   preset: 'custom',
-  genres: ['RPG','Action','Indie'], likes: {}, dislikes: {}
+  genres: ['RPG','Action','Indie'], stores: [], likes: {}, dislikes: {}
 };
 const STORAGE_KEY = 'lr_rec_profile_v3';
 
@@ -63,6 +63,7 @@ try {
 function freshDefaultProfile() {
   return Object.assign({}, DEFAULT_PROFILE, {
     genres: DEFAULT_PROFILE.genres.slice(),
+    stores: [],
     likes: {},
     dislikes: {}
   });
@@ -75,6 +76,8 @@ function loadProfile() {
       var merged = Object.assign({}, DEFAULT_PROFILE, saved);
       if (!Array.isArray(merged.genres)) merged.genres = DEFAULT_PROFILE.genres.slice();
       else merged.genres = merged.genres.slice();
+      if (!Array.isArray(merged.stores)) merged.stores = [];
+      else merged.stores = merged.stores.slice();
       merged.likes = Object.assign({}, merged.likes || {});
       merged.dislikes = Object.assign({}, merged.dislikes || {});
       return merged;
@@ -166,9 +169,11 @@ function initAccountSync() {
     if (!result || !result.profile || result.cancelled) return;
     profile = Object.assign({}, DEFAULT_PROFILE, result.profile);
     if (!Array.isArray(profile.genres)) profile.genres = DEFAULT_PROFILE.genres.slice();
+    if (!Array.isArray(profile.stores)) profile.stores = [];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
     reflectProfileInControls();
     buildGenrePills();
+    buildStorePills();
     if (catalog.length || deals.length) renderRecommendations();
   }).catch(function() {
     reflectAccountState({ status: 'delayed', user: account.state().user });
@@ -281,6 +286,8 @@ function scoreGame(game) {
   }
   var key = itemKey(game);
 
+  if (profile.stores.length && profile.stores.indexOf(gameStoreName(game)) === -1) return -999;
+
   var score = 0;
   score += Math.min(1, genreMatches / Math.max(1, profile.genres.length)) * 0.35;
   score += Math.min(1, savings / 100) * 0.25;
@@ -348,6 +355,46 @@ function gameStoreName(game) {
   if (entry && entry.name) return entry.name;
   if (entry && entry.storeName) return entry.storeName;
   return game.dealID ? 'Participating store' : 'Steam';
+}
+
+function availableStoreNames() {
+  var names = [];
+  Object.keys(stores || {}).forEach(function(key) {
+    var entry = stores[key] || {};
+    var name = String(entry.name || entry.storeName || '').trim();
+    if (name && names.indexOf(name) === -1) names.push(name);
+  });
+  return names.sort(function(a, b) { return a.localeCompare(b); });
+}
+
+function buildStorePills() {
+  var wrap = document.getElementById('storePills');
+  var hint = document.getElementById('storeHint');
+  if (!wrap) return;
+  var names = availableStoreNames();
+  var selected = Array.isArray(profile.stores) ? profile.stores : [];
+  wrap.replaceChildren();
+  names.forEach(function(name) {
+    var button = document.createElement('button');
+    var trusted = selected.length === 0 || selected.indexOf(name) !== -1;
+    button.type = 'button';
+    button.className = 'store-pill' + (trusted ? ' active' : '');
+    button.textContent = name;
+    button.setAttribute('aria-pressed', trusted ? 'true' : 'false');
+    button.addEventListener('click', function() {
+      var current = profile.stores.length ? profile.stores.slice() : names.slice();
+      var index = current.indexOf(name);
+      if (index === -1) current.push(name);
+      else if (current.length > 1) current.splice(index, 1);
+      current.sort(function(a, b) { return a.localeCompare(b); });
+      profile.stores = current.length === names.length ? [] : current;
+      saveProfile(); buildStorePills(); renderRecommendations();
+    });
+    wrap.appendChild(button);
+  });
+  if (hint) hint.textContent = selected.length
+    ? selected.length + (selected.length === 1 ? ' trusted store selected.' : ' trusted stores selected.')
+    : 'All participating stores are trusted.';
 }
 
 function escapeAttribute(value) {
@@ -602,6 +649,7 @@ function bindControls() {
   var selectAllGenres = document.getElementById('selectAllGenres');
   var clearGenres = document.getElementById('clearGenres');
   var launchQuiz = document.getElementById('launchQuiz');
+  var trustAllStores = document.getElementById('trustAllStores');
 
   reflectProfileInControls();
 
@@ -657,6 +705,10 @@ function bindControls() {
     saveProfile(); buildGenrePills(); updateGenreHint(); renderRecommendations();
   });
   if (launchQuiz) launchQuiz.addEventListener('click', function() { openQuiz(); });
+  if (trustAllStores) trustAllStores.addEventListener('click', function() {
+    profile.stores = [];
+    saveProfile(); buildStorePills(); renderRecommendations();
+  });
 
   var saveBtn = document.getElementById('savePrefs');
   if (saveBtn) saveBtn.addEventListener('click', function() {
@@ -715,6 +767,7 @@ function init() {
     var base = results[0] || {};
     var enriched = results[1];
     stores = base.stores || (enriched && enriched.stores) || {};
+    buildStorePills();
 
     var metaByDeal = {};
     var metaByApp = {};

@@ -33,6 +33,7 @@ export interface DigestDeal {
 
 export interface WeeklyDigestEmailInput extends EmailLinks {
   deals: DigestDeal[];
+  personalized?: boolean;
 }
 
 const RETAILER_CAVEAT =
@@ -248,7 +249,12 @@ export function renderWeeklyDigestEmail(input: WeeklyDigestEmailInput): Rendered
       240,
     ),
   }));
-  const subject = "Five PC game deals worth a look this week";
+  const subject = input.personalized
+    ? "Five PC game deals picked for you this week"
+    : "Five PC game deals worth a look this week";
+  const introduction = input.personalized
+    ? "A quality-first shortlist shaped by your saved LootRadar preferences."
+    : "A quality-first shortlist from this week's LootRadar scan.";
   const listItems = deals.map((deal) =>
     `<li style="margin:0 0 14px"><strong>${escapeHtml(deal.title)}</strong> — ${
       escapeHtml(money(deal.salePrice))
@@ -258,7 +264,7 @@ export function renderWeeklyDigestEmail(input: WeeklyDigestEmailInput): Rendered
   ).join("");
   const content = `
         <h1 style="margin:0;font-size:28px;line-height:1.2">Five deals worth a look</h1>
-        <p style="font-size:17px;line-height:1.55">A quality-first shortlist from this week's LootRadar scan.</p>
+        <p style="font-size:17px;line-height:1.55">${escapeHtml(introduction)}</p>
         <ol style="padding-left:22px;font-size:16px;line-height:1.5">${listItems}</ol>
         <p style="margin:24px 0">
           <a href="${
@@ -273,7 +279,7 @@ export function renderWeeklyDigestEmail(input: WeeklyDigestEmailInput): Rendered
   const text = [
     "Five deals worth a look",
     "",
-    "A quality-first shortlist from this week's LootRadar scan.",
+    introduction,
     "",
     ...dealLines,
     "",

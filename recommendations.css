@@ -119,6 +119,27 @@ html, body {
   margin-top: 0.35rem;
 }
 
+.store-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.store-pill {
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text-2);
+  border-radius: 999px;
+  padding: 0.42rem 0.7rem;
+  cursor: pointer;
+}
+
+.store-pill.active {
+  border-color: var(--mint);
+  background: var(--mint-soft);
+  color: var(--mint);
+}
+
 #becauseSection {
   margin-top: 18px;
 }

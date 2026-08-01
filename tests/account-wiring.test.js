@@ -113,6 +113,17 @@ test('recommendation feedback uses discoverable visible button names', () => {
   assert.doesNotMatch(source, /Hit like on a few games/);
 });
 
+test('recommendations expose synchronized trusted-store controls and filtering', () => {
+  const html = read('recommendations.html');
+  const source = read('recommendations.js');
+  assert.match(html, /Stores you trust/);
+  assert.match(html, /id="storePills"/);
+  assert.match(html, /id="trustAllStores"/);
+  assert.match(source, /stores:\s*\[\]/);
+  assert.match(source, /profile\.stores\.indexOf\(gameStoreName\(game\)\)/);
+  assert.match(source, /saveProfile\(\);\s*buildStorePills\(\);\s*renderRecommendations\(\)/);
+});
+
 test('both pages expose local, pending, complete, and delayed status copy', () => {
   for (const file of ['app.js', 'recommendations.js']) {
     const source = read(file);

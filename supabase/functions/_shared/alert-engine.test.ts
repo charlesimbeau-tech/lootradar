@@ -20,6 +20,7 @@ type DealOverride = Partial<{
   dealId: string;
   dealScore: number;
   recommendation: string;
+  genres: string[];
   free: boolean;
 }>;
 
@@ -36,6 +37,7 @@ function makeDeal(index: number, overrides: DealOverride = {}) {
     dealId: overrides.dealId ?? `encoded-deal-${index}`,
     dealScore: overrides.dealScore ?? 100 - index,
     recommendation: overrides.recommendation ?? `Quality reason ${index + 1}`,
+    genres: overrides.genres ?? [index % 2 === 0 ? "Action" : "RPG"],
     free: overrides.free ?? salePrice === 0,
   };
 }
@@ -199,6 +201,75 @@ Deno.test("digest candidates suppress a week that already has a delivery key", (
   const snapshot = makeSnapshot();
   const key = digestKey("user-1", "2026-W31");
   assert.deepEqual(digestCandidates(snapshot, "user-1", "2026-W31", new Set([key])), []);
+});
+
+Deno.test("digest personalization enforces budget, stores, dislikes, and ranks genre matches", () => {
+  const deals = [
+    makeDeal(0, {
+      title: "Wrong Store",
+      storeName: "GOG",
+      salePrice: 5,
+      dealScore: 100,
+      genres: ["RPG"],
+    }),
+    makeDeal(1, {
+      title: "Over Budget",
+      storeName: "Steam",
+      salePrice: 25,
+      dealScore: 99,
+      genres: ["RPG"],
+    }),
+    makeDeal(2, {
+      title: "Disliked",
+      storeName: "Steam",
+      salePrice: 5,
+      dealScore: 98,
+      dealId: "disliked",
+      genres: ["RPG"],
+    }),
+    makeDeal(3, {
+      title: "Genre Match",
+      storeName: "Steam",
+      salePrice: 9,
+      dealScore: 70,
+      genres: ["RPG"],
+    }),
+    makeDeal(4, {
+      title: "Liked Match",
+      storeName: "Steam",
+      salePrice: 10,
+      dealScore: 69,
+      gameKey: "steam:444",
+      genres: ["Strategy"],
+    }),
+    ...Array.from({ length: 15 }, (_, index) =>
+      makeDeal(index + 5, {
+        storeName: "Steam",
+        salePrice: 10,
+        dealScore: 68 - index,
+        genres: [index < 4 ? "RPG" : "Action"],
+      })),
+  ];
+  const candidate = digestCandidates(
+    makeSnapshot({ deals }),
+    "user-1",
+    "2026-W31",
+    new Set(),
+    {
+      budget: 10,
+      genres: ["RPG"],
+      stores: ["Steam"],
+      likes: { "app-444": "2026-07-30T10:00:00.000Z" },
+      dislikes: { disliked: "2026-07-30T10:00:00.000Z" },
+    },
+  )[0];
+
+  assert.equal(candidate.deals.length, 5);
+  assert.equal(candidate.deals[0].title, "Liked Match");
+  assert.ok(candidate.deals.some((deal) => deal.title === "Genre Match"));
+  assert.ok(candidate.deals.every((deal) => deal.salePrice <= 10));
+  assert.ok(candidate.deals.every((deal) => deal.storeName === "Steam"));
+  assert.ok(!candidate.deals.some((deal) => deal.dealId === "disliked"));
 });
 
 Deno.test("Friday 10:00 digest is due only in its saved IANA time-zone hour", () => {

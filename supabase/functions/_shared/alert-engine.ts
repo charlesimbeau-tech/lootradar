@@ -14,6 +14,7 @@ export type AlertDeal = Readonly<{
   dealId: string;
   dealScore: number;
   recommendation: string;
+  genres: readonly string[];
   free: boolean;
 }>;
 
@@ -54,12 +55,22 @@ export type DigestCandidate = Readonly<{
   snapshotId: string;
   weekKey: string;
   deals: readonly AlertDeal[];
+  personalized: boolean;
 }>;
 
 export type DigestPreference = Readonly<{
   timezone: string;
   digest_day: number;
   digest_hour: number;
+}>;
+
+export type DigestProfile = Readonly<{
+  budget: number | null;
+  genres: readonly string[];
+  stores: readonly string[];
+  genreMatchMode: "any" | "all";
+  likes: ReadonlySet<string>;
+  dislikes: ReadonlySet<string>;
 }>;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -93,6 +104,20 @@ function validateDeal(value: unknown, index: number): asserts value is AlertDeal
   requireNonEmptyString(value.storeName, `Deal ${index} store name`);
   requireNonEmptyString(value.recommendation, `Deal ${index} recommendation`);
   requireNonEmptyString(value.dealId, `Deal ${index} deal ID`);
+
+  if (!Array.isArray(value.genres) || value.genres.length > 20) {
+    throw new TypeError(`Deal ${index} genres must be an array of at most 20 values`);
+  }
+  const genreKeys = new Set<string>();
+  value.genres.forEach((genre, genreIndex) => {
+    requireNonEmptyString(genre, `Deal ${index} genre ${genreIndex}`);
+    if (genre.length > 80) throw new TypeError(`Deal ${index} genre is too long`);
+    const key = genre.normalize("NFKC").trim().toLocaleLowerCase("en");
+    if (key !== genre.toLocaleLowerCase("en") || genreKeys.has(key)) {
+      throw new TypeError(`Deal ${index} genres must be normalized and distinct`);
+    }
+    genreKeys.add(key);
+  });
 
   if (!SAFE_ENCODED_DEAL_ID.test(value.dealId)) {
     throw new TypeError(`Deal ${index} must use an HTTPS-safe encoded deal ID`);
@@ -260,6 +285,53 @@ function compareDeals(a: AlertDeal, b: AlertDeal): number {
     a.gameKey.localeCompare(b.gameKey);
 }
 
+function normalizedStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const item of value) {
+    if (typeof item !== "string") continue;
+    const normalized = item.normalize("NFKC").trim().toLocaleLowerCase("en");
+    if (!normalized || normalized.length > 100 || seen.has(normalized)) continue;
+    seen.add(normalized);
+    result.push(normalized);
+    if (result.length === 50) break;
+  }
+  return result;
+}
+
+function actionKeys(value: unknown): Set<string> {
+  if (!isRecord(value)) return new Set();
+  return new Set(
+    Object.keys(value)
+      .map((key) => key.trim())
+      .filter((key) => key.length > 0 && key.length <= 256),
+  );
+}
+
+export function normalizeDigestProfile(value: unknown): DigestProfile {
+  const profile = isRecord(value) ? value : {};
+  const rawBudget = profile.budget === null || profile.budget === ""
+    ? Number.NaN
+    : Number(profile.budget);
+  return {
+    budget: Number.isFinite(rawBudget) && rawBudget >= 0 && rawBudget <= 10_000 ? rawBudget : null,
+    genres: normalizedStringList(profile.genres),
+    stores: normalizedStringList(profile.stores),
+    genreMatchMode: profile.genreMatchMode === "all" ? "all" : "any",
+    likes: actionKeys(profile.likes),
+    dislikes: actionKeys(profile.dislikes),
+  };
+}
+
+function profileReferencesDeal(keys: ReadonlySet<string>, deal: AlertDeal): boolean {
+  if (keys.has(deal.dealId) || keys.has(deal.gameKey)) return true;
+  if (deal.gameKey.startsWith("steam:")) {
+    return keys.has(`app-${deal.gameKey.slice("steam:".length)}`);
+  }
+  return false;
+}
+
 function titleFamily(title: string): string {
   return title
     .normalize("NFKD")
@@ -273,10 +345,31 @@ function titleFamily(title: string): string {
     .trim();
 }
 
-function chooseDigestDeals(deals: readonly AlertDeal[]): AlertDeal[] {
+export function chooseDigestDeals(
+  deals: readonly AlertDeal[],
+  profileValue?: unknown,
+): AlertDeal[] {
+  const profile = normalizeDigestProfile(profileValue);
+  const trustedStores = new Set(profile.stores);
+  const preferredGenres = new Set(profile.genres);
+  const personalizedScore = (deal: AlertDeal): number => {
+    const dealGenres = deal.genres.map((genre) => genre.toLocaleLowerCase("en"));
+    const matches = dealGenres.filter((genre) => preferredGenres.has(genre)).length;
+    const genreBoost = profile.genres.length === 0
+      ? 0
+      : profile.genreMatchMode === "all"
+      ? (matches === profile.genres.length ? 15 : 0)
+      : 15 * Math.min(1, matches / profile.genres.length);
+    return deal.dealScore + genreBoost + (profileReferencesDeal(profile.likes, deal) ? 30 : 0);
+  };
   const exactTitles = new Set<string>();
   const remaining = [...deals]
-    .sort(compareDeals)
+    .filter((deal) => profile.budget === null || deal.salePrice <= profile.budget)
+    .filter((deal) =>
+      trustedStores.size === 0 || trustedStores.has(deal.storeName.toLocaleLowerCase("en"))
+    )
+    .filter((deal) => !profileReferencesDeal(profile.dislikes, deal))
+    .sort((a, b) => personalizedScore(b) - personalizedScore(a) || compareDeals(a, b))
     .filter((deal) => {
       const normalizedTitle = deal.title.normalize("NFKC").toLocaleLowerCase("en");
       if (exactTitles.has(normalizedTitle)) return false;
@@ -316,18 +409,25 @@ export function digestCandidates(
   userId: string,
   weekKey: string,
   priorKeys: ReadonlySet<string>,
+  profile?: unknown,
 ): DigestCandidate[] {
   const conditionKey = digestKey(userId, weekKey);
   if (priorKeys.has(conditionKey)) return [];
 
-  const deals = chooseDigestDeals(snapshot.deals);
+  const deals = chooseDigestDeals(snapshot.deals, profile);
   if (deals.length < 5) return [];
+  const normalizedProfile = normalizeDigestProfile(profile);
   return [{
     alertType: "weekly_digest",
     conditionKey,
     snapshotId: snapshot.snapshotId,
     weekKey,
     deals,
+    personalized: normalizedProfile.budget !== null ||
+      normalizedProfile.genres.length > 0 ||
+      normalizedProfile.stores.length > 0 ||
+      normalizedProfile.likes.size > 0 ||
+      normalizedProfile.dislikes.size > 0,
   }];
 }
 

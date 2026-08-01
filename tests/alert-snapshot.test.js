@@ -35,6 +35,7 @@ function rankedDeal(index, overrides = {}) {
     dealID: `deal-${index}`,
     dealScore: 80 - index,
     recommendation: `Recommendation ${index}`,
+    genres: ['Action', 'Indie', 'Action'],
     eligible: true,
     ...overrides
   };
@@ -98,6 +99,7 @@ test('builds a deterministic quality-qualified snapshot with lowest-price dedupl
 
   const free = snapshot.deals.find(deal => deal.gameKey === 'steam:free');
   assert.equal(free.free, true);
+  assert.deepEqual(free.genres, ['Action', 'Indie']);
 
   assert.deepEqual(
     snapshot.deals.map(deal => deal.title),
@@ -185,5 +187,14 @@ test('snapshot validation rejects duplicate keys and non-finite numeric fields',
       ))
     }),
     /finite deal score/i
+  );
+  assert.throws(
+    () => validateAlertSnapshot({
+      ...snapshot,
+      deals: snapshot.deals.map((deal, index) => (
+        index === 0 ? { ...deal, genres: ['Action', 'Bad\nGenre'] } : deal
+      ))
+    }),
+    /genre/i
   );
 });

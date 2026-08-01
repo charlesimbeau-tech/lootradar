@@ -34,6 +34,7 @@ function makeSnapshot(updatedAt = NOW.toISOString()) {
       dealId: `encoded-deal-${index}`,
       dealScore: 100 - index,
       recommendation: `Quality reason ${index + 1}`,
+      genres: [index % 2 === 0 ? "Action" : "RPG"],
       free: index === 0,
     })),
   };
@@ -68,6 +69,7 @@ class MemoryRepository implements AlertRepository {
   deliveries: AlertDeliveryRow[] = [];
   rejected: string[] = [];
   email = "player@example.test";
+  digestProfiles: Array<{ user_id: string; data: unknown }> = [];
 
   async recordRejectedSnapshot(
     input: { snapshotId: string; reason: string },
@@ -109,6 +111,10 @@ class MemoryRepository implements AlertRepository {
 
   async loadWatchlists(): Promise<typeof this.watchlists> {
     return structuredClone(this.watchlists);
+  }
+
+  async loadDigestProfiles(): Promise<typeof this.digestProfiles> {
+    return structuredClone(this.digestProfiles);
   }
 
   async loadPriorDeliveryKeys(): Promise<Map<string, Set<string>>> {
@@ -478,6 +484,31 @@ Deno.test("selects target, free, and due weekly digest candidates", async () => 
   assert.equal(sent.length, 3);
 });
 
+Deno.test("a due digest is selected even when the current snapshot was processed earlier", async () => {
+  const repository = new MemoryRepository();
+  repository.preferences = [preference({
+    free_game_enabled: false,
+    weekly_digest_enabled: true,
+  })];
+  repository.snapshots.set(NOW.toISOString(), "processed");
+  const sends: EmailMessage[] = [];
+  const { handler } = makeHarness({
+    repository,
+    send: async (message) => {
+      sends.push(message);
+      return { id: "digest-provider" };
+    },
+  });
+
+  const response = await handler(makeRequest());
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body.claimed, false);
+  assert.equal(body.delivered, 1);
+  assert.equal(sends.length, 1);
+  assert.match(sends[0].subject, /five pc game deals/i);
+});
+
 Deno.test("suppresses an existing retry when its category is disabled", async () => {
   const repository = new MemoryRepository();
   repository.preferences = [preference({ free_game_enabled: false })];
@@ -539,7 +570,7 @@ Deno.test("caps work at 100 rows and no more than five concurrent sends", async 
   );
 });
 
-Deno.test("digest window covers the scheduled three-hour interval and keeps the target week", () => {
+Deno.test("digest window covers the scheduled hourly interval and keeps the target week", () => {
   const friday = preference({
     weekly_digest_enabled: true,
     digest_day: 5,
@@ -550,11 +581,11 @@ Deno.test("digest window covers the scheduled three-hour interval and keeps the 
     "2026-W31",
   );
   assert.equal(
-    digestWindowDue(friday, new Date("2026-07-31T16:59:00.000Z")),
+    digestWindowDue(friday, new Date("2026-07-31T14:59:00.000Z")),
     "2026-W31",
   );
   assert.equal(
-    digestWindowDue(friday, new Date("2026-07-31T17:00:00.000Z")),
+    digestWindowDue(friday, new Date("2026-07-31T15:00:00.000Z")),
     null,
   );
 
@@ -564,7 +595,7 @@ Deno.test("digest window covers the scheduled three-hour interval and keeps the 
     digest_hour: 23,
   });
   assert.equal(
-    digestWindowDue(sundayLate, new Date("2027-01-04T00:30:00.000Z")),
+    digestWindowDue(sundayLate, new Date("2027-01-04T00:30:00.000Z"), 120),
     "2026-W53",
   );
 });
@@ -736,6 +767,36 @@ Deno.test("REST watchlist reads are user-batched, paginated, and tombstone-filte
     assert.equal(request.range, "0-499");
   }
   assert.match(requests[0].url.searchParams.get("user_id") ?? "", /^in\.\(/);
+});
+
+Deno.test("REST digest profile reads are user-batched and select only private profile data", async () => {
+  const requests: Array<{ url: URL; range: string | null }> = [];
+  const fetchImpl = (async (
+    input: string | URL | Request,
+    init?: RequestInit,
+  ) => {
+    const url = new URL(String(input));
+    requests.push({ url, range: new Headers(init?.headers).get("range") });
+    return Response.json([]);
+  }) as typeof fetch;
+  const repository = new RestAlertRepository({
+    supabaseUrl: "https://project.supabase.co",
+    serviceRoleKey: "service-role-secret",
+    fetchImpl,
+  });
+  const userIds = Array.from(
+    { length: 101 },
+    (_, index) => `00000000-0000-4000-8000-${String(index).padStart(12, "0")}`,
+  );
+
+  await repository.loadDigestProfiles(userIds);
+
+  assert.equal(requests.length, 2);
+  for (const request of requests) {
+    assert.equal(request.url.pathname, "/rest/v1/lr_profiles");
+    assert.equal(request.url.searchParams.get("select"), "user_id,data");
+    assert.equal(request.range, "0-499");
+  }
 });
 
 Deno.test("REST delivery claims enforce the attempt ceiling in the CAS query", async () => {

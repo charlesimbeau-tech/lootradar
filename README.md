@@ -117,18 +117,22 @@ For default-off deal email:
    ```bash
    supabase secrets set \
      CRON_SECRET="<random-cron-secret>" \
+     DIGEST_ADMIN_USER_IDS="<comma-separated-owner-user-ids>" \
      RESEND_API_KEY="<resend-sending-key>" \
      UNSUBSCRIBE_SECRET="<random-unsubscribe-secret>"
    ```
 
 3. Deploy the server functions. `supabase/config.toml` keeps the cron-secret
-   processor and signed-token unsubscribe endpoint public at the gateway;
-   each performs its own scoped authentication. Account deletion continues to
-   require a valid user JWT.
+   processor, signed-token unsubscribe endpoint, and owner-only digest preview
+   public at the gateway; each performs its own scoped authentication. Digest
+   administration resolves the bearer session server-side and then checks the
+   encrypted user-ID allowlist. Account deletion continues to require a valid
+   user JWT.
 
    ```bash
    supabase functions deploy process-alerts
    supabase functions deploy unsubscribe
+   supabase functions deploy digest-admin
    supabase functions deploy delete-account
    ```
 
@@ -137,7 +141,9 @@ For default-off deal email:
    Enable `pg_cron` and `pg_net`, then apply `db/schedule-alerts.sql`.
 5. Keep every notification preference disabled and invoke `process-alerts`
    once with the cron header. Confirm the current snapshot is processed with
-   zero deliveries, then test each category using one controlled account.
+   zero deliveries, then test each category using one controlled account. Use
+   `/digest-admin.html` with an allowlisted owner account to preview the exact
+   personalized five deals and deliberately send one test digest.
 
 Email controls use the public `LR_ALERTS_ENABLED` repository variable as a
 release gate. Leave it unset or `false` until the Resend sending domain, alert
@@ -242,8 +248,8 @@ The build produces `dist/static` plus a Cloudflare Worker-compatible `dist/serve
 - Historical lows are loaded on demand; the grid uses a labeled proxy to avoid bulk API calls.
 - There is no full price-history time series or typical-sale frequency.
 - Console deals and verified Steam Deck status require new licensed sources.
-- Deal email code is default-off and requires the documented Supabase, Resend,
-  Vault, schedule, and controlled-delivery configuration before activation.
+- Deal email is live and remains opt-in per category. The processor runs hourly;
+  weekly digests use synchronized budget, genre, trusted-store, and feedback data.
 - Publisher/developer signals are supported by configuration but metadata coverage is incomplete.
 - Existing personalized recommendations use their older profile score and have not yet been migrated to the new Deal Score.
 
@@ -254,8 +260,7 @@ The build produces `dist/static` plus a Cloudflare Worker-compatible `dist/serve
    their own feed, per the confirmed CheapShark terms above.
 2. Add a licensed price-history/console source behind a replaceable adapter.
 3. Add a normalized offer/score snapshot history for deeper price analysis.
-4. Verify the default-off email pipeline in production before setting
-   `LR_ALERTS_ENABLED=true`.
+4. Monitor hourly alert runs and Resend delivery/bounce outcomes as the opt-in list grows.
 5. Ingest verified Steam Deck status from a permitted source.
 6. Build a protected owner dashboard over `editorial-config` and flagged-title review queues.
 7. Migrate personalized recommendations to blend preference fit with the same transparent Deal Score.

@@ -16,7 +16,7 @@ Both worked end to end on 2026-07-31.
 | DKIM / SPF / return-path records | Published and resolving |
 | DMARC | Published at `p=none` (monitor only) |
 | Gmail send-as for `contact@` | Working from `charlesimbeau7@gmail.com`, the same mailbox the forward lands in |
-| `deals@` alert pipeline | Not enabled; `LR_ALERTS_ENABLED` still false |
+| `deals@` alert pipeline | Live since 2026-08-01; default-off preferences, hourly processing, and signed unsubscribe verified |
 
 Records published to the zone on 2026-07-31, all confirmed against the
 authoritative nameserver and public resolvers:
@@ -77,21 +77,13 @@ Two things cost real time during setup and are worth remembering:
 Cloudflare's Email Routing configuration cannot be read with a `Zone:DNS:Edit`
 token; those endpoints return 403 by design. Use the dashboard.
 
-## Current state, verified 2026-07-31
+## Current state
 
-```
-thelootradar.com              MX    route1.mx.cloudflare.net   (28)
-thelootradar.com              MX    route2.mx.cloudflare.net   (76)
-thelootradar.com              MX    route3.mx.cloudflare.net   (94)
-thelootradar.com              TXT   "v=spf1 include:_spf.mx.cloudflare.net ~all"
-thelootradar.com              TXT   "google-site-verification=reZ-lVyx..."
-send.thelootradar.com               does not exist
-resend._domainkey             TXT   does not exist
-_dmarc                        TXT   does not exist
-```
-
-Receiving is confirmed working: mail addressed to `contact@thelootradar.com`
-has been forwarding to the owner's Gmail since at least 2026-02-17.
+Receiving and sending are both confirmed working. The root Cloudflare Email
+Routing records remain intact, while Resend's DKIM, return-path MX/SPF, and
+DMARC records use their separate documented names. The deal-alert functions,
+Vault-backed cron secret, hourly `pg_cron` job, Resend delivery, and signed
+global unsubscribe were verified in production on 2026-08-01.
 
 Re-check any time with:
 
@@ -200,5 +192,5 @@ in phases 2 to 5 disturbed the routing.
 
 The README's Resend instructions cover `deals@thelootradar.com` for the
 default-off deal email. Phases 1 to 3 here are the same domain verification
-that pipeline needs, so doing this once serves both. `LR_ALERTS_ENABLED` should
-stay `false` until the rest of the README's checklist is genuinely complete.
+that pipeline needs, so doing this once serves both. `LR_ALERTS_ENABLED` is now
+`true`; individual categories remain off until each signed-in user opts in.

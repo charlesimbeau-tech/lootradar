@@ -29,7 +29,7 @@ const SENDING_LEASE_MS = 10 * 60 * 1000;
 const PROVIDER_IDEMPOTENCY_SAFETY_MS = 23 * 60 * 60 * 1000;
 const UNSUBSCRIBE_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000 - 1_000;
 const MAX_ATTEMPTS = 5;
-const DIGEST_WINDOW_MINUTES = 3 * 60;
+const DIGEST_WINDOW_MINUTES = 60;
 const REST_PAGE_SIZE = 500;
 const USER_FILTER_BATCH_SIZE = 100;
 const WEEK_MINUTES = 7 * 24 * 60;
@@ -66,6 +66,11 @@ export interface AlertWatchlistEntry {
   game_key: string;
   title: string;
   target_price: number;
+}
+
+export interface AlertDigestProfileRow {
+  user_id: string;
+  data: unknown;
 }
 
 export interface FrozenEmailPayload extends EmailMessage {
@@ -133,6 +138,10 @@ export interface AlertRepository {
     userIds: readonly string[],
     signal?: AbortSignal,
   ): Promise<AlertWatchlistEntry[]>;
+  loadDigestProfiles(
+    userIds: readonly string[],
+    signal?: AbortSignal,
+  ): Promise<AlertDigestProfileRow[]>;
   loadPriorDeliveryKeys(
     userIds: readonly string[],
     signal?: AbortSignal,
@@ -444,6 +453,7 @@ function buildCandidateRows(
   watchlists: ReadonlyMap<string, readonly AlertWatchlistEntry[]>,
   priorKeys: ReadonlyMap<string, ReadonlySet<string>>,
   now: Date,
+  digestProfiles: ReadonlyMap<string, unknown> = new Map(),
 ): AlertDeliveryRow[] {
   const rows: AlertDeliveryRow[] = [];
   for (const preference of preferences) {
@@ -490,7 +500,13 @@ function buildCandidateRows(
       const weekKey = digestWindowDue(preference, now);
       if (weekKey) {
         for (
-          const candidate of digestCandidates(snapshot, preference.user_id, weekKey, keys)
+          const candidate of digestCandidates(
+            snapshot,
+            preference.user_id,
+            weekKey,
+            keys,
+            digestProfiles.get(preference.user_id),
+          )
         ) {
           rows.push({
             id: crypto.randomUUID(),
@@ -525,6 +541,7 @@ function candidateForDelivery(
   snapshot: AlertSnapshot,
   delivery: AlertDeliveryRow,
   watchlists: ReadonlyMap<string, readonly AlertWatchlistEntry[]>,
+  digestProfiles: ReadonlyMap<string, unknown>,
 ) {
   if (delivery.alert_type === "target_price") {
     const targetPrice = conditionTargetPrice(delivery.condition_key);
@@ -543,9 +560,13 @@ function candidateForDelivery(
   }
   const week = conditionWeek(delivery.condition_key);
   if (!week) return null;
-  return digestCandidates(snapshot, delivery.user_id, week, new Set()).find((candidate) =>
-    candidate.conditionKey === delivery.condition_key
-  ) ?? null;
+  return digestCandidates(
+    snapshot,
+    delivery.user_id,
+    week,
+    new Set(),
+    digestProfiles.get(delivery.user_id),
+  ).find((candidate) => candidate.conditionKey === delivery.condition_key) ?? null;
 }
 
 function appendToken(endpoint: string, token: string): string {
@@ -626,6 +647,7 @@ function renderDelivery(
         dealScore: deal.dealScore,
         recommendation: deal.recommendation,
       })),
+      personalized: candidate.personalized,
       ...shared,
     }),
     to: email,
@@ -781,24 +803,36 @@ export function createProcessAlertsHandler(
         ? await dependencies.repository.loadWatchlists(userIds, signal)
         : [];
       const watchlists = groupWatchlists(watchlistRows);
+      const digestUserIds = userIds.filter((userId) =>
+        preferences.some((preference) =>
+          preference.user_id === userId && preference.weekly_digest_enabled === true
+        )
+      );
+      const digestProfileRows = digestUserIds.length > 0
+        ? await dependencies.repository.loadDigestProfiles(digestUserIds, signal)
+        : [];
+      const digestProfiles = new Map(
+        digestProfileRows.map((row) => [row.user_id, row.data]),
+      );
 
       let created = 0;
-      if (claim) {
-        try {
-          const priorKeys = userIds.length > 0
-            ? await dependencies.repository.loadPriorDeliveryKeys(userIds, signal)
-            : new Map<string, Set<string>>();
-          const rows = buildCandidateRows(
-            snapshot,
-            preferences,
-            watchlists,
-            priorKeys,
-            startedAt,
-          );
-          if (rows.length > 0) {
-            await dependencies.repository.insertDeliveries(rows, signal);
-          }
-          created = rows.length;
+      try {
+        const priorKeys = userIds.length > 0
+          ? await dependencies.repository.loadPriorDeliveryKeys(userIds, signal)
+          : new Map<string, Set<string>>();
+        const rows = buildCandidateRows(
+          snapshot,
+          preferences,
+          watchlists,
+          priorKeys,
+          startedAt,
+          digestProfiles,
+        );
+        if (rows.length > 0) {
+          await dependencies.repository.insertDeliveries(rows, signal);
+        }
+        created = rows.length;
+        if (claim) {
           const completed = await dependencies.repository.completeSnapshot(
             snapshot.snapshotId,
             claim.token,
@@ -810,7 +844,9 @@ export function createProcessAlertsHandler(
           if (!completed) {
             return jsonResponse(409, { error: "Snapshot processing lease was lost" });
           }
-        } catch (error) {
+        }
+      } catch (error) {
+        if (claim) {
           await dependencies.repository.completeSnapshot(
             snapshot.snapshotId,
             claim.token,
@@ -819,8 +855,8 @@ export function createProcessAlertsHandler(
             now().toISOString(),
             signal,
           );
-          return jsonResponse(500, { error: "Alert selection failed safely" });
         }
+        return jsonResponse(500, { error: "Alert selection failed safely" });
       }
 
       const currentTime = now();
@@ -937,7 +973,12 @@ export function createProcessAlertsHandler(
             return;
           }
         } else {
-          const candidate = candidateForDelivery(snapshot, delivery, watchlists);
+          const candidate = candidateForDelivery(
+            snapshot,
+            delivery,
+            watchlists,
+            digestProfiles,
+          );
           if (!candidate) {
             suppressed += 1;
             await dependencies.repository.updateDelivery(
@@ -1339,6 +1380,28 @@ export class RestAlertRepository implements AlertRepository {
       all.push(
         ...await this.#allPages<AlertWatchlistEntry>(
           `lr_watchlist?${query}`,
+          signal,
+        ),
+      );
+    }
+    return all;
+  }
+
+  async loadDigestProfiles(
+    userIds: readonly string[],
+    signal?: AbortSignal,
+  ): Promise<AlertDigestProfileRow[]> {
+    const all: AlertDigestProfileRow[] = [];
+    for (let index = 0; index < userIds.length; index += USER_FILTER_BATCH_SIZE) {
+      const batch = userIds.slice(index, index + USER_FILTER_BATCH_SIZE);
+      const query = new URLSearchParams({
+        select: "user_id,data",
+        user_id: `in.(${batch.join(",")})`,
+        order: "user_id.asc",
+      });
+      all.push(
+        ...await this.#allPages<AlertDigestProfileRow>(
+          `lr_profiles?${query}`,
           signal,
         ),
       );

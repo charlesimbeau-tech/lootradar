@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digest preview | LootRadar</title>
+  <meta name="description" content="Private LootRadar weekly digest preview and test delivery controls.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="canonical" href="https://thelootradar.com/digest-admin.html">
+  <link rel="stylesheet" href="style.css?v=27">
+  <link rel="stylesheet" href="recommendations.css?v=10">
+  <link rel="icon" href="icons/icon.svg?v=2" type="image/svg+xml">
+  <link rel="icon" href="icons/favicon-32.png?v=2" sizes="32x32" type="image/png">
+  <link rel="icon" href="icons/favicon.ico?v=2" sizes="any">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=2">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b0e0d">
+</head>
+<body>
+  <nav class="site-nav" aria-label="Primary navigation">
+    <div class="site-nav-inner">
+      <a class="nav-brand" href="index.html" aria-label="LootRadar home"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Loot<span>Radar</span></span></a>
+      <div class="nav-links"><a href="account.html">My account</a></div>
+    </div>
+  </nav>
+
+  <main class="account-wrap">
+    <header class="account-head">
+      <p class="eyebrow">Private operator tool</p>
+      <h1>Weekly digest preview</h1>
+      <p>Uses the live qualified snapshot and your synchronized preferences. Previewing never sends email.</p>
+      <p id="digestAdminStatus" class="account-status" role="status" aria-live="polite">Checking your account…</p>
+    </header>
+
+    <section class="account-card account-wide" id="digestAdminControls" hidden>
+      <div class="account-actions">
+        <button class="account-button" id="previewDigest" type="button">Build current preview</button>
+        <button class="account-button secondary" id="sendTestDigest" type="button" disabled>Send this test to me</button>
+      </div>
+      <h2 id="digestSubject">No preview built yet</h2>
+      <p id="digestSnapshot" class="account-muted"></p>
+      <ol id="digestPreview"></ol>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=2"></script>
+  <script src="lib/auth-nav.js?v=2"></script>
+  <script src="digest-admin.js?v=1"></script>
+  <script src="lib/site-nav.js?v=1"></script>
+</body>
+</html>
