@@ -69,6 +69,18 @@ test('each page owns one account client and performs one initial merge', () => {
   }
 });
 
+test('account surfaces reuse the navigation Supabase client', () => {
+  const navigation = read('lib/auth-nav.js');
+  assert.match(navigation, /function clientFor\(browser\)/);
+  assert.equal((navigation.match(/\.createClient\s*\(/g) || []).length, 1);
+
+  for (const file of ['app.js', 'recommendations.js', 'account.js', 'login.js']) {
+    const source = read(file);
+    assert.match(source, /LootRadarAuthNav\.clientFor\(window\)/, `${file} requests the shared client`);
+    assert.doesNotMatch(source, /(?:window\.)?supabase\.createClient\s*\(/, `${file} does not create a second client`);
+  }
+});
+
 test('homepage immediately persists and backgrounds watchlist synchronization', () => {
   const source = read('app.js');
   const saveBody = source.match(/function saveWatchlist\(\)\s*\{([\s\S]*?)\n  \}/);
@@ -89,6 +101,16 @@ test('recommendations sync profile and feedback through the account client', () 
   assert.ok(profileWrite > localWrite, 'local save happens before syncProfile');
   assert.match(source, /account\.syncFeedback\s*\(/);
   assert.doesNotMatch(source, /supabase\.from\(['"]lr_(?:profiles|feedback)['"]\)/);
+});
+
+test('recommendation feedback uses discoverable visible button names', () => {
+  const html = read('recommendations.html');
+  const source = read('recommendations.js');
+  assert.match(html, /Use <strong>More like this<\/strong> or <strong>Not for me<\/strong>/);
+  assert.match(source, />More like this<\/button>/);
+  assert.match(source, />Not for me<\/button>/);
+  assert.match(source, /Choose More like this on a few games/);
+  assert.doesNotMatch(source, /Hit like on a few games/);
 });
 
 test('both pages expose local, pending, complete, and delayed status copy', () => {

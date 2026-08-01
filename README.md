@@ -75,9 +75,12 @@ Basic browsing and local watchlists need no database.
 
 For optional private account syncing:
 
-1. Create a Supabase project and apply the complete, idempotent
+1. Link the production project with `supabase link --project-ref <project-ref>`
+   and apply the checked-in migrations with `supabase db push`. If CLI access
+   is unavailable, run the complete, idempotent
    `db/supabase-recommendations.sql` and `db/supabase-notifications.sql`
-   migrations in its SQL editor.
+   transactions in the Supabase SQL Editor, in that order. Do not publish
+   account UI changes until all account tables and RPCs exist in production.
 2. In Authentication → URL Configuration, set the Site URL to exactly
    `https://thelootradar.com`.
 3. Set the Redirect allowlist to exactly

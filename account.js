@@ -342,15 +342,17 @@
       !window.supabase ||
       !window.LR_SUPABASE_URL ||
       !window.LR_SUPABASE_ANON_KEY ||
+      !window.LootRadarAuthNav ||
       !window.LootRadarAccountClient
     ) {
       show('Account access is unavailable right now.');
       return;
     }
-    const supabase = window.supabase.createClient(
-      window.LR_SUPABASE_URL,
-      window.LR_SUPABASE_ANON_KEY
-    );
+    const supabase = window.LootRadarAuthNav.clientFor(window);
+    if (!supabase) {
+      show('Account access is unavailable right now.');
+      return;
+    }
     const sessionResult = await supabase.auth.getSession();
     const session = sessionResult?.data?.session || null;
     if (sessionResult?.error || !session?.user) {

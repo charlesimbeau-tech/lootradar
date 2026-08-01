@@ -7,10 +7,49 @@ const sql = fs.readFileSync(
   path.join(__dirname, '..', 'db', 'supabase-recommendations.sql'),
   'utf8'
 );
+const migrationPath = path.join(
+  __dirname,
+  '..',
+  'supabase',
+  'migrations',
+  '20260801211500_account_sync.sql'
+);
+const notificationMigrationPath = path.join(
+  __dirname,
+  '..',
+  'supabase',
+  'migrations',
+  '20260801211600_account_notifications.sql'
+);
 const rlsVerifier = fs.readFileSync(
   path.join(__dirname, '..', 'scripts', 'verify-account-rls.js'),
   'utf8'
 );
+
+test('the production account schema is a transactional Supabase migration', () => {
+  assert.equal(fs.existsSync(migrationPath), true, 'account migration is missing');
+  const migration = fs.readFileSync(migrationPath, 'utf8');
+  assert.equal(migration, sql, 'migration drifted from the canonical account SQL');
+  assert.match(migration, /^-- Run in Supabase SQL editor\s+\s*begin;/i);
+  assert.match(migration, /commit;\s*$/i);
+});
+
+test('the production notification schema is a Supabase migration', () => {
+  assert.equal(
+    fs.existsSync(notificationMigrationPath),
+    true,
+    'notification migration is missing'
+  );
+  const canonical = fs.readFileSync(
+    path.join(__dirname, '..', 'db', 'supabase-notifications.sql'),
+    'utf8'
+  );
+  assert.equal(
+    fs.readFileSync(notificationMigrationPath, 'utf8'),
+    canonical,
+    'notification migration drifted from its canonical SQL'
+  );
+});
 
 test('account schema contains private synchronized records', () => {
   for (const token of [

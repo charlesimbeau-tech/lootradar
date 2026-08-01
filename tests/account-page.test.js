@@ -24,6 +24,23 @@ test('private dashboard exposes the approved account controls without indexing',
   ]) assert.ok(html.includes(token), `missing ${token}`);
 });
 
+test('dashboard leads users to editable preferences and game feedback', () => {
+  assert.match(
+    html,
+    /<a href="recommendations\.html">Edit preferences and rate games<\/a>/
+  );
+});
+
+test('dashboard loads the shared authenticated client before account code', () => {
+  const configIndex = html.indexOf('<script src="supabase-config.js"></script>');
+  const authNavIndex = html.indexOf('<script src="lib/auth-nav.js?v=2"></script>');
+  const accountIndex = html.indexOf('<script src="account.js?v=2"></script>');
+
+  assert.ok(configIndex >= 0, 'missing Supabase configuration');
+  assert.ok(authNavIndex > configIndex, 'shared auth client must load after configuration');
+  assert.ok(accountIndex > authNavIndex, 'account code must load after shared auth client');
+});
+
 test('dashboard renders dynamic private values through text nodes only', () => {
   assert.doesNotMatch(script, /\.innerHTML\s*=/);
   assert.match(script, /\.textContent\s*=/);

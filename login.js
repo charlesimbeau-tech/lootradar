@@ -28,6 +28,7 @@
       !window.supabase ||
       !window.LR_SUPABASE_URL ||
       !window.LR_SUPABASE_ANON_KEY ||
+      !window.LootRadarAuthNav ||
       !window.LootRadarAuth ||
       !window.LootRadarRedirect
     ) {
@@ -48,10 +49,11 @@
 
     setControlsDisabled(false);
     show('');
-    const client = window.supabase.createClient(
-      window.LR_SUPABASE_URL,
-      window.LR_SUPABASE_ANON_KEY
-    );
+    const client = window.LootRadarAuthNav.clientFor(window);
+    if (!client) {
+      setUnavailable();
+      return;
+    }
     const params = new URLSearchParams(window.location.search);
     const next = window.LootRadarAuth.resolveNext(
       params.get('next'),

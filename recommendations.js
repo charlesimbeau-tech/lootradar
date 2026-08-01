@@ -46,8 +46,8 @@ var account = null;
 var accountUser = null;
 
 try {
-  var supabaseClient = window.supabase && window.LR_SUPABASE_URL && window.LR_SUPABASE_ANON_KEY
-    ? window.supabase.createClient(window.LR_SUPABASE_URL, window.LR_SUPABASE_ANON_KEY)
+  var supabaseClient = window.LootRadarAuthNav
+    ? window.LootRadarAuthNav.clientFor(window)
     : null;
   account = supabaseClient && window.LootRadarAccountClient
     ? window.LootRadarAccountClient.createAccountClient({
@@ -466,7 +466,7 @@ function renderBecause(scored) {
   if (!grid || !reason) return;
   var likedIds = Object.keys(profile.likes || {});
   if (!likedIds.length) {
-    reason.textContent = 'Hit like on a few games and this section starts learning what you are into.';
+    reason.textContent = 'Choose More like this on a few games and this section starts learning what you are into.';
     grid.innerHTML = '';
     return;
   }

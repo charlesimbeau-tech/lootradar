@@ -17,8 +17,8 @@
   let account = null;
 
   try {
-    const supabaseClient = window.supabase && window.LR_SUPABASE_URL && window.LR_SUPABASE_ANON_KEY
-      ? window.supabase.createClient(window.LR_SUPABASE_URL, window.LR_SUPABASE_ANON_KEY)
+    const supabaseClient = window.LootRadarAuthNav
+      ? window.LootRadarAuthNav.clientFor(window)
       : null;
     account = supabaseClient && window.LootRadarAccountClient
       ? window.LootRadarAccountClient.createAccountClient({

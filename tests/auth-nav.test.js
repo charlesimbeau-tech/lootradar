@@ -29,6 +29,28 @@ function fakeDocument(links) {
   };
 }
 
+test('each browser page reuses one Supabase client', () => {
+  const { clientFor } = require('../lib/auth-nav.js');
+  let created = 0;
+  const browser = {
+    LR_SUPABASE_URL: 'https://example.supabase.co',
+    LR_SUPABASE_ANON_KEY: 'public-key',
+    supabase: {
+      createClient(url, key) {
+        created += 1;
+        return { url, key, auth: { getSession() {} } };
+      }
+    }
+  };
+
+  const first = clientFor(browser);
+  const second = clientFor(browser);
+
+  assert.equal(first, second);
+  assert.equal(created, 1);
+  assert.equal(clientFor({}), null);
+});
+
 test('authenticated sessions upgrade every root and nested account link', async () => {
   const { updateAuthNavigation } = require('../lib/auth-nav.js');
   const links = [
@@ -119,7 +141,7 @@ test('public navigation loads the shared helper with correct relative paths', ()
       );
       assert.match(
         html,
-        new RegExp(`<script src="${prefix}lib/auth-nav\\.js\\?v=1"></script>`),
+        new RegExp(`<script src="${prefix}lib/auth-nav\\.js\\?v=\\d+"></script>`),
         `${relativePath} loads the auth-navigation helper`
       );
     }
