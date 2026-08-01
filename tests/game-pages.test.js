@@ -107,6 +107,52 @@ test('generator writes the game hub and one page per selected game', () => {
   assert.equal(fs.existsSync(path.join(outputDir, gamePageRoute(second))), true);
 });
 
+test('no generated game page is reachable only from the sitemap', () => {
+  // Related links used to take the top four by Deal Score, which pointed every
+  // page in a genre at the same four destinations: 273 of 370 pages ended up
+  // with zero inbound internal links and a handful collected hundreds. A page
+  // only the sitemap knows about gets crawled rarely and ranks poorly, which
+  // defeats the point of publishing one page per game.
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-orphans-'));
+  const genres = [['RPG'], ['Action'], ['Strategy'], ['Sports'], ['Indie', 'RPG']];
+  const deals = Array.from({ length: 40 }, (unused, index) => ({
+    ...qualifiedDeal,
+    key: `steam:${9000 + index}`,
+    steamAppID: String(9000 + index),
+    dealID: `deal-${9000 + index}`,
+    title: `Linkable Game ${index}`,
+    dealScore: 94 - (index % 20),
+    genres: genres[index % genres.length]
+  }));
+
+  const result = buildGamePages({
+    outputDir,
+    deals,
+    snapshot: { updatedAt: '2026-07-31T18:00:00Z' }
+  });
+
+  const routes = result.routes.filter(route => route !== 'index.html');
+  const inbound = Object.fromEntries(routes.map(route => [route, 0]));
+  for (const source of result.routes) {
+    const html = fs.readFileSync(path.join(outputDir, source), 'utf8');
+    for (const route of routes) {
+      if (source === route) continue;
+      if (html.includes(`"${route}"`)) inbound[route] += 1;
+    }
+  }
+
+  const orphans = routes.filter(route => inbound[route] === 0);
+  assert.deepEqual(orphans, [], `these pages have no inbound internal link: ${orphans.join(', ')}`);
+
+  // Spread matters as much as coverage. One page hoovering up every link is the
+  // failure mode this replaced, so no page may hold more than half of them.
+  const counts = routes.map(route => inbound[route]);
+  assert.ok(
+    Math.max(...counts) <= routes.length / 2,
+    `links are concentrated: one page holds ${Math.max(...counts)} of ${routes.length}`
+  );
+});
+
 module.exports = { qualifiedDeal };
 
 test('game page titles and headings target how people actually search', () => {
