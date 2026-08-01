@@ -26,8 +26,10 @@ jobs:
         env:
           MAX_PRICE: 70
           PAGE_SIZE: 60
-          # Guaranteed floor per store; adaptive paging may go deeper.
-          PAGES_PER_STORE: 3
+          # Guaranteed floor per store; adaptive paging may go deeper. Lowered
+          # from 3 to 2 on 2026-08-01 so the ceiling could come back down to 3
+          # without pinning floor to ceiling and disabling the yield gate again.
+          PAGES_PER_STORE: 2
           # Second pass per store that keeps recent releases in the snapshot.
           # Set to 0 to disable without touching the fetch script.
           RECENT_PAGES_PER_STORE: 2
@@ -39,21 +41,24 @@ jobs:
           # fetch-deals.js only fires past PAGES_PER_STORE, which it could never
           # reach.
           #
-          # Moved to 4 on 2026-07-31. The run of 16:58 UTC showed 10 of 14
-          # stores returning exactly 180 deals, which is 3 x PAGE_SIZE, so every
-          # major store was being truncated mid-catalogue. That run used 65 of
-          # 90 budgeted requests, so the ceiling was never the binding
-          # constraint. One extra page per store is at most 14 more requests,
-          # landing near 79, and stores whose third page falls below
-          # MIN_PAGE_YIELD now stop on their own rather than being cut off
-          # uniformly.
+          # Briefly 4 on 2026-07-31, on the reasoning that one more page per
+          # store was at most 14 extra requests and the runs were only using 65
+          # of the 90 budget. That reasoning was wrong, and the evidence was
+          # immediate: the very next scheduled run failed with HTTP 429 and a
+          # one-hour Retry-After, and four of the following eight scheduled runs
+          # failed the same way. Staying under our own budget says nothing,
+          # because the limiter is CheapShark's and it responds to request rate
+          # and volume, not to a counter we keep.
           #
-          # CheapShark confirmed by email on 2026-07-31 that roughly 70 requests
-          # per refresh across eight daily runs is fine, and asked to be
-          # contacted rather than guessed at if a block ever appears. Going
-          # beyond 4 should be paired with a longer sleep in fetch-deals.js,
-          # since the 07-30 block was a burst limit rather than a daily quota.
-          MAX_PAGES_PER_STORE: 4
+          # Back to 3, with the floor at 2 so the yield gate still has room to
+          # work. Worst case is 14 x (3 + 2) = 70, matching the shape CheapShark
+          # confirmed by email on 2026-07-31 as fine across eight daily runs.
+          #
+          # Before raising this again: lengthen the sleep in fetch-deals.js
+          # first, change one variable at a time, and watch several consecutive
+          # scheduled runs rather than a single manual one. They also asked to be
+          # contacted rather than guessed at, which is cheaper than this was.
+          MAX_PAGES_PER_STORE: 3
           MIN_PAGE_YIELD: 0.25
           # Hard ceiling. Keep comfortably above the expected per-run usage so a
           # store returning unusually deep results cannot run away with it.
