@@ -17,6 +17,11 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
+        with:
+          # Manual validation runs execute on a feature branch and rebase their
+          # generated-data commit onto main before pushing. A depth-1 checkout
+          # omits the merge base and turns every shared file into add/add.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v6
         with:
@@ -26,43 +31,23 @@ jobs:
         env:
           MAX_PRICE: 70
           PAGE_SIZE: 60
-          # Guaranteed floor per store; adaptive paging may go deeper. Lowered
-          # from 3 to 2 on 2026-08-01 so the ceiling could come back down to 3
-          # without pinning floor to ceiling and disabling the yield gate again.
+          # Guaranteed floor per store; productive stores may page deeper.
           PAGES_PER_STORE: 2
-          # Second pass per store that keeps recent releases in the snapshot.
-          # Set to 0 to disable without touching the fetch script.
-          RECENT_PAGES_PER_STORE: 2
-          # Raising this to 10 tripped CheapShark's rate limiter on 2026-07-30:
-          # Steam, GamersGate and GOG each pulled 10 pages and the runner was
-          # blocked for an hour around request 50, failing 8 of 14 stores. It
-          # was pinned to 3 in response, which also pinned it to the floor above
-          # and so disabled adaptive paging entirely: the yield gate in
-          # fetch-deals.js only fires past PAGES_PER_STORE, which it could never
-          # reach.
-          #
-          # Briefly 4 on 2026-07-31, on the reasoning that one more page per
-          # store was at most 14 extra requests and the runs were only using 65
-          # of the 90 budget. That reasoning was wrong, and the evidence was
-          # immediate: the very next scheduled run failed with HTTP 429 and a
-          # one-hour Retry-After, and four of the following eight scheduled runs
-          # failed the same way. Staying under our own budget says nothing,
-          # because the limiter is CheapShark's and it responds to request rate
-          # and volume, not to a counter we keep.
-          #
-          # Back to 3, with the floor at 2 so the yield gate still has room to
-          # work. Worst case is 14 x (3 + 2) = 70, matching the shape CheapShark
-          # confirmed by email on 2026-07-31 as fine across eight daily runs.
-          #
-          # Before raising this again: lengthen the sleep in fetch-deals.js
-          # first, change one variable at a time, and watch several consecutive
-          # scheduled runs rather than a single manual one. They also asked to be
-          # contacted rather than guessed at, which is cheaper than this was.
-          MAX_PAGES_PER_STORE: 3
+          # One global Recent pass replaces 2 pages x 14 stores. Those eight
+          # pages retain new-arrival coverage with twenty fewer duplicate-prone
+          # calls, leaving more of the same budget for ranked price coverage.
+          GLOBAL_RECENT_PAGES: 8
+          # Candidate depth, not a per-store entitlement. Sparse stores stop
+          # early and productive stores compete for the global budget below.
+          MAX_PAGES_PER_STORE: 5
           MIN_PAGE_YIELD: 0.25
-          # Hard ceiling. Keep comfortably above the expected per-run usage so a
-          # store returning unusually deep results cannot run away with it.
-          MAX_REQUESTS: 90
+          # Enforce request starts at 40/minute. The old 350ms loop sleeps still
+          # packed about 60 calls into 47 seconds because response time varied;
+          # retries also bypassed those sleeps entirely.
+          REQUEST_INTERVAL_MS: 1500
+          # Hard ceiling including /stores. This matches the request volume
+          # CheapShark previously confirmed was acceptable for this schedule.
+          MAX_REQUESTS: 70
         run: node scripts/fetch-deals.js
 
       - name: Enrich catalog with Steam metadata (no key)

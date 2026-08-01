@@ -5,6 +5,9 @@ const path = require('node:path');
 const {
   validateSnapshot
 } = require('../lib/deal-snapshot-validator.js');
+const {
+  calculateStoreCeiling
+} = require('../scripts/fetch-deals.js');
 
 test('rejects a refresh containing failed stores', () => {
   assert.throws(
@@ -74,27 +77,32 @@ test('the recent-release pass cannot abort an otherwise healthy refresh', () => 
     'a failure in the primary DealRating pass must mark the store as failed'
   );
 
-  // The recent pass is additive. Its failure must not, or one flaky sort
-  // parameter would take down the whole three-hourly refresh.
-  const recentBlock = source.slice(source.indexOf('RECENT_PAGES_PER_STORE > 0'));
-  const recentCatch = recentBlock.slice(0, recentBlock.indexOf('console.log'));
-  assert.match(recentCatch, /recent pass skipped/, 'the recent pass must warn on failure');
+  // The recent pass is additive and global. Running it once after the primary
+  // store loop avoids fetching the same recent listings fourteen times.
+  const storeLoop = source.indexOf('for (const [storeIndex, store] of activeStores.entries())');
+  const recentStart = source.indexOf('GLOBAL_RECENT_PAGES > 0');
+  assert.ok(storeLoop >= 0, 'the primary store loop must exist');
+  assert.ok(recentStart > storeLoop, 'the global recent pass must follow the primary store loop');
+  const recentBlock = source.slice(recentStart, source.indexOf('const deduped', recentStart));
+  assert.match(recentBlock, /recent pass skipped/i, 'the recent pass must warn on failure');
   assert.doesNotMatch(
-    recentCatch,
+    recentBlock,
     /failedStores\.push/,
     'the recent pass must not abort the refresh'
   );
+  assert.match(recentBlock, /activeStores\.map\(store => store\.storeID\)\.join\(','\)/);
 
   assert.match(source, /sortBy=\$\{sortBy\}/, 'both passes share one query builder');
   assert.match(source, /releaseDate: d\.releaseDate/, 'release dates must survive into the snapshot');
 });
 
-test('the workflow declares the recent-pass page budget', () => {
+test('the workflow declares one global recent-pass page budget', () => {
   const workflow = fs.readFileSync(
     path.join(__dirname, '..', '.github', 'workflows', 'update-deals.yml'),
     'utf8'
   );
-  assert.match(workflow, /RECENT_PAGES_PER_STORE: \d+/);
+  assert.match(workflow, /GLOBAL_RECENT_PAGES: \d+/);
+  assert.doesNotMatch(workflow, /RECENT_PAGES_PER_STORE:/);
 });
 
 test('depth is bounded by a request budget and a per-page quality floor', () => {
@@ -120,7 +128,7 @@ test('depth is bounded by a request budget and a per-page quality floor', () => 
   );
   assert.match(
     source,
-    /rankedCeiling/,
+    /recentReserve = GLOBAL_RECENT_PAGES[\s\S]*rankedCeiling/,
     'the recent pass needs reserved budget so a deep primary pass cannot starve it'
   );
 });
@@ -136,6 +144,17 @@ test('the refresh workflow cannot outlive its own schedule', () => {
   for (const key of ['MAX_PAGES_PER_STORE', 'MIN_PAGE_YIELD', 'MAX_REQUESTS']) {
     assert.match(workflow, new RegExp(`${key}:`), `${key} should be tunable from the workflow`);
   }
+  const requestInterval = Number((workflow.match(/REQUEST_INTERVAL_MS:\s*(\d+)/) || [])[1]);
+  assert.ok(
+    requestInterval >= 1500,
+    `request interval ${requestInterval}ms would exceed the configured 40 starts/minute ceiling`
+  );
+});
+
+test('deep stores cannot consume the guaranteed floor for stores still waiting', () => {
+  assert.equal(calculateStoreCeiling(62, 13, 2), 36);
+  assert.equal(calculateStoreCeiling(62, 2, 2), 58);
+  assert.equal(calculateStoreCeiling(62, 0, 2), 62);
 });
 
 test('refresh depth stays inside the rate limit CheapShark actually enforces', () => {
@@ -149,18 +168,19 @@ test('refresh depth stays inside the rate limit CheapShark actually enforces', (
   };
 
   const stores = 14;
-  const perStore = num('MAX_PAGES_PER_STORE') + num('RECENT_PAGES_PER_STORE');
-  const worstCase = stores * perStore + 1;
+  const floor = num('PAGES_PER_STORE');
+  const ceiling = num('MAX_PAGES_PER_STORE');
+  const recent = num('GLOBAL_RECENT_PAGES');
+  const budget = num('MAX_REQUESTS');
+  const mandatory = stores * floor + recent + 1;
 
-  // On 2026-07-30 a refresh at 10 pages per store drew HTTP 429 with a one-hour
-  // block around the fiftieth request, failing 8 of 14 stores. Roughly 70
-  // requests per refresh is the shape that has actually completed.
   assert.ok(
-    worstCase <= 90,
-    `worst-case ${worstCase} requests per refresh risks the rate limiter`
+    mandatory <= budget,
+    `mandatory ${mandatory} requests leave no room inside budget ${budget}`
   );
+  assert.ok(ceiling >= 5, 'the hybrid refresh must permit deeper high-yield store paging');
   assert.ok(
-    num('MAX_REQUESTS') <= 90,
-    'the request budget must stay under what has drawn a block'
+    budget <= 70,
+    'the hybrid refresh must not exceed the previously tolerated 70-request shape'
   );
 });

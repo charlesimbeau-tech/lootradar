@@ -57,6 +57,19 @@ test('the refresh workflow limits automated CheapShark pressure', () => {
   assert.match(workflow, /node-version: '24'/);
 });
 
+test('the refresh checkout has enough history to rebase a dispatched branch', () => {
+  const workflow = fs.readFileSync(
+    path.join(__dirname, '..', '.github', 'workflows', 'update-deals.yml'),
+    'utf8'
+  );
+
+  assert.match(
+    workflow,
+    /uses: actions\/checkout@v5\r?\n\s+with:\r?\n(?:\s+#[^\r\n]*\r?\n)*\s+fetch-depth: 0/,
+    'a shallow checkout makes git pull --rebase origin main see unrelated histories'
+  );
+});
+
 test('the refresh workflow stages the game page archive', () => {
   // The archive is what keeps a game page alive after its discount ends. If the
   // workflow does not commit it, every run starts from empty, expired pages are
@@ -72,8 +85,8 @@ test('paging cannot outgrow the request budget', () => {
   // On 2026-07-30 a deeper paging setting was published without checking it
   // against the budget, CheapShark rate limited the runner for an hour, and 8
   // of 14 stores were lost from that refresh. This is the arithmetic that was
-  // missing. \b anchors matter: PAGES_PER_STORE also appears inside
-  // MAX_PAGES_PER_STORE and RECENT_PAGES_PER_STORE.
+  // missing. \b anchors matter because PAGES_PER_STORE also appears inside
+  // MAX_PAGES_PER_STORE.
   const workflow = fs.readFileSync(
     path.join(__dirname, '..', '.github', 'workflows', 'update-deals.yml'),
     'utf8'
@@ -86,7 +99,7 @@ test('paging cannot outgrow the request budget', () => {
 
   const floor = setting('PAGES_PER_STORE');
   const ceiling = setting('MAX_PAGES_PER_STORE');
-  const recent = setting('RECENT_PAGES_PER_STORE');
+  const recent = setting('GLOBAL_RECENT_PAGES');
   const budget = setting('MAX_REQUESTS');
 
   assert.ok(
@@ -103,10 +116,19 @@ test('paging cannot outgrow the request budget', () => {
   );
 
   const stores = Number(require('../deals.json').storeCount) || 14;
-  const worstCase = stores * (ceiling + recent);
+  const mandatory = 1 + stores * floor + recent;
   assert.ok(
-    worstCase <= budget,
-    `worst-case ${worstCase} requests (${stores} stores x ${ceiling}+${recent} pages) exceeds MAX_REQUESTS ${budget}`
+    mandatory <= budget,
+    `mandatory ${mandatory} requests (store list + ${stores} stores x ${floor} pages + ${recent} recent pages) exceeds MAX_REQUESTS ${budget}`
+  );
+
+  // The candidate depth intentionally exceeds the budget. That lets productive
+  // stores use calls surrendered by sparse stores while MAX_REQUESTS remains the
+  // hard cap across the whole run.
+  const candidateDepth = 1 + stores * ceiling + recent;
+  assert.ok(
+    candidateDepth > budget,
+    `candidate depth ${candidateDepth} should exercise the global request cap ${budget}`
   );
 });
 
