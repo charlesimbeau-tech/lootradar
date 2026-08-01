@@ -4,10 +4,29 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const schemaPath = path.join(__dirname, '..', 'db', 'supabase-notifications.sql');
+const freezeRpcPath = path.join(__dirname, '..', 'db', 'supabase-alert-freeze-rpc.sql');
+const freezeRpcMigrationPath = path.join(
+  __dirname,
+  '..',
+  'supabase',
+  'migrations',
+  '20260801220000_alert_payload_freeze_rpc.sql'
+);
 
 function readSchema() {
   return fs.readFileSync(schemaPath, 'utf8');
 }
+
+test('payload freezing is a typed lease-owned service-role RPC migration', () => {
+  assert.equal(fs.existsSync(freezeRpcPath), true, 'freeze RPC SQL is missing');
+  assert.equal(fs.existsSync(freezeRpcMigrationPath), true, 'freeze RPC migration is missing');
+  const sql = fs.readFileSync(freezeRpcPath, 'utf8');
+  assert.equal(fs.readFileSync(freezeRpcMigrationPath, 'utf8'), sql);
+  assert.match(sql, /create or replace function public\.lr_freeze_alert_delivery/i);
+  assert.match(sql, /where id = p_id[\s\S]*status = 'sending'[\s\S]*lease_token = p_lease_token/i);
+  assert.match(sql, /grant execute on function public\.lr_freeze_alert_delivery[\s\S]*to service_role/i);
+  assert.doesNotMatch(sql, /to (?:anon|authenticated)/i);
+});
 
 function normalizeSql(sql) {
   return sql.replace(/\s+/g, ' ').trim().toLowerCase();

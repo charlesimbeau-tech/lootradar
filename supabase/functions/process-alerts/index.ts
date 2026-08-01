@@ -857,13 +857,14 @@ export function createProcessAlertsHandler(
           signal,
         );
         if (!claimed) return;
+        const ownedLeaseToken = claimed.lease_token ?? leaseToken;
 
         const preference = preferencesByUser.get(claimed.user_id);
         if (!preferenceAllows(preference, claimed.alert_type)) {
           suppressed += 1;
           await dependencies.repository.updateDelivery(
             claimed.id,
-            leaseToken,
+            ownedLeaseToken,
             terminalPatch(
               "suppressed",
               "Email category is disabled or unsubscribed",
@@ -884,7 +885,7 @@ export function createProcessAlertsHandler(
           retryable += 1;
           await dependencies.repository.updateDelivery(
             claimed.id,
-            leaseToken,
+            ownedLeaseToken,
             retryPatch(claimed, "Account email lookup failed", now()),
             signal,
           );
@@ -894,7 +895,7 @@ export function createProcessAlertsHandler(
           suppressed += 1;
           await dependencies.repository.updateDelivery(
             claimed.id,
-            leaseToken,
+            ownedLeaseToken,
             terminalPatch(
               "suppressed",
               "No deliverable account email is available",
@@ -915,7 +916,7 @@ export function createProcessAlertsHandler(
             failed += 1;
             await dependencies.repository.updateDelivery(
               delivery.id,
-              leaseToken,
+              ownedLeaseToken,
               terminalPatch("failed", "Stored email payload is incomplete", now()),
               signal,
             );
@@ -925,7 +926,7 @@ export function createProcessAlertsHandler(
             suppressed += 1;
             await dependencies.repository.updateDelivery(
               delivery.id,
-              leaseToken,
+              ownedLeaseToken,
               terminalPatch(
                 "suppressed",
                 "Account email changed after this delivery was prepared",
@@ -941,7 +942,7 @@ export function createProcessAlertsHandler(
             suppressed += 1;
             await dependencies.repository.updateDelivery(
               delivery.id,
-              leaseToken,
+              ownedLeaseToken,
               terminalPatch(
                 "suppressed",
                 "The current qualified snapshot no longer satisfies this condition",
@@ -961,19 +962,28 @@ export function createProcessAlertsHandler(
             );
             const frozen = await dependencies.repository.freezeDeliveryPayload(
               delivery.id,
-              leaseToken,
+              ownedLeaseToken,
               payload,
               await idempotencyKey(delivery.condition_key),
               now().toISOString(),
               signal,
             );
-            if (!frozen) return;
+            if (!frozen) {
+              const released = await dependencies.repository.updateDelivery(
+                delivery.id,
+                ownedLeaseToken,
+                retryPatch(delivery, "Email payload lease could not be frozen", now()),
+                signal,
+              );
+              if (released) retryable += 1;
+              return;
+            }
             delivery = frozen;
           } catch {
             failed += 1;
             await dependencies.repository.updateDelivery(
               delivery.id,
-              leaseToken,
+              ownedLeaseToken,
               terminalPatch("failed", "Email preparation failed", now()),
               signal,
             );
@@ -988,7 +998,7 @@ export function createProcessAlertsHandler(
           failed += 1;
           await dependencies.repository.updateDelivery(
             delivery.id,
-            leaseToken,
+            ownedLeaseToken,
             terminalPatch("failed", "Stored email payload is incomplete", now()),
             signal,
           );
@@ -1004,7 +1014,7 @@ export function createProcessAlertsHandler(
           delivered += 1;
           await dependencies.repository.updateDelivery(
             delivery.id,
-            leaseToken,
+            ownedLeaseToken,
             {
               status: "delivered",
               provider_message_id: result.id,
@@ -1028,7 +1038,7 @@ export function createProcessAlertsHandler(
           else failed += 1;
           await dependencies.repository.updateDelivery(
             delivery.id,
-            leaseToken,
+            ownedLeaseToken,
             patch,
             signal,
           );
@@ -1512,7 +1522,26 @@ export class RestAlertRepository implements AlertRepository {
         updated_at: input.now,
       }),
     }, signal);
-    return rows[0] ?? null;
+    if (rows[0]) return rows[0];
+
+    // A PostgREST PATCH can update the row while returning an empty
+    // representation because the new status and attempt count no longer match
+    // the CAS filters. The unique lease token makes this read-back ownership
+    // proof; it cannot claim another worker's row.
+    const confirmation = new URLSearchParams({
+      id: `eq.${row.id}`,
+      status: "eq.sending",
+      lease_token: `eq.${input.leaseToken}`,
+      attempt_count: `eq.${row.attempt_count + 1}`,
+      select: "*",
+      limit: "1",
+    });
+    const confirmed = await this.#rest<AlertDeliveryRow[]>(
+      `lr_alert_deliveries?${confirmation}`,
+      {},
+      signal,
+    );
+    return confirmed[0] ?? null;
   }
 
   async resolveUserEmail(
@@ -1547,21 +1576,14 @@ export class RestAlertRepository implements AlertRepository {
     now: string,
     signal?: AbortSignal,
   ): Promise<AlertDeliveryRow | null> {
-    const query = new URLSearchParams({
-      id: `eq.${id}`,
-      status: "eq.sending",
-      lease_token: `eq.${leaseToken}`,
-      email_payload: "is.null",
-      select: "*",
-    });
-    const rows = await this.#rest<AlertDeliveryRow[]>(`lr_alert_deliveries?${query}`, {
-      method: "PATCH",
-      headers: { Prefer: "return=representation" },
+    const rows = await this.#rest<AlertDeliveryRow[]>("rpc/lr_freeze_alert_delivery", {
+      method: "POST",
       body: JSON.stringify({
-        email_payload: payload,
-        idempotency_key: frozenIdempotencyKey,
-        payload_frozen_at: now,
-        updated_at: now,
+        p_id: id,
+        p_lease_token: leaseToken,
+        p_email_payload: payload,
+        p_idempotency_key: frozenIdempotencyKey,
+        p_frozen_at: now,
       }),
     }, signal);
     return rows[0] ?? null;

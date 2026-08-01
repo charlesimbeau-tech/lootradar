@@ -779,6 +779,103 @@ Deno.test("REST delivery claims enforce the attempt ceiling in the CAS query", a
   assert.equal(requests.length, 0);
 });
 
+Deno.test("REST delivery claims confirm an empty self-invalidating PATCH response", async () => {
+  const leaseToken = crypto.randomUUID();
+  const row: AlertDeliveryRow = {
+    id: "delivery-a",
+    user_id: "user-a",
+    alert_type: "free_game",
+    game_key: "steam:1000",
+    condition_key: "free:user-a:steam:1000:deal",
+    snapshot_id: NOW.toISOString(),
+    status: "retryable",
+    attempt_count: 1,
+    next_attempt_at: NOW.toISOString(),
+  };
+  const requests: URL[] = [];
+  const fetchImpl = (async (input: string | URL | Request) => {
+    const url = new URL(String(input));
+    requests.push(url);
+    if (requests.length === 1) return Response.json([]);
+    return Response.json([{
+      ...row,
+      status: "sending",
+      attempt_count: 2,
+      lease_token: leaseToken,
+    }]);
+  }) as typeof fetch;
+  const repository = new RestAlertRepository({
+    supabaseUrl: "https://project.supabase.co",
+    serviceRoleKey: "service-role-secret",
+    fetchImpl,
+  });
+
+  const claimed = await repository.claimDelivery(row, {
+    leaseToken,
+    now: NOW.toISOString(),
+    leaseExpiresAt: new Date(NOW.getTime() + 60_000).toISOString(),
+    maxAttempts: 5,
+  });
+
+  assert.equal(requests.length, 2);
+  assert.equal(requests[1].searchParams.get("status"), "eq.sending");
+  assert.equal(requests[1].searchParams.get("lease_token"), `eq.${leaseToken}`);
+  assert.equal(requests[1].searchParams.get("attempt_count"), "eq.2");
+  assert.equal(claimed?.lease_token, leaseToken);
+});
+
+Deno.test("REST payload freezing uses the typed lease-owned database RPC", async () => {
+  const requests: Array<{ url: URL; body: Record<string, unknown> }> = [];
+  const leaseToken = crypto.randomUUID();
+  const frozenRow: AlertDeliveryRow = {
+    id: "delivery-a",
+    user_id: "user-a",
+    alert_type: "target_price",
+    game_key: "steam:1000",
+    condition_key: "target:user-a:steam:1000:1000:20",
+    snapshot_id: NOW.toISOString(),
+    status: "sending",
+    attempt_count: 1,
+    lease_token: leaseToken,
+  };
+  const fetchImpl = (async (
+    input: string | URL | Request,
+    init?: RequestInit,
+  ) => {
+    requests.push({
+      url: new URL(String(input)),
+      body: JSON.parse(String(init?.body ?? "{}")),
+    });
+    return Response.json([frozenRow]);
+  }) as typeof fetch;
+  const repository = new RestAlertRepository({
+    supabaseUrl: "https://project.supabase.co",
+    serviceRoleKey: "service-role-secret",
+    fetchImpl,
+  });
+
+  const result = await repository.freezeDeliveryPayload(
+    frozenRow.id,
+    leaseToken,
+    {
+      to: "player@example.test",
+      subject: "Target reached",
+      html: "<p>Target reached</p>",
+      text: "Target reached",
+      allUnsubscribeUrl: "https://example.test/unsubscribe",
+    },
+    "idempotency-key",
+    NOW.toISOString(),
+  );
+
+  assert.equal(result?.id, frozenRow.id);
+  assert.equal(requests[0].url.pathname, "/rest/v1/rpc/lr_freeze_alert_delivery");
+  assert.equal(requests[0].url.search, "");
+  assert.equal(requests[0].body.p_id, frozenRow.id);
+  assert.equal(requests[0].body.p_lease_token, leaseToken);
+  assert.equal(requests[0].body.p_idempotency_key, "idempotency-key");
+});
+
 Deno.test("REST and Auth requests inherit caller cancellation", async () => {
   const observedSignals: AbortSignal[] = [];
   const fetchImpl = ((
