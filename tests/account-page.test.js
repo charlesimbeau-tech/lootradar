@@ -32,7 +32,7 @@ test('dashboard leads users to editable preferences and game feedback', () => {
 });
 
 test('dashboard loads the shared authenticated client before account code', () => {
-  const configIndex = html.indexOf('<script src="supabase-config.js"></script>');
+  const configIndex = html.indexOf('<script src="supabase-config.js?v=2"></script>');
   const authNavIndex = html.indexOf('<script src="lib/auth-nav.js?v=2"></script>');
   const accountIndex = html.indexOf('<script src="account.js?v=2"></script>');
 
