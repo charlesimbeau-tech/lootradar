@@ -1,9 +1,12 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
+  DEFAULT_FILTERS,
   consolidateHomepageFilters,
+  effectiveSort,
   filterDeals,
   sortDeals,
+  toggleCollection,
   readFiltersFromUrl,
   filtersToSearchParams
 } = require('../lib/deal-filters.js');
@@ -44,6 +47,41 @@ test('best right now is a stricter shortlist than all qualified deals', () => {
     filterDeals([fixtures[0], worthALook], { collection: 'all' }).map(game => game.slug),
     ['excellent-game', 'worth-a-look']
   );
+});
+
+test('free today and five-dollar finds never overlap', () => {
+  const free = { ...fixtures[0], slug: 'free', salePrice: 0 };
+  const five = { ...fixtures[0], slug: 'five', salePrice: 5 };
+  const over = { ...fixtures[0], slug: 'over', salePrice: 5.01 };
+
+  assert.deepEqual(
+    filterDeals([free, five, over], { collection: 'free' }).map(game => game.slug),
+    ['free']
+  );
+  assert.deepEqual(
+    filterDeals([free, five, over], { collection: 'five' }).map(game => game.slug),
+    ['five']
+  );
+});
+
+test('homepage ordering follows neutral, filtered, and discovery states', () => {
+  assert.equal(DEFAULT_FILTERS.collection, 'all');
+  assert.equal(effectiveSort(DEFAULT_FILTERS), 'title');
+  assert.equal(effectiveSort({ ...DEFAULT_FILTERS, q: 'portal' }), 'recommended');
+  assert.equal(effectiveSort({ ...DEFAULT_FILTERS, maxPrice: 10 }), 'recommended');
+  assert.equal(effectiveSort({ ...DEFAULT_FILTERS, collection: 'fresh' }), 'release');
+  assert.equal(effectiveSort({ ...DEFAULT_FILTERS, collection: 'hidden' }), 'recommended');
+});
+
+test('clicking the active discovery tab returns to the neutral catalog', () => {
+  assert.equal(toggleCollection('all', 'free'), 'free');
+  assert.equal(toggleCollection('free', 'free'), 'all');
+  assert.equal(toggleCollection('free', 'hidden'), 'hidden');
+});
+
+test('alphabetical ordering uses game titles', () => {
+  const rows = [{ title: 'Zulu' }, { title: 'alpha' }, { title: 'Beta' }];
+  assert.deepEqual(sortDeals(rows, 'title').map(row => row.title), ['alpha', 'Beta', 'Zulu']);
 });
 
 test('relaxed quality controls can reveal excluded items only when explicitly included', () => {

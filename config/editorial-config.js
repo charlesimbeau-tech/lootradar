@@ -49,10 +49,10 @@
     featuredGameIds: Object.freeze([]),
     collections: Object.freeze([
       { id: 'best', label: 'Best right now' },
+      { id: 'free', label: 'Free today' },
+      { id: 'five', label: '$5 finds' },
       { id: 'fresh', label: 'New arrivals' },
-      { id: 'multiplayer', label: 'Co-op & multiplayer' },
-      { id: 'hidden', label: 'Hidden gems' },
-      { id: 'all', label: 'All deals' }
+      { id: 'hidden', label: 'Hidden gems' }
     ])
   });
 });
