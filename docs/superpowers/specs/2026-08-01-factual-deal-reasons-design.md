@@ -15,6 +15,7 @@ The supported variants are:
 | Available data | Copy |
 | --- | --- |
 | Player rating, review count, discount | `{rating}% positive · {reviews} reviews · {discount}% off` |
+| Player rating and review count without discount or price-history evidence | `{rating}% positive · {reviews} reviews` |
 | Player rating and recorded-low match | `{rating}% positive · {reviews} reviews · Recorded low` |
 | Player rating and price above recorded low | `{rating}% positive · {reviews} reviews · ${difference} above recorded low` |
 | Critic score without player-rating evidence | `Critic score {score} · Player rating unavailable` |
