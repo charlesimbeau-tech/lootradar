@@ -21,7 +21,7 @@ The supported variants are:
 | Discount without usable rating evidence | `{discount}% off · Rating data unavailable` |
 | Neither quality nor discount evidence | `Rating data unavailable` |
 
-The existing compact review-count formatting remains in place. Dollar differences retain two decimal places.
+Review counts remain compact, using uppercase `K` and `M` suffixes. Dollar differences retain two decimal places.
 
 ## Scope
 
