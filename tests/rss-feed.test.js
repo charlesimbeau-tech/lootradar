@@ -96,12 +96,56 @@ test('separates recommendation copy from the price disclaimer without doubling p
       dealScore: 92,
       eligible: true,
       recommendation: 'Already punctuated!'
+    },
+    {
+      key: 'steam:blank',
+      title: 'Blank Copy',
+      salePrice: 6.99,
+      storeName: 'Steam',
+      dealScore: 91,
+      eligible: true,
+      recommendation: '   '
+    },
+    {
+      key: 'steam:ascii-quote',
+      title: 'ASCII Quote Copy',
+      salePrice: 7.99,
+      storeName: 'Steam',
+      dealScore: 90,
+      eligible: true,
+      recommendation: '"Already punctuated!"'
+    },
+    {
+      key: 'steam:curly-quote',
+      title: 'Curly Quote Copy',
+      salePrice: 8.99,
+      storeName: 'Steam',
+      dealScore: 89,
+      eligible: true,
+      recommendation: '“Already punctuated?”'
+    },
+    {
+      key: 'steam:parenthetical',
+      title: 'Parenthetical Copy',
+      salePrice: 9.99,
+      storeName: 'Steam',
+      dealScore: 88,
+      eligible: true,
+      recommendation: '(Already punctuated.)'
     }
   ], options);
 
   assert.match(xml, /86% positive · 45\.9K reviews · 90% off\. Price listings/);
   assert.match(xml, /Already punctuated! Price listings/);
   assert.doesNotMatch(xml, /Already punctuated!\. Price listings/);
+  assert.match(xml, /This one made it through the quality filters\. Price listings/);
+  assert.doesNotMatch(xml, />\. Price listings/);
+  assert.match(xml, /&quot;Already punctuated!&quot; Price listings/);
+  assert.doesNotMatch(xml, /&quot;Already punctuated!&quot;\. Price listings/);
+  assert.match(xml, /“Already punctuated\?” Price listings/);
+  assert.doesNotMatch(xml, /“Already punctuated\?”\. Price listings/);
+  assert.match(xml, /\(Already punctuated\.\) Price listings/);
+  assert.doesNotMatch(xml, /\(Already punctuated\.\)\. Price listings/);
 });
 
 test('omits malformed eligible rows instead of emitting unstable items', () => {
