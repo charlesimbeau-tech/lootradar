@@ -60,7 +60,7 @@
     five: { label: '$5 finds', title: 'Worthwhile games for five dollars or less', summary: 'Paid games from one cent through five dollars, strongest first.' },
     fresh: { label: 'New arrivals', title: 'Out recently, already loved', summary: 'Released in the last year, already discounted, already carrying real reviews.' },
     hidden: { label: 'Hidden gems', title: 'Adored by everyone who found them', summary: 'Smaller crowds, unusually happy ones, and enough reviews to trust.' },
-    all: { label: 'All deals', title: 'Every qualified deal from A to Z', summary: 'The complete qualified catalog, alphabetical until you search or filter.' }
+    all: { label: 'All deals', title: 'Everything that qualifies', summary: 'Every listing that clears the filters you have set.' }
   };
   const homepageCollectionIds = (config.collections || [])
     .map(collection => collection.id)
