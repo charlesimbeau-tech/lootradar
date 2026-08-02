@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=27">
+  <link rel="stylesheet" href="style.css?v=28">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" href="/icons/favicon-48.png" sizes="48x48" type="image/png">
   <link rel="icon" href="icons/icon.svg?v=2" type="image/svg+xml">
@@ -114,20 +114,6 @@
           <span class="search-glyph" aria-hidden="true"></span>
           <span class="sr-only">Search games</span>
           <input id="searchInput" name="q" type="search" autocomplete="off" placeholder="Search a game, a genre, a store…">
-        </label>
-        <label class="select-field">
-          <span class="sr-only">Sort deals</span>
-          <select id="sortSelect" name="sort">
-            <option value="recommended">Recommended</option>
-            <option value="score">Highest Deal Score</option>
-            <option value="reviewed">Best reviewed</option>
-            <option value="price">Lowest price</option>
-            <option value="discount">Largest discount</option>
-            <option value="history">Strongest price signal</option>
-            <option value="release">Newest release</option>
-            <option value="popular">Most popular</option>
-            <option value="added">Recently added</option>
-          </select>
         </label>
         <button class="filter-toggle" id="filterToggle" type="button" aria-expanded="false" aria-controls="filterPanel">
           Filters <span id="activeFilterCount">0</span>
@@ -750,10 +736,10 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="config/editorial-config.js?v=2"></script>
+  <script src="config/editorial-config.js?v=3"></script>
   <script src="lib/deal-normalizer.js?v=1"></script>
   <script src="lib/deal-score.js?v=2"></script>
-  <script src="lib/deal-filters.js?v=2"></script>
+  <script src="lib/deal-filters.js?v=3"></script>
   <script src="lib/deal-dataset.js?v=1"></script>
   <script src="lib/cheapshark-client.js?v=1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -765,7 +751,7 @@
   <script src="lib/redirect.js?v=1"></script>
   <script src="lib/analytics.js?v=2"></script>
   <script src="lib/auth-controller.js?v=1"></script>
-  <script src="app.js?v=28"></script>
+  <script src="app.js?v=29"></script>
   <script data-goatcounter="https://thelootradar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

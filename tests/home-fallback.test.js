@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const { DEFAULT_FILTERS, filterDeals, sortDeals } = require('../lib/deal-filters.js');
+const { DEFAULT_FILTERS, effectiveSort, filterDeals, sortDeals } = require('../lib/deal-filters.js');
 const {
   CARD_LIMIT,
   buildHomeFallback,
@@ -74,10 +74,9 @@ test('bakes the default homepage view into index.html', () => {
   assert.match(html, /Prices checked Jul 31, 2:13\sAM EDT/);
   assert.match(html, /<!--LR:stores:start-->2<!--LR:stores:end-->/);
 
-  // The default view drops anything under the recommended-quality floor, so the
-  // reported count is the filtered total rather than the raw fixture count.
+  // The neutral default includes the entire qualified fixture catalog.
   const expectedVisible = filterDeals(deals, DEFAULT_FILTERS).length;
-  assert.ok(expectedVisible > CARD_LIMIT && expectedVisible < deals.length);
+  assert.equal(expectedVisible, deals.length);
   assert.equal(result.visible, expectedVisible);
   assert.match(html, new RegExp(`<!--LR:count:start-->${expectedVisible} deals<!--LR:count:end-->`));
 });
@@ -118,8 +117,9 @@ test('the baked grid matches what the browser renders on first paint', () => {
   const deals = Array.from({ length: 30 }, (unused, index) => fixture(index));
   buildHomeFallback({ base, deals, indexPath });
 
-  const ranked = sortDeals(filterDeals(deals, DEFAULT_FILTERS), DEFAULT_FILTERS.sort);
-  const hero = sortDeals(filterDeals(deals, DEFAULT_FILTERS), 'recommended')[0];
+  const ranked = sortDeals(filterDeals(deals, DEFAULT_FILTERS), effectiveSort(DEFAULT_FILTERS));
+  const heroFilters = { ...DEFAULT_FILTERS, collection: 'best' };
+  const hero = sortDeals(filterDeals(deals, heroFilters), 'recommended')[0];
   const expected = ranked
     .filter(deal => deal.key !== hero.key)
     .slice(0, CARD_LIMIT)
@@ -226,8 +226,38 @@ test('the homepage presents one collection row instead of repeating deal tags', 
   assert.doesNotMatch(html, /class="footer-links quick-links"/);
   assert.deepEqual(
     config.collections.map(collection => collection.id),
-    ['best', 'fresh', 'multiplayer', 'hidden', 'all']
+    ['best', 'free', 'five', 'fresh', 'hidden']
   );
+});
+
+test('the homepage uses five discovery tabs and no manual sort control', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+  const config = require('../config/editorial-config.js');
+
+  assert.doesNotMatch(html, /id="sortSelect"/);
+  assert.deepEqual(
+    config.collections.map(collection => collection.id),
+    ['best', 'free', 'five', 'fresh', 'hidden']
+  );
+  assert.match(app, /effectiveSort\(state\.filters\)/);
+  assert.match(app, /toggleCollection\(state\.filters\.collection, button\.dataset\.collection\)/);
+});
+
+test('the static neutral catalog is baked alphabetically', () => {
+  const { indexPath, base } = scaffold();
+  const deals = [
+    { ...fixture(0), key: 'steam:z', title: 'Zulu' },
+    { ...fixture(2), key: 'steam:a', title: 'Alpha' },
+    { ...fixture(1), key: 'steam:b', title: 'Beta' }
+  ];
+
+  const result = buildHomeFallback({ base, deals, indexPath });
+  const html = fs.readFileSync(indexPath, 'utf8');
+  const rendered = [...html.matchAll(/class="card-title"[^>]*>([^<]+)</g)].map(match => match[1]);
+
+  assert.deepEqual(rendered, ['Alpha', 'Beta']);
+  assert.equal(result.visible, deals.length);
 });
 
 test('app.js keeps the prerendered grid on the first load', () => {
@@ -260,6 +290,7 @@ test('the hero pick obeys the same content rules as the grid', () => {
 
 test('app.js picks the hero from the filtered set, not raw eligibility', () => {
   const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
-  assert.match(app, /sortDeals\(filterDeals\(state\.allDeals, DEFAULT_FILTERS\), 'recommended'\)\[0\]/);
+  assert.match(app, /const heroFilters = \{ \.\.\.DEFAULT_FILTERS, collection: 'best' \}/);
+  assert.match(app, /sortDeals\(filterDeals\(state\.allDeals, heroFilters\), 'recommended'\)\[0\]/);
   assert.doesNotMatch(app, /state\.allDeals\.filter\(deal => deal\.eligible\), 'recommended'/);
 });

@@ -10,7 +10,17 @@
     baseDelayMs: 750
   });
   const { calculateDealScore } = window.LootRadarScoring;
-  const { DEFAULT_FILTERS, normalizeFilters, consolidateHomepageFilters, filterDeals, sortDeals, readFiltersFromUrl, filtersToSearchParams } = window.LootRadarFilters;
+  const {
+    DEFAULT_FILTERS,
+    normalizeFilters,
+    consolidateHomepageFilters,
+    effectiveSort,
+    toggleCollection,
+    filterDeals,
+    sortDeals,
+    readFiltersFromUrl,
+    filtersToSearchParams
+  } = window.LootRadarFilters;
   const { buildDealDataset } = window.LootRadarDataset;
   const analytics = window.LootRadarAnalytics;
   const config = window.LootRadarEditorialConfig;
@@ -46,13 +56,11 @@
 
   const collections = {
     best: { label: 'Best right now', title: 'The best of what is live right now', summary: 'Games people actually rate, at prices that actually moved.' },
+    free: { label: 'Free today', title: 'Good games that cost nothing today', summary: 'Full games at exactly $0 that still cleared the quality checks.' },
+    five: { label: '$5 finds', title: 'Worthwhile games for five dollars or less', summary: 'Paid games from one cent through five dollars, strongest first.' },
     fresh: { label: 'New arrivals', title: 'Out recently, already loved', summary: 'Released in the last year, already discounted, already carrying real reviews.' },
-    under10: { label: 'Under $10', title: 'Great games under $10', summary: 'Single-digit prices with thousands of happy players behind them.' },
-    deep: { label: 'Deep discounts', title: 'Deep discounts worth a look', summary: 'Enormous price cuts that still survived the quality checks.' },
-    indie: { label: 'Indie standouts', title: 'Indie deals worth discovering', summary: 'Small studios, big ideas, prices that make the risk basically free.' },
-    multiplayer: { label: 'Co-op & multiplayer', title: 'Games worth dragging a friend into', summary: 'Well-reviewed games built for a couch, a party, or a squad.' },
     hidden: { label: 'Hidden gems', title: 'Adored by everyone who found them', summary: 'Smaller crowds, unusually happy ones, and enough reviews to trust.' },
-    all: { label: 'All deals', title: 'Everything that qualifies', summary: 'Every listing that clears the filters you have set.' }
+    all: { label: 'All deals', title: 'Every qualified deal from A to Z', summary: 'The complete qualified catalog, alphabetical until you search or filter.' }
   };
   const homepageCollectionIds = (config.collections || [])
     .map(collection => collection.id)
@@ -244,7 +252,6 @@
   function syncFormFromState() {
     const filters = state.filters;
     $('#searchInput').value = filters.q;
-    $('#sortSelect').value = filters.sort;
     $('#storeSelect').value = filters.store;
     $('#genreSelect').value = filters.genre;
     $('#priceSelect').value = String(filters.maxPrice);
@@ -264,7 +271,6 @@
     state.filters = normalizeFilters({
       ...state.filters,
       q: $('#searchInput').value.trim(),
-      sort: $('#sortSelect').value,
       store: $('#storeSelect').value,
       genre: $('#genreSelect').value,
       maxPrice: Number($('#priceSelect').value),
@@ -365,25 +371,23 @@
     </article>`;
   }
 
-  // The hero is the top of the default view, so in that view it would also be
-  // the first card. Once the reader sorts, searches, or filters, the grid is
-  // answering their question rather than ours, and quietly withholding a match
-  // would be a bug. So the pick is only held back while nothing has been
-  // touched.
+  // The hero is held back only in the untouched neutral catalog. Once the
+  // reader searches, filters, or chooses a discovery section, the grid is
+  // answering their question and should include every match.
   function isDefaultView(filters) {
     return Object.keys(DEFAULT_FILTERS).every(name => filters[name] === DEFAULT_FILTERS[name]);
   }
 
   function render() {
     const filtered = filterDeals(state.allDeals, state.filters);
-    state.visibleDeals = sortDeals(filtered, state.filters.sort);
+    state.visibleDeals = sortDeals(filtered, effectiveSort(state.filters));
     // The count describes the collection, which still contains the pick; the
     // grid just pages through the ones not already featured above it.
     const pool = state.heroKey && isDefaultView(state.filters)
       ? state.visibleDeals.filter(deal => deal.key !== state.heroKey)
       : state.visibleDeals;
     const shown = pool.slice(0, state.shown);
-    const collection = collections[state.filters.collection] || collections.best;
+    const collection = collections[state.filters.collection] || collections.all;
     $('#collectionTitle').textContent = state.filters.q ? `Results for “${state.filters.q}”` : collection.title;
     $('#resultSummary').textContent = collection.summary;
     $('#resultCount').textContent = `${state.visibleDeals.length} ${state.visibleDeals.length === 1 ? 'deal' : 'deals'}`;
@@ -397,7 +401,8 @@
     // grid underneath it. Eligibility alone let through the add-ons and
     // multi-packs the rest of the page exists to throw out, and it ignores the
     // reader's filters on purpose: this is the site's pick, not their search.
-    const top = sortDeals(filterDeals(state.allDeals, DEFAULT_FILTERS), 'recommended')[0];
+    const heroFilters = { ...DEFAULT_FILTERS, collection: 'best' };
+    const top = sortDeals(filterDeals(state.allDeals, heroFilters), 'recommended')[0];
     if (!top) return;
     state.heroKey = top.key;
     const image = safeImage(top.image);
@@ -602,7 +607,7 @@
     $('#collectionTabs').addEventListener('click', event => {
       const button = event.target.closest('[data-collection]');
       if (!button) return;
-      state.filters.collection = button.dataset.collection;
+      state.filters.collection = toggleCollection(state.filters.collection, button.dataset.collection);
       state.shown = PAGE_SIZE;
       syncFormFromState();
       syncUrl();

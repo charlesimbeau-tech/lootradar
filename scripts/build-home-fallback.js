@@ -10,7 +10,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const { buildDealDataset } = require('../lib/deal-dataset.js');
-const { DEFAULT_FILTERS, filterDeals, sortDeals } = require('../lib/deal-filters.js');
+const { DEFAULT_FILTERS, effectiveSort, filterDeals, sortDeals } = require('../lib/deal-filters.js');
 const { gamePageRoute, selectGamePageDeals } = require('../lib/game-pages.js');
 const config = require('../config/editorial-config.js');
 
@@ -183,9 +183,10 @@ function buildHomeFallback(options = {}) {
 
   // The same filter and sort the browser applies on first paint, so the static
   // grid and the hydrated grid agree instead of visibly reshuffling.
-  const visible = sortDeals(filterDeals(withRoutes, DEFAULT_FILTERS), DEFAULT_FILTERS.sort);
-  // Mirrors renderHero in app.js: the same default content rules as the grid.
-  const hero = sortDeals(filterDeals(withRoutes, DEFAULT_FILTERS), 'recommended')[0];
+  const visible = sortDeals(filterDeals(withRoutes, DEFAULT_FILTERS), effectiveSort(DEFAULT_FILTERS));
+  // Mirrors renderHero in app.js: the site pick always comes from Best right now.
+  const heroFilters = { ...DEFAULT_FILTERS, collection: 'best' };
+  const hero = sortDeals(filterDeals(withRoutes, heroFilters), 'recommended')[0];
   // This is always the default view, so the pick is always held back from the
   // grid, exactly as render() does before the reader touches anything.
   const shown = visible.filter(deal => !hero || deal.key !== hero.key).slice(0, CARD_LIMIT);
