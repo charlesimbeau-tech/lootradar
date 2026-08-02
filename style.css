@@ -221,6 +221,11 @@ button { color: inherit; }
   padding: .75rem 1.15rem;
   font-family: var(--display); font-weight: 800; font-size: .86rem;
   cursor: pointer; transition: transform .18s ease, background .18s ease, border-color .18s ease;
+  /* Colour belongs on the base class, not only on the modifiers. Without it a
+     button carrying just .button fell through to the browser default grey while
+     inheriting the page's near-white text, which rendered "Show results" in the
+     filter panel as a blank white rectangle. The modifiers below still win. */
+  background: var(--mint); color: #0b0e0d;
 }
 .button:hover { transform: translateY(-2px); }
 .button-primary { background: var(--mint); color: #0b0e0d; }
