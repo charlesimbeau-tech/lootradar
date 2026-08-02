@@ -70,8 +70,9 @@ test('homepage ordering follows neutral, filtered, and discovery states', () => 
   assert.equal(effectiveSort({ ...DEFAULT_FILTERS, q: 'portal' }), 'recommended');
   assert.equal(effectiveSort({ ...DEFAULT_FILTERS, maxPrice: 10 }), 'recommended');
   // Recency is the entry condition for new arrivals, not the ranking. Sorting
-  // by release date buried better-reviewed games behind newer weaker ones.
-  assert.equal(effectiveSort({ ...DEFAULT_FILTERS, collection: 'fresh' }), 'reviewed');
+  // by release date buried better games behind newer weaker ones, and disagreed
+  // with the permanent page, which ranks the same collection by Deal Score.
+  assert.equal(effectiveSort({ ...DEFAULT_FILTERS, collection: 'fresh' }), 'recommended');
   assert.equal(effectiveSort({ ...DEFAULT_FILTERS, collection: 'hidden' }), 'recommended');
 });
 
