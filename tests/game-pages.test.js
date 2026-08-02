@@ -92,6 +92,24 @@ test('renders a unique evidence-based game price page', () => {
   assert.doesNotMatch(source, /\u2014/);
 });
 
+test('renders factual recommendation copy on game pages', () => {
+  const generated = renderGamePage(qualifiedDeal, { updatedAt: '2026-07-29T18:00:00Z' });
+  assert.match(generated, /<p>92% positive \u00b7 57\.1K reviews \u00b7 78% off<\/p>/);
+
+  const supplied = renderGamePage({
+    ...qualifiedDeal,
+    recommendation: '86% positive \u00b7 45.9K reviews \u00b7 90% off'
+  }, { updatedAt: '2026-07-29T18:00:00Z' });
+  assert.match(supplied, /<p>86% positive \u00b7 45\.9K reviews \u00b7 90% off<\/p>/);
+
+  for (const source of [generated, supplied]) {
+    assert.doesNotMatch(
+      source,
+      /markedly happier|worth trusting|take the price seriously|Deal Score of \d+/i
+    );
+  }
+});
+
 test('generator writes the game hub and one page per selected game', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-game-pages-'));
   const second = { ...qualifiedDeal, key: 'steam:1234', title: 'A Second Great Game', steamAppID: '1234', dealID: 'deal-1234' };

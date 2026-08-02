@@ -1,6 +1,7 @@
 'use strict';
 
 const { GAME_HUB_LIMIT, gamePageRoute } = require('../../lib/game-pages.js');
+const { createRecommendationReason } = require('../../lib/deal-score.js');
 const SITE_ORIGIN = 'https://thelootradar.com';
 
 function escapeHTML(value) {
@@ -77,51 +78,6 @@ function genreText(deal) {
   const genres = Array.isArray(deal.genres) ? deal.genres.filter(Boolean).slice(0, 4) : [];
   return genres.length ? genres.join(', ') : 'PC game';
 }
-// Hundreds of pages sharing one paragraph reads as filler, to people and to
-// crawlers. Lead with whichever signal is actually doing the work on this deal.
-function selectionReason(deal) {
-  const score = Number(deal.dealScore);
-  const rating = Number(deal.userRating);
-  const reviews = Number(deal.reviewCount);
-  const discount = Number(deal.discount);
-  const year = Number(deal.releaseYear);
-  const count = formatCount(reviews);
-
-  const lead = (() => {
-    if (rating >= 95 && reviews >= 10000) {
-      return `${rating}% of ${count} players rated this positively. Agreement at that scale is rare enough to be worth trusting.`;
-    }
-    if (reviews >= 100000) {
-      return `${count} people have reviewed this and ${rating}% of them came away happy. Whatever else is true, it is not an unknown quantity.`;
-    }
-    if (rating >= 90 && reviews < 5000) {
-      return `${rating}% positive across ${count} reviews. A smaller crowd than the household names get, and a markedly happier one.`;
-    }
-    if (discount >= 85) {
-      return `${discount}% off, and unlike most cuts that size it is attached to a game holding ${rating}% positive from ${count} reviews.`;
-    }
-    if (rating >= 85) {
-      return `${rating}% positive from ${count} reviews, which is the kind of number that survives a few years of people trying to find fault.`;
-    }
-    return `${rating}% positive across ${count} reviews, enough evidence to take the price seriously.`;
-  })();
-
-  const context = (() => {
-    if (Number.isFinite(year) && year > 0 && year <= 2016) {
-      return ` Released in ${year} and still scoring ${score} here, which says more than a launch-week rating would.`;
-    }
-    if (discount <= 30 && score >= 75) {
-      return ` The discount is modest at ${discount}%, so the score of ${score} is carried by the game rather than the price tag.`;
-    }
-    if (score >= 85) {
-      return ` A Deal Score of ${score} puts it near the top of what the current snapshot has to offer.`;
-    }
-    return ` That works out to a Deal Score of ${score}.`;
-  })();
-
-  return lead + context;
-}
-
 // Store type changes what can actually go wrong at checkout, so say the useful
 // thing rather than the generic one.
 function storeCaveat(storeName) {
@@ -196,6 +152,7 @@ function renderGamePage(deal, snapshotInput = {}, related = []) {
     ? `${deal.title} is ${formatPrice(deal.salePrice)} at ${deal.storeName} in the latest LootRadar sweep. Here is the Deal Score, the player rating, and what to check before you buy.`
     : `${deal.title} is not discounted in the current LootRadar sweep. The last offer we recorded was ${formatPrice(deal.salePrice)} at ${deal.storeName}, ${deal.discount}% off. Here is the player rating and what it normally costs.`;
   const image = /^https?:\/\//i.test(String(deal.image || '')) ? deal.image : `${SITE_ORIGIN}/public/og.png`;
+  const recommendation = deal.recommendation || createRecommendationReason(deal);
   const art = /^https?:\/\//i.test(String(deal.image || '')) ? `<img src="${escapeHTML(deal.image)}" alt="${escapeHTML(deal.title)} artwork" width="920" height="430" decoding="async">` : '<div class="game-art-fallback" aria-hidden="true">LR</div>';
   const tags = [genreText(deal), deal.releaseYear ? String(deal.releaseYear) : '', 'PC'].filter(Boolean);
   return `<!doctype html><html lang="en"><head>${pageHead(title, description, canonical, image, schemaForGame(deal, canonical))}</head><body>${header()}<main class="game-shell" id="mainContent">
@@ -205,7 +162,7 @@ function renderGamePage(deal, snapshotInput = {}, related = []) {
     ? `<section class="offer-panel" aria-labelledby="currentOffer"><div><p class="offer-label">The offer we saved</p><h2 id="currentOffer">${formatPrice(deal.salePrice)} at ${escapeHTML(deal.storeName)}</h2><p>That is ${escapeHTML(deal.discount)}% off the listed normal price of ${formatPrice(deal.normalPrice)}.</p><time${snapshot.iso ? ` datetime="${snapshot.iso}"` : ''}>Prices checked ${escapeHTML(snapshot.label)}</time></div><a class="offer-button" href="https://www.cheapshark.com/redirect?dealID=${escapeHTML(safeDealID(deal.dealID))}" target="_blank" rel="sponsored noopener noreferrer" data-track-deal data-track-surface="game_price_page" data-track-store="${escapeHTML(deal.storeName)}" data-track-price="${escapeHTML(deal.salePrice)}">Check price at ${escapeHTML(deal.storeName)}</a></section>`
     : `<section class="offer-panel offer-panel-expired" aria-labelledby="currentOffer"><div><p class="offer-label">Not discounted right now</p><h2 id="currentOffer">Last seen at ${formatPrice(deal.salePrice)}</h2><p>That was ${escapeHTML(deal.discount)}% off ${formatPrice(deal.normalPrice)} at ${escapeHTML(deal.storeName)}${lastSeen.label && lastSeen.label !== 'the latest refresh' ? `, on ${escapeHTML(lastSeen.label)}` : ''}. It has not appeared in a sweep since, so treat that figure as history rather than a price you can pay today.</p>${lastSeen.iso ? `<time datetime="${lastSeen.iso}">Last recorded ${escapeHTML(lastSeen.label)}</time>` : ''}</div>${deal.steamAppID ? `<a class="offer-button offer-button-secondary" href="https://store.steampowered.com/app/${escapeHTML(deal.steamAppID)}/" target="_blank" rel="noopener noreferrer">See the current price on Steam</a>` : ''}</section>`}
   <section class="evidence-grid" aria-label="Deal evidence"><article><span>Deal Score</span><strong>${escapeHTML(deal.dealScore)}<small>/100</small></strong><p>${discounted ? 'Our combined ranking signal. Emphatically not a review score.' : 'What it scored when we last recorded an offer. Not a review score.'}</p></article><article><span>Player rating</span><strong>${escapeHTML(deal.userRating)}<small>% positive</small></strong><p>Out of ${formatCount(deal.reviewCount)} recorded player reviews.</p></article><article><span>${discounted ? 'Price cut' : 'Last price cut'}</span><strong>${escapeHTML(deal.discount)}<small>% off</small></strong><p>${discounted ? `Normally ${formatPrice(deal.normalPrice)}, currently ${formatPrice(deal.salePrice)}.` : `Listed at ${formatPrice(deal.normalPrice)}, last recorded at ${formatPrice(deal.salePrice)}.`}</p></article></section>
-  <section class="game-context"><div><p class="section-kicker">Why it made the cut</p><h2>Is ${escapeHTML(deal.title)} worth buying at this price?</h2><p>${escapeHTML(selectionReason(deal))}</p><p>These permanent pages keep out add-ons, bundles, Early Access listings, and anything running on a thin review signal.</p></div><aside><h2>Before you buy ${escapeHTML(deal.title)}</h2><ul><li>${escapeHTML(storeCaveat(deal.storeName))}</li><li>The final price and the exact edition, on the store page.</li><li>Whether you will actually play it. The discount cannot answer that one.</li></ul></aside></section>
+  <section class="game-context"><div><p class="section-kicker">Why it made the cut</p><h2>Is ${escapeHTML(deal.title)} worth buying at this price?</h2><p>${escapeHTML(recommendation)}</p><p>These permanent pages keep out add-ons, bundles, Early Access listings, and anything running on a thin review signal.</p></div><aside><h2>Before you buy ${escapeHTML(deal.title)}</h2><ul><li>${escapeHTML(storeCaveat(deal.storeName))}</li><li>The final price and the exact edition, on the store page.</li><li>Whether you will actually play it. The discount cannot answer that one.</li></ul></aside></section>
   ${renderStoreComparison(deal)}
   <section class="snapshot-note"><h2>How current is this ${escapeHTML(deal.title)} price?</h2><p>This page shows one saved offer from the latest data refresh. It makes no claim about this being the lowest price the game has ever reached, because we cannot prove that. Store prices and availability both move between refreshes.</p></section>
   ${renderRelated(related)}
