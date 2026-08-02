@@ -55,6 +55,20 @@ test('a returning deal goes live again without losing its first-seen date', () =
   assert.equal(entry.firstSeenAt, '2026-08-01T00:00:00.000Z');
 });
 
+test('archived entries retain their recommendation and historical-price evidence', () => {
+  const recommendation = '92% positive \u00b7 5K reviews \u00b7 Recorded low';
+  const first = mergeArchive(emptyArchive(), [deal(1, {
+    historicalLow: 9.99,
+    recommendation
+  })], { now: '2026-08-01T00:00:00Z' });
+  const archived = mergeArchive(first, [], { now: '2026-08-02T00:00:00Z' });
+
+  const entry = archiveEntries(archived)[0];
+  assert.equal(entry.live, false);
+  assert.equal(entry.historicalLow, 9.99);
+  assert.equal(entry.recommendation, recommendation);
+});
+
 test('entries age out after the retention window', () => {
   const first = mergeArchive(emptyArchive(), [deal(1), deal(2)], { now: '2026-01-01T00:00:00Z' });
   const later = mergeArchive(first, [deal(1)], { now: '2026-06-01T00:00:00Z', retentionDays: 90 });
@@ -148,6 +162,43 @@ test('lastmod moves only when the figures move', () => {
 
   assert.equal(second['steam:1'].contentChangedAt, '2026-08-05T00:00:00.000Z', 'a repriced page should report the new date');
   assert.equal(second['steam:2'].contentChangedAt, '2026-08-01T00:00:00.000Z', 'an unchanged page must keep its original date');
+});
+
+test('lastmod moves when recommendation or historical-price evidence changes', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-lastmod-evidence-'));
+  const archivePath = path.join(outputDir, 'archive.json');
+  const initialRecommendation = '92% positive \u00b7 5K reviews \u00b7 Recorded low';
+
+  buildGamePages({
+    outputDir,
+    archivePath,
+    deals: [
+      deal(1, { historicalLow: 9.99, recommendation: initialRecommendation }),
+      deal(2, { historicalLow: 9.99, recommendation: initialRecommendation })
+    ],
+    snapshot: { updatedAt: '2026-08-01T00:00:00Z' }
+  });
+  buildGamePages({
+    outputDir,
+    archivePath,
+    deals: [
+      deal(1, { historicalLow: 9.99, recommendation: 'Updated recommendation evidence' }),
+      deal(2, { historicalLow: 8.99, recommendation: initialRecommendation })
+    ],
+    snapshot: { updatedAt: '2026-08-05T00:00:00Z' }
+  });
+
+  const games = JSON.parse(fs.readFileSync(archivePath, 'utf8')).games;
+  assert.equal(
+    games['steam:1'].contentChangedAt,
+    '2026-08-05T00:00:00.000Z',
+    'new recommendation evidence rewrites the page'
+  );
+  assert.equal(
+    games['steam:2'].contentChangedAt,
+    '2026-08-05T00:00:00.000Z',
+    'new historical-price evidence rewrites the page'
+  );
 });
 
 test('a deal ending counts as a change worth reporting', () => {

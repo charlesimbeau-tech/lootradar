@@ -125,6 +125,32 @@ test('generator writes the game hub and one page per selected game', () => {
   assert.equal(fs.existsSync(path.join(outputDir, gamePageRoute(second))), true);
 });
 
+test('generator preserves recorded-low recommendation evidence through the archive merge', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-game-low-'));
+  const archivePath = path.join(outputDir, 'archive.json');
+  const historicalLowDeal = {
+    ...qualifiedDeal,
+    salePrice: 8.88,
+    historicalLow: 8.88,
+    recommendation: '92% positive \u00b7 57.1K reviews \u00b7 Recorded low'
+  };
+
+  const result = buildGamePages({
+    outputDir,
+    archivePath,
+    deals: [historicalLowDeal],
+    snapshot: { updatedAt: '2026-08-01T00:00:00Z' }
+  });
+
+  const html = fs.readFileSync(path.join(outputDir, gamePageRoute(historicalLowDeal)), 'utf8');
+  assert.match(html, /<p>92% positive \u00b7 57\.1K reviews \u00b7 Recorded low<\/p>/);
+  assert.equal(result.archive.games[historicalLowDeal.key].historicalLow, 8.88);
+  assert.equal(
+    result.archive.games[historicalLowDeal.key].recommendation,
+    historicalLowDeal.recommendation
+  );
+});
+
 test('no generated game page is reachable only from the sitemap', () => {
   // Related links used to take the top four by Deal Score, which pointed every
   // page in a genre at the same four destinations: 273 of 370 pages ended up

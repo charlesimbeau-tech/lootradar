@@ -62,7 +62,9 @@ function pageSignature(entry) {
     entry.discount,
     entry.dealScore,
     entry.userRating,
-    entry.reviewCount
+    entry.reviewCount,
+    entry.historicalLow,
+    entry.recommendation
   ].join('|');
 }
 
