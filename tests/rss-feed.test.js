@@ -77,6 +77,33 @@ test('includes price, store, score, recommendation, source note, and snapshot da
   assert.match(xml, /urn:lootradar:steam:free:0\.00/);
 });
 
+test('separates recommendation copy from the price disclaimer without doubling punctuation', () => {
+  const xml = createRssFeed([
+    {
+      key: 'steam:factual',
+      title: 'Factual Copy',
+      salePrice: 4.99,
+      storeName: 'Steam',
+      dealScore: 93,
+      eligible: true,
+      recommendation: '86% positive · 45.9K reviews · 90% off'
+    },
+    {
+      key: 'steam:terminal',
+      title: 'Terminal Copy',
+      salePrice: 5.99,
+      storeName: 'Steam',
+      dealScore: 92,
+      eligible: true,
+      recommendation: 'Already punctuated!'
+    }
+  ], options);
+
+  assert.match(xml, /86% positive · 45\.9K reviews · 90% off\. Price listings/);
+  assert.match(xml, /Already punctuated! Price listings/);
+  assert.doesNotMatch(xml, /Already punctuated!\. Price listings/);
+});
+
 test('omits malformed eligible rows instead of emitting unstable items', () => {
   const xml = createRssFeed([
     { key: '', title: 'Missing key', salePrice: 1, dealScore: 80, eligible: true },
