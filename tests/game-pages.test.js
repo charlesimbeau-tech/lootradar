@@ -92,15 +92,17 @@ test('renders a unique evidence-based game price page', () => {
   assert.doesNotMatch(source, /\u2014/);
 });
 
-test('renders factual recommendation copy on game pages', () => {
+test('derives factual recommendation copy on game pages instead of trusting supplied copy', () => {
   const generated = renderGamePage(qualifiedDeal, { updatedAt: '2026-07-29T18:00:00Z' });
   assert.match(generated, /<p>92% positive \u00b7 57\.1K reviews \u00b7 78% off<\/p>/);
 
   const supplied = renderGamePage({
     ...qualifiedDeal,
-    recommendation: '86% positive \u00b7 45.9K reviews \u00b7 90% off'
+    historicalLow: 8.88,
+    recommendation: 'Stale recommendation copy'
   }, { updatedAt: '2026-07-29T18:00:00Z' });
-  assert.match(supplied, /<p>86% positive \u00b7 45\.9K reviews \u00b7 90% off<\/p>/);
+  assert.match(supplied, /<p>92% positive \u00b7 57\.1K reviews \u00b7 Recorded low<\/p>/);
+  assert.doesNotMatch(supplied, /Stale recommendation copy/);
 
   for (const source of [generated, supplied]) {
     assert.doesNotMatch(
@@ -145,10 +147,7 @@ test('generator preserves recorded-low recommendation evidence through the archi
   const html = fs.readFileSync(path.join(outputDir, gamePageRoute(historicalLowDeal)), 'utf8');
   assert.match(html, /<p>92% positive \u00b7 57\.1K reviews \u00b7 Recorded low<\/p>/);
   assert.equal(result.archive.games[historicalLowDeal.key].historicalLow, 8.88);
-  assert.equal(
-    result.archive.games[historicalLowDeal.key].recommendation,
-    historicalLowDeal.recommendation
-  );
+  assert.equal(result.archive.games[historicalLowDeal.key].recommendation, undefined);
 });
 
 test('no generated game page is reachable only from the sitemap', () => {

@@ -3,6 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { buildDealDataset } = require('../lib/deal-dataset.js');
+const { createRecommendationReason } = require('../lib/deal-score.js');
 const { gamePageRoute, selectGamePageDeals } = require('../lib/game-pages.js');
 const { archiveEntries, emptyArchive, mergeArchive } = require('../lib/game-archive.js');
 const config = require('../config/editorial-config.js');
@@ -63,8 +64,7 @@ function pageSignature(entry) {
     entry.dealScore,
     entry.userRating,
     entry.reviewCount,
-    entry.historicalLow,
-    entry.recommendation
+    createRecommendationReason(entry)
   ].join('|');
 }
 

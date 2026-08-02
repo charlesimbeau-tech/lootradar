@@ -55,18 +55,19 @@ test('a returning deal goes live again without losing its first-seen date', () =
   assert.equal(entry.firstSeenAt, '2026-08-01T00:00:00.000Z');
 });
 
-test('archived entries retain their recommendation and historical-price evidence', () => {
+test('archived entries retain historical-price evidence without persisting derived copy', () => {
   const recommendation = '92% positive \u00b7 5K reviews \u00b7 Recorded low';
   const first = mergeArchive(emptyArchive(), [deal(1, {
     historicalLow: 9.99,
     recommendation
   })], { now: '2026-08-01T00:00:00Z' });
+  first.games['steam:1'].recommendation = 'Legacy persisted recommendation';
   const archived = mergeArchive(first, [], { now: '2026-08-02T00:00:00Z' });
 
   const entry = archiveEntries(archived)[0];
   assert.equal(entry.live, false);
   assert.equal(entry.historicalLow, 9.99);
-  assert.equal(entry.recommendation, recommendation);
+  assert.equal(entry.recommendation, undefined);
 });
 
 test('entries age out after the retention window', () => {
@@ -164,17 +165,16 @@ test('lastmod moves only when the figures move', () => {
   assert.equal(second['steam:2'].contentChangedAt, '2026-08-01T00:00:00.000Z', 'an unchanged page must keep its original date');
 });
 
-test('lastmod moves when recommendation or historical-price evidence changes', () => {
+test('lastmod moves only when historical evidence changes the derived reason', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-lastmod-evidence-'));
   const archivePath = path.join(outputDir, 'archive.json');
-  const initialRecommendation = '92% positive \u00b7 5K reviews \u00b7 Recorded low';
 
   buildGamePages({
     outputDir,
     archivePath,
     deals: [
-      deal(1, { historicalLow: 9.99, recommendation: initialRecommendation }),
-      deal(2, { historicalLow: 9.99, recommendation: initialRecommendation })
+      deal(1, { historicalLow: 9.99 }),
+      deal(2, { historicalLow: null })
     ],
     snapshot: { updatedAt: '2026-08-01T00:00:00Z' }
   });
@@ -182,8 +182,8 @@ test('lastmod moves when recommendation or historical-price evidence changes', (
     outputDir,
     archivePath,
     deals: [
-      deal(1, { historicalLow: 9.99, recommendation: 'Updated recommendation evidence' }),
-      deal(2, { historicalLow: 8.99, recommendation: initialRecommendation })
+      deal(1, { historicalLow: 8.99 }),
+      deal(2, { historicalLow: 0 })
     ],
     snapshot: { updatedAt: '2026-08-05T00:00:00Z' }
   });
@@ -192,12 +192,12 @@ test('lastmod moves when recommendation or historical-price evidence changes', (
   assert.equal(
     games['steam:1'].contentChangedAt,
     '2026-08-05T00:00:00.000Z',
-    'new recommendation evidence rewrites the page'
+    'new historical evidence rewrites the page when its derived reason changes'
   );
   assert.equal(
     games['steam:2'].contentChangedAt,
-    '2026-08-05T00:00:00.000Z',
-    'new historical-price evidence rewrites the page'
+    '2026-08-01T00:00:00.000Z',
+    'equivalent historical evidence must not report a rendered change'
   );
 });
 
