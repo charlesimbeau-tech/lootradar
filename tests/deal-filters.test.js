@@ -1,6 +1,12 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { filterDeals, sortDeals, readFiltersFromUrl, filtersToSearchParams } = require('../lib/deal-filters.js');
+const {
+  consolidateHomepageFilters,
+  filterDeals,
+  sortDeals,
+  readFiltersFromUrl,
+  filtersToSearchParams
+} = require('../lib/deal-filters.js');
 
 const fixtures = [
   {
@@ -22,6 +28,24 @@ test('default quality mode rejects DLC and low-confidence games', () => {
   assert.deepEqual(visible.map(game => game.slug), ['excellent-game']);
 });
 
+test('best right now is a stricter shortlist than all qualified deals', () => {
+  const worthALook = {
+    ...fixtures[0],
+    slug: 'worth-a-look',
+    title: 'Worth a Look',
+    dealScore: 74
+  };
+
+  assert.deepEqual(
+    filterDeals([fixtures[0], worthALook], { collection: 'best' }).map(game => game.slug),
+    ['excellent-game']
+  );
+  assert.deepEqual(
+    filterDeals([fixtures[0], worthALook], { collection: 'all' }).map(game => game.slug),
+    ['excellent-game', 'worth-a-look']
+  );
+});
+
 test('relaxed quality controls can reveal excluded items only when explicitly included', () => {
   const visible = filterDeals(fixtures, {
     collection: 'all', quality: 'all', includeDlc: true, minRating: 0, minReviews: 0
@@ -37,6 +61,19 @@ test('URL filters round-trip', () => {
   const params = filtersToSearchParams(parsed);
   assert.equal(params.get('q'), 'hades');
   assert.equal(params.get('includeDlc'), '1');
+});
+
+test('retired duplicate collection chips become equivalent filter controls', () => {
+  assert.deepEqual(
+    {
+      collection: consolidateHomepageFilters({ collection: 'under10' }).collection,
+      maxPrice: consolidateHomepageFilters({ collection: 'under10' }).maxPrice,
+      minRating: consolidateHomepageFilters({ collection: 'under10' }).minRating
+    },
+    { collection: 'all', maxPrice: 10, minRating: 80 }
+  );
+  assert.equal(consolidateHomepageFilters({ collection: 'deep' }).minDiscount, 70);
+  assert.equal(consolidateHomepageFilters({ collection: 'indie' }).genre, 'Indie');
 });
 
 test('the new arrivals collection needs recency and review support together', () => {

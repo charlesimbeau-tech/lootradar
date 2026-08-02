@@ -10,7 +10,7 @@
     baseDelayMs: 750
   });
   const { calculateDealScore } = window.LootRadarScoring;
-  const { DEFAULT_FILTERS, normalizeFilters, filterDeals, sortDeals, readFiltersFromUrl, filtersToSearchParams } = window.LootRadarFilters;
+  const { DEFAULT_FILTERS, normalizeFilters, consolidateHomepageFilters, filterDeals, sortDeals, readFiltersFromUrl, filtersToSearchParams } = window.LootRadarFilters;
   const { buildDealDataset } = window.LootRadarDataset;
   const analytics = window.LootRadarAnalytics;
   const config = window.LootRadarEditorialConfig;
@@ -35,7 +35,7 @@
     allDeals: [],
     visibleDeals: [],
     stores: {},
-    filters: readFiltersFromUrl(window.location.href),
+    filters: consolidateHomepageFilters(readFiltersFromUrl(window.location.href)),
     shown: PAGE_SIZE,
     heroKey: null,
     selectedDeal: null,
@@ -54,6 +54,9 @@
     hidden: { label: 'Hidden gems', title: 'Adored by everyone who found them', summary: 'Smaller crowds, unusually happy ones, and enough reviews to trust.' },
     all: { label: 'All deals', title: 'Everything that qualifies', summary: 'Every listing that clears the filters you have set.' }
   };
+  const homepageCollectionIds = (config.collections || [])
+    .map(collection => collection.id)
+    .filter(id => collections[id]);
 
   const $ = selector => document.querySelector(selector);
   const $$ = selector => [...document.querySelectorAll(selector)];
@@ -229,7 +232,8 @@
   }
 
   function renderCollections() {
-    $('#collectionTabs').innerHTML = Object.entries(collections).map(([id, item]) => {
+    $('#collectionTabs').innerHTML = homepageCollectionIds.map(id => {
+      const item = collections[id];
       const count = filterDeals(state.allDeals, { ...state.filters, q: '', collection: id }).length;
       return `<button type="button" role="tab" data-collection="${id}" aria-selected="${state.filters.collection === id}">
         ${escapeHTML(item.label)} <span>${count}</span>

@@ -102,6 +102,15 @@ test('deep discounts still require quality eligibility', () => {
   assert.equal(selectLandingDeals(fixtures, 'deep').some(item => item.title === 'Weak Deep Cut'), false);
 });
 
+test('the permanent best-deals page uses the same stricter shortlist as the homepage', () => {
+  const candidates = [
+    { ...fixtures[0], title: 'Great Deal', dealScore: 75 },
+    { ...fixtures[1], title: 'Worth a Look', dealScore: 74 }
+  ];
+
+  assert.deepEqual(selectLandingDeals(candidates, 'best').map(item => item.title), ['Great Deal']);
+});
+
 test('deep discounts prioritize discount depth instead of duplicating best-deal order', () => {
   const candidates = [
     { ...fixtures[0], title: 'Higher score', discount: 72, dealScore: 95 },
@@ -113,7 +122,7 @@ test('deep discounts prioritize discount depth instead of duplicating best-deal 
   );
   assert.deepEqual(
     selectLandingDeals(candidates, 'best').map(item => item.title),
-    ['Higher score', 'Deeper discount']
+    ['Higher score']
   );
 });
 

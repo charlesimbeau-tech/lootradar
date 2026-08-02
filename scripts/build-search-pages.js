@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { buildDealDataset } = require('../lib/deal-dataset.js');
-const { FRESH, isFreshRelease } = require('../lib/deal-filters.js');
+const { BEST, FRESH, isFreshRelease } = require('../lib/deal-filters.js');
 const { gamePageRoute, selectGamePageDeals } = require('../lib/game-pages.js');
 const config = require('../config/editorial-config.js');
 const { MIN_INDEXABLE_DEALS, renderLandingPage } = require('./templates/deal-landing.js');
@@ -26,7 +26,7 @@ const PAGE_DEFINITIONS = {
       'The biggest badge on the page is almost never the best deal on the page. This one starts with the latest store listings, runs them through the quality and content checks, and only then ranks what is left standing. What rises to the top are games with real player feedback attached to prices that genuinely moved.',
       'It is a starting point, not an instruction. Genre, mood, and how much time you actually have still matter more than any number we can calculate. Every card tells you the store, the current price, how solid the review evidence is, the Deal Score, and the specific reason this offer climbed.'
     ],
-    criteria: 'A listing has to clear the default eligibility rules and score at least 55. That score mixes game quality, price value, discount strength, review confidence, and player interest. Add-ons, soundtracks, demos, currency packs, and anything with thin evidence get filtered out before ranking even starts. What remains is ordered by Deal Score, with review volume breaking the ties.',
+    criteria: `A listing has to clear the default eligibility rules and score at least ${BEST.minDealScore}, the site's "Great deal" boundary. That score mixes game quality, price value, discount strength, review confidence, and player interest. Add-ons, soundtracks, demos, currency packs, and anything with thin evidence get filtered out before ranking even starts. What remains is ordered by Deal Score, with review volume breaking the ties.`,
     caveat: 'We do the filtering and the scoring. The store decides what you actually pay and whether it is still in stock. Listings can change after the snapshot, or in the time it takes you to click through.',
     cardSummary: 'The best balance of great game, good price, and real review evidence in the latest sweep.',
     relatedGuide: { path: 'blog/game-price-comparison.html', label: 'How to compare PC game prices' }
@@ -177,7 +177,7 @@ function selectLandingDeals(deals, pageId, now = Date.now()) {
     if (!deal.eligible || deal.excludedContent || deal.isBundle || deal.isEarlyAccess) {
       return false;
     }
-    if (pageId === 'best') return Number(deal.dealScore) >= 55;
+    if (pageId === 'best') return Number(deal.dealScore) >= BEST.minDealScore;
     if (pageId === 'fresh') return isFreshRelease(deal, now);
     if (pageId === 'steam-under-10') {
       return String(deal.storeID) === '1' && Number(deal.salePrice) <= 10;

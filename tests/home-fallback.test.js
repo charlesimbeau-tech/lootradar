@@ -29,7 +29,9 @@ function fixture(index) {
     userRating: 92,
     reviewCount: 4000 + index * 25,
     discount: 75,
-    dealScore: 90 - index,
+    // Keep 25 fixtures at or above the 75-point Best threshold so the hero
+    // plus a full 24-card grid are available, with the remainder filtered out.
+    dealScore: 99 - index,
     eligible: true,
     genres: ['Action'],
     tags: ['Singleplayer'],
@@ -213,6 +215,19 @@ test('the shipped index.html keeps its fallback markers and baked content', () =
   // a permanent loading animation above real content.
   assert.match(html, /id="loading"[^>]*\shidden/);
   assert.match(html, /<noscript>/);
+});
+
+test('the homepage presents one collection row instead of repeating deal tags', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const config = require('../config/editorial-config.js');
+  const collectionRows = html.match(/aria-label="(?:Curated collections|Permanent deal collections)"/g) || [];
+
+  assert.equal(collectionRows.length, 1);
+  assert.doesNotMatch(html, /class="footer-links quick-links"/);
+  assert.deepEqual(
+    config.collections.map(collection => collection.id),
+    ['best', 'fresh', 'multiplayer', 'hidden', 'all']
+  );
 });
 
 test('app.js keeps the prerendered grid on the first load', () => {

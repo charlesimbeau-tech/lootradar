@@ -50,11 +50,9 @@
     collections: Object.freeze([
       { id: 'best', label: 'Best right now' },
       { id: 'fresh', label: 'New arrivals' },
-      { id: 'under10', label: 'Highly rated under $10' },
-      { id: 'deep', label: 'Deep discounts worth a look' },
-      { id: 'indie', label: 'Indie standouts' },
       { id: 'multiplayer', label: 'Co-op & multiplayer' },
-      { id: 'hidden', label: 'Hidden gems' }
+      { id: 'hidden', label: 'Hidden gems' },
+      { id: 'all', label: 'All deals' }
     ])
   });
 });
