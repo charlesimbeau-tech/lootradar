@@ -249,6 +249,33 @@ test('generator writes a crawlable hub and seven unique collection pages', () =>
   assert.match(bestPage, /href="\.\.\/games\/co-op-indie-pick-14-14\.html"/);
 });
 
+test('deal landing cards use the canonical factual reason when recommendation copy is missing', () => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-factual-landing-'));
+  const deals = Array.from({ length: 14 }, (_, index) => generatedFixture(index + 1));
+  deals[0] = {
+    ...deals[0],
+    title: 'Factual Fallback',
+    userRating: 86,
+    reviewCount: 45900,
+    discount: 90,
+    dealScore: 99,
+    recommendation: undefined
+  };
+
+  buildSearchPages({
+    outputDir,
+    deals,
+    snapshot: { updatedAt: '2026-07-27T18:01:07.921Z' }
+  });
+
+  const source = fs.readFileSync(
+    path.join(outputDir, PAGE_DEFINITIONS.best.route),
+    'utf8'
+  );
+  assert.match(source, /86% positive \u00b7 45\.9K reviews \u00b7 90% off/);
+  assert.doesNotMatch(source, /positive across|in this snapshot|review evidence behind it/i);
+});
+
 test('quiet collections remain useful but are marked noindex', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lootradar-quiet-pages-'));
   const result = buildSearchPages({

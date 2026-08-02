@@ -53,6 +53,29 @@ test('recommendation reason uses a factual stat line with uppercase compact coun
   );
 });
 
+test('recommendation reason formats million-scale counts and omits absent discounts', () => {
+  assert.equal(
+    createRecommendationReason({
+      userRating: 91,
+      reviewCount: 1250000,
+      discount: 50,
+      salePrice: 9.99,
+      normalPrice: 19.99
+    }),
+    '91% positive \u00b7 1.3M reviews \u00b7 50% off'
+  );
+  assert.equal(
+    createRecommendationReason({
+      userRating: 86,
+      reviewCount: 45900,
+      discount: 0,
+      salePrice: 49.99,
+      normalPrice: 49.99
+    }),
+    '86% positive \u00b7 45.9K reviews'
+  );
+});
+
 test('recommendation reason states recorded-low evidence directly', () => {
   assert.equal(
     createRecommendationReason({
@@ -86,4 +109,26 @@ test('recommendation reason describes limited rating evidence without commentary
     '90% off · Rating data unavailable'
   );
   assert.equal(createRecommendationReason({}), 'Rating data unavailable');
+});
+
+test('recommendation reasons never restore the former editorial discount language', () => {
+  const reasons = [90, 80, 65, 25].map(discount => createRecommendationReason({
+    userRating: 86,
+    reviewCount: 45900,
+    discount,
+    salePrice: 4.99,
+    normalPrice: 49.99
+  }));
+  reasons.push(
+    createRecommendationReason({ criticScore: 82, discount: 70 }),
+    createRecommendationReason({ discount: 90 }),
+    createRecommendationReason({})
+  );
+
+  for (const reason of reasons) {
+    assert.doesNotMatch(
+      reason,
+      /frankly silly|hefty|proper cut|game itself is doing the work|price looks sharp/i
+    );
+  }
 });

@@ -138,7 +138,7 @@ test('separates recommendation copy from the price disclaimer without doubling p
   assert.match(xml, /86% positive · 45\.9K reviews · 90% off\. Price listings/);
   assert.match(xml, /Already punctuated! Price listings/);
   assert.doesNotMatch(xml, /Already punctuated!\. Price listings/);
-  assert.match(xml, /This one made it through the quality filters\. Price listings/);
+  assert.match(xml, /Rating data unavailable\. Price listings/);
   assert.doesNotMatch(xml, />\. Price listings/);
   assert.match(xml, /&quot;Already punctuated!&quot; Price listings/);
   assert.doesNotMatch(xml, /&quot;Already punctuated!&quot;\. Price listings/);

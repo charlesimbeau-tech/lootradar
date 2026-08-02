@@ -1,5 +1,7 @@
 'use strict';
 
+const { createRecommendationReason } = require('../../lib/deal-score.js');
+
 const SITE_ORIGIN = 'https://thelootradar.com';
 const MIN_INDEXABLE_DEALS = 6;
 
@@ -58,10 +60,7 @@ function formatSnapshot(updatedAt) {
 
 function recommendationFor(deal) {
   if (deal.recommendation) return deal.recommendation;
-  if (Number(deal.userRating) > 0 && Number(deal.reviewCount) > 0) {
-    return `${deal.userRating}% positive across ${formatCount(deal.reviewCount)} reviews, and it is ${deal.discount}% off in this snapshot.`;
-  }
-  return `${deal.discount}% off at ${deal.storeName}, though there is not much review evidence behind it yet.`;
+  return createRecommendationReason(deal);
 }
 
 function renderDealCard(deal) {
