@@ -21,16 +21,16 @@ test('the refresh workflow rebuilds and stages permanent game pages', () => {
     'utf8'
   );
   const gamesBuild = workflow.indexOf('node scripts/build-game-pages.js');
-  const guideBuild = workflow.indexOf('node scripts/build-guide-deal-modules.js');
   const searchBuild = workflow.indexOf('node scripts/build-search-pages.js');
   const sitemapBuild = workflow.indexOf('node scripts/generate-sitemap.js');
   assert.ok(gamesBuild > -1);
   assert.ok(gamesBuild < searchBuild);
-  assert.ok(gamesBuild < guideBuild);
-  assert.ok(guideBuild < searchBuild);
   assert.ok(searchBuild < sitemapBuild);
   assert.match(workflow, /\[ -d games \] && git add games/);
-  assert.match(workflow, /git add blog\/are-90-percent-discounts-good\.html/);
+  // The evergreen guides were removed, so the refresh no longer rebuilds or
+  // stages them. Nothing should reintroduce a step for a script that is gone.
+  assert.doesNotMatch(workflow, /build-guide-deal-modules/);
+  assert.doesNotMatch(workflow, /git add blog\//);
 });
 
 
@@ -40,7 +40,19 @@ test('the refresh workflow keeps each named step attached to a command', () => {
     'utf8'
   );
   assert.doesNotMatch(workflow, /- name:[^\r\n]+\r?\n\s+- name:/);
-  assert.match(workflow, /- name: Refresh guide evidence modules\r?\n\s+run: node scripts\/build-guide-deal-modules\.js/);
+  // The original guard named one specific step. Removing that step broke it,
+  // which is the wrong failure: the property worth holding is that no step is
+  // ever left without a command, whichever steps exist.
+  const steps = [...workflow.matchAll(/- name: ([^\r\n]+)/g)].map(match => match[1]);
+  assert.ok(steps.length > 5, 'expected the refresh to have several named steps');
+  for (const step of steps) {
+    const after = workflow.slice(workflow.indexOf(`- name: ${step}`) + step.length);
+    assert.match(
+      after.slice(0, 400),
+      /\n\s+(run:|uses:|env:)/,
+      `step "${step}" has no command attached`
+    );
+  }
 });
 
 

@@ -18,14 +18,7 @@ const STATIC_EDITORIAL_PATHS = Object.freeze([
   '/methodology.html',
   '/blog.html',
   '/privacy.html',
-  '/terms.html',
-  '/blog/are-90-percent-discounts-good.html',
-  '/blog/best-free-pc-games.html',
-  '/blog/cheapest-steam-games.html',
-  '/blog/game-price-comparison.html',
-  '/blog/how-to-get-free-games.html',
-  '/blog/indie-games-under-five.html',
-  '/blog/steam-sale-guide.html'
+  '/terms.html'
 ]);
 
 function editorialEntries(baseDir = root, editorialLastmod = EDITORIAL_LASTMOD) {

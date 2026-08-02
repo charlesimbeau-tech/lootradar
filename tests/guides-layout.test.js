@@ -10,13 +10,6 @@ const {
 
 const root = path.resolve(__dirname, '..');
 const evergreenGuideFiles = [
-  'blog/are-90-percent-discounts-good.html',
-  'blog/best-free-pc-games.html',
-  'blog/cheapest-steam-games.html',
-  'blog/game-price-comparison.html',
-  'blog/how-to-get-free-games.html',
-  'blog/indie-games-under-five.html',
-  'blog/steam-sale-guide.html'
 ];
 const weeklyGuideFiles = loadWeeklyIssues(root).map(weeklyGuideRelativePath);
 const guideFiles = [...weeklyGuideFiles, ...evergreenGuideFiles];
@@ -30,7 +23,11 @@ test('the guides index uses the editorial landing-page system', () => {
   assert.match(source, /<body class="guides-index">/);
   assert.match(source, /class="guides-hero"/);
   assert.match(source, /class="guide-feature"/);
-  assert.match(source, /class="guide-card-grid"/);
+  // The evergreen guide grid was removed with the guides themselves. What is
+  // left is the weekly shortlist feature, so the index must still surface an
+  // issue rather than being an empty shell.
+  assert.match(source, /href="blog\/5-pc-game-deals-worth-buying-/);
+  assert.doesNotMatch(source, /class="guide-card-grid"/);
   assert.match(source, /class="guides-principles"/);
   assert.match(source, /href="guides\.css\?v=2"/);
 });

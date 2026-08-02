@@ -58,24 +58,18 @@ test('repeated navigation uses the current product vocabulary', () => {
   }
 });
 
-test('relevant guides link to permanent deal collections', () => {
-  const expectedLinks = new Map([
-    ['blog/cheapest-steam-games.html', [
-      '../deals/steam-deals-under-10.html',
-      '../deals/deep-discounts.html'
-    ]],
-    ['blog/indie-games-under-five.html', ['../deals/indie-game-deals.html']],
-    ['blog/game-price-comparison.html', [
-      '../deals/index.html',
-      '../deals/best-pc-game-deals.html'
-    ]],
-    ['blog/steam-sale-guide.html', ['../deals/best-pc-game-deals.html']]
-  ]);
+test('the weekly shortlist links to permanent deal collections', () => {
+  // The evergreen guides that used to carry these links were removed. The
+  // weekly issue is the remaining editorial page, and it still has to route
+  // readers into the collections rather than dead-ending.
+  const weekly = fs.readdirSync(path.join(root, 'blog'))
+    .filter(file => file.startsWith('5-pc-game-deals-worth-buying-'));
+  assert.ok(weekly.length > 0, 'expected at least one weekly issue');
 
-  for (const [relativePath, links] of expectedLinks) {
-    const html = fs.readFileSync(path.join(root, relativePath), 'utf8');
-    for (const href of links) {
-      assert.match(html, new RegExp(`href="${href.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
+  for (const file of weekly) {
+    const source = fs.readFileSync(path.join(root, 'blog', file), 'utf8');
+    for (const link of ['../deals/index.html', '../deals/best-pc-game-deals.html']) {
+      assert.ok(source.includes(`href="${link}"`), `blog/${file} should link to ${link}`);
     }
   }
 });

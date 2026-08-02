@@ -48,21 +48,13 @@ const requiredBuild = [
 const editorialPages = [
   'index.html', 'games.html', 'recommendations.html', 'login.html',
   'about.html', 'methodology.html', 'blog.html', 'privacy.html', 'terms.html',
-  ...weeklyGuidePages,
-  'blog/are-90-percent-discounts-good.html',
-  'blog/best-free-pc-games.html', 'blog/cheapest-steam-games.html',
-  'blog/game-price-comparison.html', 'blog/how-to-get-free-games.html',
-  'blog/indie-games-under-five.html', 'blog/steam-sale-guide.html'
+  ...weeklyGuidePages
 ];
 const adsensePublisher = 'ca-pub-3845680227675655';
 const adsenseEditorialPages = [
   'index.html', 'games.html', 'recommendations.html', 'methodology.html',
   'about.html', 'blog.html',
-  ...weeklyGuidePages,
-  'blog/are-90-percent-discounts-good.html',
-  'blog/best-free-pc-games.html', 'blog/cheapest-steam-games.html',
-  'blog/game-price-comparison.html', 'blog/how-to-get-free-games.html',
-  'blog/indie-games-under-five.html', 'blog/steam-sale-guide.html'
+  ...weeklyGuidePages
 ];
 const generatedDealPages = [
   'deals/index.html',

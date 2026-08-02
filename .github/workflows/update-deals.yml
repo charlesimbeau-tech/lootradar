@@ -61,9 +61,6 @@ jobs:
       - name: Build permanent game price pages
         run: node scripts/build-game-pages.js
 
-      - name: Refresh guide evidence modules
-        run: node scripts/build-guide-deal-modules.js
-
       - name: Build search landing pages
         run: node scripts/build-search-pages.js
 
@@ -99,10 +96,6 @@ jobs:
           [ -f game-pages-archive.json ] && git add game-pages-archive.json || true
           [ -f feed.xml ] && git add feed.xml || true
           [ -f sitemap.xml ] && git add sitemap.xml || true
-          git add blog/game-price-comparison.html
-          git add blog/best-free-pc-games.html
-          git add blog/steam-sale-guide.html
-          git add blog/are-90-percent-discounts-good.html
 
           if git diff --cached --quiet; then
             echo "No data changes to commit"

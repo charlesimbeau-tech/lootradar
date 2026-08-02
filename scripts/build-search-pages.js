@@ -29,7 +29,6 @@ const PAGE_DEFINITIONS = {
     criteria: `A listing has to clear the default eligibility rules and score at least ${BEST.minDealScore}, the site's "Great deal" boundary. That score mixes game quality, price value, discount strength, review confidence, and player interest. Add-ons, soundtracks, demos, currency packs, and anything with thin evidence get filtered out before ranking even starts. What remains is ordered by Deal Score, with review volume breaking the ties.`,
     caveat: 'We do the filtering and the scoring. The store decides what you actually pay and whether it is still in stock. Listings can change after the snapshot, or in the time it takes you to click through.',
     cardSummary: 'The best balance of great game, good price, and real review evidence in the latest sweep.',
-    relatedGuide: { path: 'blog/game-price-comparison.html', label: 'How to compare PC game prices' }
   },
   fresh: {
     id: 'fresh',
@@ -49,7 +48,6 @@ const PAGE_DEFINITIONS = {
     criteria: `A game must have released within the last ${FRESH.windowDays} days, hold at least ${FRESH.minRating}% positive player feedback across ${FRESH.minReviews.toLocaleString('en-US')} or more reviews, pass the default eligibility rules, and earn a Deal Score of at least ${FRESH.minDealScore}. Qualifying listings are ordered by Deal Score, with review volume breaking ties. The review floor is lower than the rest of the site on purpose, because a recent release cannot have a decade of reviews behind it.`,
     caveat: 'Release dates come from available game metadata, so a title with missing data can be left out even when it is genuinely new. New releases also discount less deeply than back-catalogue games, so expect smaller percentages here.',
     cardSummary: 'Recent releases that already collected the reviews to justify the risk.',
-    relatedGuide: { path: 'blog/steam-sale-guide.html', label: 'How to shop a sale without overspending' }
   },
   'steam-under-10': {
     id: 'steam-under-10',
@@ -69,7 +67,6 @@ const PAGE_DEFINITIONS = {
     criteria: 'To appear here a listing must come from the Steam storefront, cost $10 or less, and pass the default eligibility rules. Whatever qualifies is ranked by Deal Score, which weighs player and critic signals, how strong the price is, how deep the cut goes, review volume, and player interest. DLC, soundtracks, demos, and currency packs are not invited.',
     caveat: 'This page covers the Steam storefront listing in the snapshot. Other sellers may have Steam keys at other prices, and store inventory moves around.',
     cardSummary: 'Steam listings at $10 or less that still cleared the quality bar.',
-    relatedGuide: { path: 'blog/cheapest-steam-games.html', label: 'A practical guide to inexpensive Steam games' }
   },
   coop: {
     id: 'coop',
@@ -89,7 +86,6 @@ const PAGE_DEFINITIONS = {
     criteria: 'A listing must pass the default quality and content filters and carry an explicit co-op tag in its metadata. A generic multiplayer tag will not do. Whatever qualifies is ranked by Deal Score, combining quality, price value, discount strength, review confidence, and player interest, which stops a big discount from dragging a poorly supported game onto the list.',
     caveat: 'Co-op classification depends on Steam metadata, and that metadata does not cover every listing. Treat this as a good curated set rather than a complete catalog of every co-op game on sale.',
     cardSummary: 'Properly tagged co-op games that also cleared the normal quality bar.',
-    relatedGuide: { path: 'blog/game-price-comparison.html', label: 'How to compare PC game prices' }
   },
   indie: {
     id: 'indie',
@@ -109,7 +105,6 @@ const PAGE_DEFINITIONS = {
     criteria: 'A listing needs Indie in its genre or tag metadata, has to pass the default quality and content rules, and then gets ranked by Deal Score. That combines game quality, price value, discount strength, review confidence, and player interest. Excluded add-ons and thin-evidence entries stay out no matter how dramatic their percentages look.',
     caveat: 'Steam metadata is incomplete, so some genuinely independent games never get classified for this page. Prices come from the current snapshot and will move.',
     cardSummary: 'Indie-tagged games with real review evidence and a price worth acting on.',
-    relatedGuide: { path: 'blog/indie-games-under-five.html', label: 'How to find inexpensive indie games' }
   },
   deep: {
     id: 'deep',
@@ -129,7 +124,6 @@ const PAGE_DEFINITIONS = {
     criteria: 'Every listing must be at least 70% below its stated normal price, clear the default eligibility checks, and score 65 or higher. That raised floor is deliberate: it stops discount depth from taking over the page. Non-game content and thin-evidence listings are removed before what qualifies is ranked by Deal Score.',
     caveat: 'Normal prices and discount percentages come from store data. A giant percentage is not proof of an all-time low, and we will not call it one without verified history to back it up.',
     cardSummary: 'Cuts of 70% or deeper that also earned a strong Deal Score.',
-    relatedGuide: { path: 'blog/game-price-comparison.html', label: 'How to judge a PC game discount' }
   },
   hidden: {
     id: 'hidden',
@@ -149,7 +143,6 @@ const PAGE_DEFINITIONS = {
     criteria: 'A game needs at least 85% positive feedback, between 100 and 4,999 recorded player reviews, a pass on the default eligibility rules, and a Deal Score of 60 or better. Qualifying listings are ranked by Deal Score and then review volume. Those boundaries chase strong, well-supported sentiment instead of producing another list of the most famous games on PC.',
     caveat: 'Review counts and ratings come from the enrichment and listing data available. Missing metadata can keep a good game out, and hidden here means the boundaries of this collection rather than any universal claim about fame.',
     cardSummary: 'At least 85% positive, from a smaller but entirely credible crowd.',
-    relatedGuide: { path: 'blog/indie-games-under-five.html', label: 'Finding smaller games on a budget' }
   }
 };
 
