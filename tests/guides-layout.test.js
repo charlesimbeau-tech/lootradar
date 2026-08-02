@@ -18,7 +18,7 @@ function read(file) {
   return fs.readFileSync(path.join(root, file), 'utf8');
 }
 
-test('the guides index uses the editorial landing-page system', () => {
+test('the weekly picks hub uses the editorial landing-page system', () => {
   const source = read('blog.html');
   assert.match(source, /<body class="guides-index">/);
   assert.match(source, /class="guides-hero"/);
@@ -30,6 +30,11 @@ test('the guides index uses the editorial landing-page system', () => {
   assert.doesNotMatch(source, /class="guide-card-grid"/);
   assert.match(source, /class="guides-principles"/);
   assert.match(source, /href="guides\.css\?v=2"/);
+  assert.match(source, /<title>Weekly PC game picks \| LootRadar<\/title>/);
+  assert.match(source, /LootRadar’s weekly PC game picks\./);
+  assert.match(source, /Five current PC game deals\./);
+  assert.match(source, /How we choose the five/);
+  assert.doesNotMatch(source, /buying guides|free games|Current roundup|three-minute shortlist/i);
 });
 
 test('every guide article uses the shared responsive reading system', () => {
@@ -58,7 +63,7 @@ test('the filled guide button keeps a readable dark label', () => {
   const globalStyles = read('style.css');
 
   assert.match(globalStyles, /body:not\(\.home-page\) main a\s*\{[^}]*color:\s*var\(--mint\)/);
-  assert.match(index, /class="button button-primary"[^>]*>Read this week's shortlist<\/a>/);
+  assert.match(index, /class="button button-primary"[^>]*>See this week's picks<\/a>/);
   assert.match(
     guideStyles,
     /\.guides-index \.guides-hero-actions \.button-primary\s*\{[^}]*color:\s*#0a0d0c/

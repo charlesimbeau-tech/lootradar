@@ -43,12 +43,16 @@ test('loads and renders every structured weekly issue', () => {
   }
 });
 
-test('the newest issue drives both Guides page promotion blocks', () => {
+test('the newest issue drives both Weekly Picks promotion blocks', () => {
   const issue = loadCurrentWeeklyIssue(root);
   const relativePath = weeklyGuideRelativePath(issue);
   assert.match(renderGuideHero(issue), new RegExp(relativePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.match(renderGuideFeature(issue), new RegExp(relativePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  assert.match(renderGuideFeature(issue), /Current roundup/);
+  assert.match(renderGuideHero(issue), /See this week's picks/);
+  assert.match(renderGuideHero(issue), /Browse live deals/);
+  assert.match(renderGuideFeature(issue), /Latest weekly picks/);
+  assert.match(renderGuideFeature(issue), /See all five picks/);
+  assert.doesNotMatch(`${renderGuideHero(issue)}${renderGuideFeature(issue)}`, /Guides|Current roundup|three-minute shortlist/);
 });
 
 test('rejects stale deal evidence when a new issue is prepared', () => {
