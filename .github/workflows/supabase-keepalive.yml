@@ -1,0 +1,34 @@
+name: Supabase Database Health Check
+
+on:
+  schedule:
+    # A real read-only database request each day keeps the Free project active
+    # and also warns us if the account backend becomes unavailable.
+    - cron: '23 13 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  database-health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Query the account database
+        env:
+          LR_SUPABASE_URL: ${{ secrets.LR_SUPABASE_URL }}
+          LR_SUPABASE_ANON_KEY: ${{ secrets.LR_SUPABASE_ANON_KEY }}
+        run: |
+          test -n "$LR_SUPABASE_URL"
+          test -n "$LR_SUPABASE_ANON_KEY"
+
+          curl --silent --show-error --fail-with-body \
+            --retry 3 \
+            --retry-all-errors \
+            --connect-timeout 10 \
+            --max-time 30 \
+            --header "apikey: $LR_SUPABASE_ANON_KEY" \
+            --header "Authorization: Bearer $LR_SUPABASE_ANON_KEY" \
+            "$LR_SUPABASE_URL/rest/v1/lr_profiles?select=id&limit=1" \
+            > /dev/null
