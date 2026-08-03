@@ -16,7 +16,7 @@ test('Supabase keepalive performs a daily read-only database query', () => {
   assert.match(workflow, /permissions:\s*\n\s*contents: read/);
   assert.match(workflow, /secrets\.LR_SUPABASE_URL/);
   assert.match(workflow, /secrets\.LR_SUPABASE_ANON_KEY/);
-  assert.match(workflow, /\/rest\/v1\/lr_profiles\?select=id&limit=1/);
+  assert.match(workflow, /\/rest\/v1\/lr_profiles\?select=user_id&limit=1/);
   assert.match(workflow, /--fail-with-body/);
   assert.doesNotMatch(workflow, /SERVICE_ROLE|POST|PATCH|DELETE/);
 });
