@@ -231,6 +231,16 @@ test('the homepage hero uses the responsive decorative radar artwork', () => {
   assert.match(html, /id="heroPick"/);
 });
 
+test('the homepage navigation uses the radar artwork with a cache-safe stylesheet', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const styles = fs.readFileSync(path.join(root, 'style.css'), 'utf8');
+
+  assert.match(styles, /\.site-nav\s*\{[\s\S]*?lootradar-radar-hero\.png/);
+  assert.match(styles, /@supports[\s\S]*?\.site-nav\s*\{[\s\S]*?lootradar-radar-hero\.webp/);
+  assert.match(styles, /@media \(max-width: 560px\)[\s\S]*?\.site-nav\s*\{[^}]*background-position:/);
+  assert.match(html, /style\.css\?v=30/);
+});
+
 test('the homepage presents one collection row instead of repeating deal tags', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const config = require('../config/editorial-config.js');
