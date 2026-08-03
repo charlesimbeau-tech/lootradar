@@ -240,6 +240,7 @@ test('the homepage navigation uses the radar artwork with a cache-safe styleshee
   assert.match(styles, /@media \(max-width: 560px\)[\s\S]*?\.site-nav\s*\{[^}]*background-position:/);
   assert.match(html, /style\.css\?v=30/);
   assert.doesNotMatch(html, /Deals worth detecting/);
+  assert.match(html, /Every three hours, LootRadar sweeps across storefronts, filters out the static, and locks onto games players actually love when they hit prices worth paying\./);
 });
 
 test('the homepage presents one collection row instead of repeating deal tags', () => {
