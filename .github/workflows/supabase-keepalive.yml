@@ -2,9 +2,9 @@ name: Supabase Database Health Check
 
 on:
   schedule:
-    # A real read-only database request each day keeps the Free project active
-    # and also warns us if the account backend becomes unavailable.
-    - cron: '23 13 * * *'
+    # Three real read-only database requests each day keep the Free project
+    # active and also warn us if the account backend becomes unavailable.
+    - cron: '23 5,13,21 * * *'
   workflow_dispatch:
 
 permissions:

@@ -10,8 +10,8 @@ const workflow = fs.readFileSync(
   'utf8'
 );
 
-test('Supabase keepalive performs a daily read-only database query', () => {
-  assert.match(workflow, /cron: '23 13 \* \* \*'/);
+test('Supabase keepalive performs three daily read-only database queries', () => {
+  assert.match(workflow, /cron: '23 5,13,21 \* \* \*'/);
   assert.match(workflow, /workflow_dispatch:/);
   assert.match(workflow, /permissions:\s*\n\s*contents: read/);
   assert.match(workflow, /secrets\.LR_SUPABASE_URL/);
