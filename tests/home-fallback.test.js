@@ -217,6 +217,20 @@ test('the shipped index.html keeps its fallback markers and baked content', () =
   assert.match(html, /<noscript>/);
 });
 
+test('the homepage hero uses the responsive decorative radar artwork', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const styles = fs.readFileSync(path.join(root, 'style.css'), 'utf8');
+
+  assert.match(styles, /public\/lootradar-radar-hero\.png/);
+  assert.match(styles, /public\/lootradar-radar-hero\.webp/);
+  assert.match(styles, /linear-gradient\([^}]+url\(["']?public\/lootradar-radar-hero\.png/s);
+  assert.match(styles, /@media \(max-width: 780px\)[\s\S]+?\.hero\s*\{[^}]*background-position:/);
+  assert.match(styles, /@media \(max-width: 560px\)[\s\S]+?\.hero\s*\{[^}]*background-position:/);
+  assert.match(html, /<h1>Games worth playing\.<br><em>Prices worth paying\.<\/em><\/h1>/);
+  assert.match(html, />See what survived today<\/a>/);
+  assert.match(html, /id="heroPick"/);
+});
+
 test('the homepage presents one collection row instead of repeating deal tags', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const config = require('../config/editorial-config.js');

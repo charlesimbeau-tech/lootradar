@@ -162,11 +162,23 @@ button { color: inherit; }
 .account-sync a:hover { color: var(--text); }
 
 .hero {
+  --hero-left-shade: rgba(7, 10, 8, .94);
+  --hero-mid-shade: rgba(7, 10, 8, .76);
+  --hero-right-shade: rgba(7, 10, 8, .68);
   position: relative; overflow: hidden;
   background:
-    radial-gradient(circle at 72% 45%, rgba(185, 245, 93, .12), transparent 28%),
-    linear-gradient(180deg, #0c100e 0%, var(--bg) 100%);
+    linear-gradient(90deg, var(--hero-left-shade) 0%, var(--hero-mid-shade) 48%, var(--hero-right-shade) 100%),
+    linear-gradient(180deg, rgba(10, 13, 12, .14) 45%, var(--bg) 100%),
+    url("public/lootradar-radar-hero.png") center / cover no-repeat;
   border-bottom: 1px solid var(--line);
+}
+@supports (background-image: url("data:image/webp;base64,UklGRiIAAABXRUJQVlA4")) {
+  .hero {
+    background-image:
+      linear-gradient(90deg, var(--hero-left-shade) 0%, var(--hero-mid-shade) 48%, var(--hero-right-shade) 100%),
+      linear-gradient(180deg, rgba(10, 13, 12, .14) 45%, var(--bg) 100%),
+      url("public/lootradar-radar-hero.webp");
+  }
 }
 .hero::before {
   content: ""; position: absolute; inset: 0; opacity: .35; pointer-events: none;
@@ -807,6 +819,12 @@ body:not(.home-page) .hero-inner { display: block; min-height: 0; padding: 2.5re
     margin-top: -.5rem;
     padding-bottom: .55rem;
   }
+  .hero {
+    --hero-left-shade: rgba(7, 10, 8, .91);
+    --hero-mid-shade: rgba(7, 10, 8, .82);
+    --hero-right-shade: rgba(7, 10, 8, .77);
+    background-position: 42% center;
+  }
   .hero-inner { grid-template-columns: 1fr; min-height: 0; padding: 4rem 0; }
   .hero-pick { width: min(100%, 480px); transform: none; }
   .hero h1 { font-size: clamp(3rem, 13vw, 5.2rem); }
@@ -838,6 +856,12 @@ body:not(.home-page) .hero-inner { display: block; min-height: 0; padding: 2.5re
   .brand-mark::after { width: 32px; }
   .nav-watch { font-size: 0; padding-left: .65rem; }
   .nav-watch::before { content: "Watch"; font-size: .72rem; }
+  .hero {
+    --hero-left-shade: rgba(7, 10, 8, .94);
+    --hero-mid-shade: rgba(7, 10, 8, .87);
+    --hero-right-shade: rgba(7, 10, 8, .84);
+    background-position: 35% center;
+  }
   .hero-inner { padding: 3.2rem 0; gap: 2.6rem; }
   .hero h1 { font-size: clamp(2.7rem, 15vw, 4.2rem); }
   .hero-lede { font-size: .98rem; }
