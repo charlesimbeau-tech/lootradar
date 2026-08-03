@@ -239,6 +239,7 @@ test('the homepage navigation uses the radar artwork with a cache-safe styleshee
   assert.match(styles, /@supports[\s\S]*?\.site-nav\s*\{[\s\S]*?lootradar-radar-hero\.webp/);
   assert.match(styles, /@media \(max-width: 560px\)[\s\S]*?\.site-nav\s*\{[^}]*background-position:/);
   assert.match(html, /style\.css\?v=30/);
+  assert.doesNotMatch(html, /Deals worth detecting/);
 });
 
 test('the homepage presents one collection row instead of repeating deal tags', () => {
