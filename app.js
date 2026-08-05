@@ -371,9 +371,9 @@
     </article>`;
   }
 
-  // The hero is held back only in the untouched neutral catalog. Once the
-  // reader searches, filters, or chooses a discovery section, the grid is
-  // answering their question and should include every match.
+  // The hero is held back only in the untouched default view (Best right now).
+  // Once the reader searches, filters, or chooses another discovery section,
+  // the grid is answering their question and should include every match.
   function isDefaultView(filters) {
     return Object.keys(DEFAULT_FILTERS).every(name => filters[name] === DEFAULT_FILTERS[name]);
   }

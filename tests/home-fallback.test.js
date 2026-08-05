@@ -74,9 +74,10 @@ test('bakes the default homepage view into index.html', () => {
   assert.match(html, /Prices checked Jul 31, 2:13\sAM EDT/);
   assert.match(html, /<!--LR:stores:start-->2<!--LR:stores:end-->/);
 
-  // The neutral default includes the entire qualified fixture catalog.
+  // The default view is Best right now, so only the fixtures at or above the
+  // 75-point threshold count, not the entire qualified catalog.
   const expectedVisible = filterDeals(deals, DEFAULT_FILTERS).length;
-  assert.equal(expectedVisible, deals.length);
+  assert.equal(expectedVisible, 25);
   assert.equal(result.visible, expectedVisible);
   assert.match(html, new RegExp(`<!--LR:count:start-->${expectedVisible} deals<!--LR:count:end-->`));
 });
@@ -270,8 +271,10 @@ test('the homepage uses five discovery tabs and no manual sort control', () => {
   assert.match(app, /toggleCollection\(state\.filters\.collection, button\.dataset\.collection\)/);
 });
 
-test('the static neutral catalog is baked alphabetically', () => {
+test('the default view is baked by Deal Score, strongest first', () => {
   const { indexPath, base } = scaffold();
+  // Scores run 99 (Zulu), 98 (Beta), 97 (Alpha), so a title sort would invert
+  // the order the homepage now opens on.
   const deals = [
     { ...fixture(0), key: 'steam:z', title: 'Zulu' },
     { ...fixture(2), key: 'steam:a', title: 'Alpha' },
@@ -280,9 +283,12 @@ test('the static neutral catalog is baked alphabetically', () => {
 
   const result = buildHomeFallback({ base, deals, indexPath });
   const html = fs.readFileSync(indexPath, 'utf8');
-  const rendered = [...html.matchAll(/class="card-title"[^>]*>([^<]+)</g)].map(match => match[1]);
+  const hero = html.slice(html.indexOf('<!--LR:hero:start-->'), html.indexOf('<!--LR:hero:end-->'));
+  const grid = html.slice(html.indexOf('<!--LR:deals:start-->'), html.indexOf('<!--LR:deals:end-->'));
+  const rendered = [...grid.matchAll(/class="card-title"[^>]*>([^<]+)</g)].map(match => match[1]);
 
-  assert.deepEqual(rendered, ['Alpha', 'Beta']);
+  assert.match(hero, /Zulu/);
+  assert.deepEqual(rendered, ['Beta', 'Alpha']);
   assert.equal(result.visible, deals.length);
 });
 

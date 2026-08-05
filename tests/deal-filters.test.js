@@ -64,9 +64,12 @@ test('free today and five-dollar finds never overlap', () => {
   );
 });
 
-test('homepage ordering follows neutral, filtered, and discovery states', () => {
-  assert.equal(DEFAULT_FILTERS.collection, 'all');
-  assert.equal(effectiveSort(DEFAULT_FILTERS), 'title');
+test('homepage ordering follows default, neutral, filtered, and discovery states', () => {
+  // The homepage opens on Best right now, ranked by Deal Score. The
+  // alphabetical neutral catalog is what "All deals" switches to.
+  assert.equal(DEFAULT_FILTERS.collection, 'best');
+  assert.equal(effectiveSort(DEFAULT_FILTERS), 'recommended');
+  assert.equal(effectiveSort({ ...DEFAULT_FILTERS, collection: 'all' }), 'title');
   assert.equal(effectiveSort({ ...DEFAULT_FILTERS, q: 'portal' }), 'recommended');
   assert.equal(effectiveSort({ ...DEFAULT_FILTERS, maxPrice: 10 }), 'recommended');
   // Recency is the entry condition for new arrivals, not the ranking. Sorting
