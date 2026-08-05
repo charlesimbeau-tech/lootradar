@@ -239,7 +239,7 @@ test('the homepage navigation uses the radar artwork with a cache-safe styleshee
   assert.match(styles, /\.site-nav\s*\{[\s\S]*?lootradar-radar-hero\.png/);
   assert.match(styles, /@supports[\s\S]*?\.site-nav\s*\{[\s\S]*?lootradar-radar-hero\.webp/);
   assert.match(styles, /@media \(max-width: 560px\)[\s\S]*?\.site-nav\s*\{[^}]*background-position:/);
-  assert.match(html, /style\.css\?v=30/);
+  assert.match(html, /style\.css\?v=31/);
   assert.doesNotMatch(html, /Deals worth detecting/);
   assert.match(html, /Every three hours, LootRadar sweeps across storefronts, filters out the static, and locks onto games players actually love when they hit prices worth paying\./);
 });

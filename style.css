@@ -450,8 +450,11 @@ div.card-image { cursor: default; }
 .score-row > div:last-child > strong { display: block; font: 800 .78rem/1.2 var(--display); }
 .score-row p { margin: .25rem 0 0; color: var(--text-3); font-size: .7rem; line-height: 1.4; }
 .card-actions { display: grid; grid-template-columns: 1fr 44px; gap: .55rem; margin-top: 1rem; }
-.button-card { min-height: 44px; background: var(--surface-3); border-color: var(--line); font-size: .75rem; }
-.button-card:hover { border-color: var(--mint); }
+/* The card CTA is the same primary action as the hero's, just at card size, so
+   it carries the same mint. It used to override the base button with a grey
+   surface, which left the one control that earns the click looking secondary. */
+.button-card { min-height: 44px; font-size: .75rem; }
+.button-card:hover { background: #ceff82; }
 .watch-button {
   border: 1px solid var(--line); border-radius: 9px; background: transparent;
   font: 500 1.3rem/1 var(--body); cursor: pointer;

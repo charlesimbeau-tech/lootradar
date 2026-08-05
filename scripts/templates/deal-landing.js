@@ -232,8 +232,12 @@ ${indexable ? '' : '  <meta name="robots" content="noindex,follow">\n'}  <link r
     .landing-overline{margin:0;color:var(--mint);font-size:.67rem;text-transform:uppercase;letter-spacing:.06em}
     .landing-review,.landing-reason{color:var(--text-3);font-size:.76rem;line-height:1.55}.landing-reason{min-height:3.1em}
     .landing-price{display:flex;align-items:baseline;gap:.7rem;margin:1rem 0}.landing-price s{color:var(--text-3)}.landing-price strong{font:800 1.25rem/1 var(--display)}
-    .landing-deal-body>a{display:inline-flex;padding:.6rem .8rem;border:1px solid var(--line);border-radius:8px;color:var(--text);text-decoration:none;font-size:.75rem;font-weight:800}
-    .landing-deal-body>a.landing-detail-link{margin-left:.35rem;border-color:transparent;color:var(--mint);text-decoration:underline}
+    .landing-deal-body>a{display:inline-flex;padding:.6rem .8rem;border:1px solid transparent;border-radius:8px;text-decoration:none;font-size:.75rem;font-weight:800}
+    /* The :not() is load-bearing: style.css paints every link in main mint via
+       "body:not(.home-page) main a", which outranks a plain .landing-deal-body>a
+       and would leave mint text on the mint button. */
+    .landing-deal-body>a:not(.landing-detail-link){background:var(--mint);color:#0b0e0d}
+    .landing-deal-body>a.landing-detail-link{margin-left:.35rem;background:transparent;border-color:transparent;color:var(--mint);text-decoration:underline}
     .landing-hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.landing-hub-card{padding:1.5rem}
     .landing-hub-card>p:first-child{color:var(--mint);font-size:.7rem;text-transform:uppercase;letter-spacing:.07em}.landing-hub-card h2{font:800 1.35rem/1.2 var(--display)}
     .landing-hub-card h2 a{color:var(--text);text-decoration:none}.landing-hub-card p,.landing-hub-card span{color:var(--text-3);line-height:1.6}.landing-hub-card span{font-size:.75rem}
