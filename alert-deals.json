@@ -1,8 +1,8 @@
 {
-  "snapshotId": "2026-10-15T11:36:34.925Z",
-  "updatedAt": "2026-10-15T11:36:34.925Z",
+  "snapshotId": "2026-10-15T17:07:02.837Z",
+  "updatedAt": "2026-10-15T17:07:02.837Z",
   "source": "CheapShark-derived LootRadar quality snapshot",
-  "qualifiedDealCount": 1467,
+  "qualifiedDealCount": 1563,
   "deals": [
     {
       "gameKey": "steam:1174180",
@@ -73,6 +73,18 @@
         "Action"
       ],
       "free": false
+    },
+    {
+      "gameKey": "steam:801480",
+      "title": "Agent A: A puzzle in disguise",
+      "salePrice": 0,
+      "normalPrice": 19.99,
+      "storeName": "Epic Games Store",
+      "dealId": "moBugpo5OZJpfoqQx9Afg2b%2FBPbzb%2FTp7b9eEt1C6o4%3D",
+      "dealScore": 91,
+      "recommendation": "95% positive · 2K reviews · 100% off",
+      "genres": [],
+      "free": true
     },
     {
       "gameKey": "steam:894020",
@@ -341,7 +353,7 @@
       "storeName": "Steam",
       "dealId": "ezTZN4WxuyjkES3Kd8g8u6%2BmOKCOxPZacQz798UprZk%3D",
       "dealScore": 89,
-      "recommendation": "89% positive · 393.4K reviews · 70% off",
+      "recommendation": "89% positive · 393.5K reviews · 70% off",
       "genres": [
         "RPG"
       ],
@@ -379,16 +391,19 @@
       "free": false
     },
     {
-      "gameKey": "steam:1510860",
-      "title": "Out of Sight",
-      "salePrice": 0,
-      "normalPrice": 14.99,
-      "storeName": "Epic Games Store",
-      "dealId": "QM8NQEcadw11jzfTduhLF6c4HLxQPSB6AgAyGFjwdHw%3D",
+      "gameKey": "steam:234140",
+      "title": "Mad Max",
+      "salePrice": 2.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "3ZVckWkgsdN9gSDSRcyavPjd40TWpxGmJUnPG0zBK0g%3D",
       "dealScore": 89,
-      "recommendation": "94% positive · 823 reviews · 100% off",
-      "genres": [],
-      "free": true
+      "recommendation": "91% positive · 26.9K reviews · 85% off",
+      "genres": [
+        "Action",
+        "Adventure"
+      ],
+      "free": false
     },
     {
       "gameKey": "steam:8930",
@@ -418,6 +433,20 @@
         "Adventure",
         "Indie",
         "Simulation"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:489830",
+      "title": "The Elder Scrolls V: Skyrim Special Edition",
+      "salePrice": 9.99,
+      "normalPrice": 39.99,
+      "storeName": "GOG",
+      "dealId": "wQsDg3EBc2Xy9GJgd%2F0vs8SQkQ6jfLlkhXweWVTqpIo%3D",
+      "dealScore": 89,
+      "recommendation": "94% positive · 132.3K reviews · 75% off",
+      "genres": [
+        "RPG"
       ],
       "free": false
     },
@@ -469,10 +498,10 @@
     {
       "gameKey": "steam:204450",
       "title": "Call of Juarez: Gunslinger",
-      "salePrice": 2.7,
+      "salePrice": 2.66,
       "normalPrice": 14.99,
-      "storeName": "GreenManGaming",
-      "dealId": "axg%2FgqQ%2FarroEh%2FSqn5F6Fn1yc%2F89lex%2BZWXLqcXHyc%3D",
+      "storeName": "GameBillet",
+      "dealId": "9ZSgNa5eUmq9MiEp9i97g%2F4UqaJs6FmJykO8ksOhuc0%3D",
       "dealScore": 88,
       "recommendation": "94% positive · 10.2K reviews · 82% off",
       "genres": [
@@ -562,10 +591,10 @@
     {
       "gameKey": "steam:1265945",
       "title": "Dying Light: Definitive 10th Anniversary Edition",
-      "salePrice": 9,
+      "salePrice": 8.96,
       "normalPrice": 49.99,
-      "storeName": "GreenManGaming",
-      "dealId": "qt4u67ofuhtN%2BUqfqKOKbhYeKCoI4hX823ys6%2BfxEa0%3D",
+      "storeName": "GameBillet",
+      "dealId": "cCIOuopqVz95Kor%2FMl4TfloiJ5XpYNJzOkGISA3wk%2B0%3D",
       "dealScore": 88,
       "recommendation": "94% positive · 389.8K reviews · 82% off",
       "genres": [],
@@ -681,12 +710,12 @@
     {
       "gameKey": "steam:743450",
       "title": "Monster Prom",
-      "salePrice": 2.02,
+      "salePrice": 1.92,
       "normalPrice": 11.99,
       "storeName": "GameBillet",
       "dealId": "E6rEcLXUio2v4OpgpM6mf1XHvP77nWHsM77i0NTuhHM%3D",
       "dealScore": 88,
-      "recommendation": "95% positive · 9K reviews · 83% off",
+      "recommendation": "95% positive · 9K reviews · 84% off",
       "genres": [
         "Indie",
         "Simulation"
@@ -724,13 +753,16 @@
     {
       "gameKey": "steam:2138710",
       "title": "Sifu",
-      "salePrice": 8.58,
+      "salePrice": 8.54,
       "normalPrice": 39.99,
-      "storeName": "IndieGala",
-      "dealId": "zencb14hbfPkmPdoIDANIJ%2FIWZE92A2Vrk%2FDq%2F%2B4Ac4%3D",
+      "storeName": "GameBillet",
+      "dealId": "04WY6J4iXz7uFMlcJv9tK4hOjFdkBL4JGn%2FBJfR7rZ8%3D",
       "dealScore": 88,
       "recommendation": "92% positive · 8.4K reviews · 79% off",
-      "genres": [],
+      "genres": [
+        "Action",
+        "Indie"
+      ],
       "free": false
     },
     {
@@ -748,18 +780,6 @@
         "Simulation"
       ],
       "free": false
-    },
-    {
-      "gameKey": "steam:2290000",
-      "title": "TerraScape",
-      "salePrice": 0,
-      "normalPrice": 16.99,
-      "storeName": "Epic Games Store",
-      "dealId": "gqPFD4Wmb08lXHh9rKKwgDZ4lTMOPs7YffIZam1whDw%3D",
-      "dealScore": 88,
-      "recommendation": "86% positive · 944 reviews · 100% off",
-      "genres": [],
-      "free": true
     },
     {
       "gameKey": "steam:835960",
@@ -889,7 +909,7 @@
     {
       "gameKey": "steam:1128920",
       "title": "EVERSPACE 2",
-      "salePrice": 8.89,
+      "salePrice": 8.79,
       "normalPrice": 49.99,
       "storeName": "GameBillet",
       "dealId": "ZBwE0Alg%2BgX0%2FCiuxwsQKKR6bzCDrAEVZi%2BByA8kaCM%3D",
@@ -1013,15 +1033,17 @@
       "free": false
     },
     {
-      "gameKey": "steam:204100",
-      "title": "Max Payne 3",
-      "salePrice": 5.73,
+      "gameKey": "steam:578330",
+      "title": "LEGO City Undercover",
+      "salePrice": 2.99,
       "normalPrice": 19.99,
-      "storeName": "GameBillet",
-      "dealId": "u%2BsW6qzp82DJbnRIxZYJwc6yJYRy4cUTSxTBWW5u18g%3D",
+      "storeName": "GOG",
+      "dealId": "0QY2pHzPa0ni6LORf8XiiAymK2EU0I%2BgiEFsTU%2Ff8l8%3D",
       "dealScore": 87,
-      "recommendation": "85% positive · 25K reviews · 71% off",
-      "genres": [],
+      "recommendation": "90% positive · 3.7K reviews · 85% off",
+      "genres": [
+        "Action"
+      ],
       "free": false
     },
     {
@@ -1088,6 +1110,21 @@
       "free": false
     },
     {
+      "gameKey": "steam:2060130",
+      "title": "Return to Monkey Island",
+      "salePrice": 7.49,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "VNqRBBR1g%2B3NBIF7VF%2BZIECD5dkp6oedGYF3HbhCDGQ%3D",
+      "dealScore": 87,
+      "recommendation": "89% positive · 4.9K reviews · 70% off",
+      "genres": [
+        "Adventure",
+        "Casual"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:900270",
       "title": "Reventure",
       "salePrice": 0.85,
@@ -1119,6 +1156,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:17933",
+      "title": "Saints Row the Third - The Full Package",
+      "salePrice": 3.75,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "nZInlIK4%2Bf1AxXFMAhuHVS1QbT9aGIQe%2FUHbCJec5qo%3D",
+      "dealScore": 87,
+      "recommendation": "94% positive · 50.5K reviews · 75% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:324800",
       "title": "Shadow Warrior 2",
       "salePrice": 2.99,
@@ -1131,6 +1180,18 @@
         "Action",
         "Adventure"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "title:the elder scrolls iv oblivion",
+      "title": "The Elder Scrolls IV: Oblivion Game of the Year Edition Deluxe",
+      "salePrice": 4.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "iMdY6HikveRUL72IJ5TyeIAzMZ8TMtwC4qZA7hH8vcs%3D",
+      "dealScore": 87,
+      "recommendation": "95% positive · 39.9K reviews · 75% off",
+      "genres": [],
       "free": false
     },
     {
@@ -1226,6 +1287,21 @@
       "free": false
     },
     {
+      "gameKey": "steam:784150",
+      "title": "Workers and Resources: Soviet Republic",
+      "salePrice": 9.99,
+      "normalPrice": 39.99,
+      "storeName": "GOG",
+      "dealId": "M58MUjI0TdsWEI87CoguoliPToOFMv8u8mQYyfI34Kw%3D",
+      "dealScore": 87,
+      "recommendation": "89% positive · 8.9K reviews · 75% off",
+      "genres": [
+        "Simulation",
+        "Strategy"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:228380",
       "title": "Wreckfest",
       "salePrice": 6.14,
@@ -1274,6 +1350,22 @@
       "free": false
     },
     {
+      "gameKey": "steam:365360",
+      "title": "Battle Brothers",
+      "salePrice": 8.99,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "m3yTfVBnyj%2Bt1VWctCAA5uhcBvxLfJMm03lwPwVILIY%3D",
+      "dealScore": 86,
+      "recommendation": "89% positive · 15.6K reviews · 70% off",
+      "genres": [
+        "RPG",
+        "Simulation",
+        "Strategy"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:2114740",
       "title": "Blasphemous 2",
       "salePrice": 7.49,
@@ -1301,22 +1393,6 @@
       "genres": [
         "Simulation",
         "Strategy"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:1578650",
-      "title": "Citizen Sleeper",
-      "salePrice": 5.99,
-      "normalPrice": 19.99,
-      "storeName": "GOG",
-      "dealId": "he65LKjbE4QeYCvLrfc0nyZHICrxkWXhuCH857MSY3s%3D",
-      "dealScore": 86,
-      "recommendation": "93% positive · 6.5K reviews · 70% off",
-      "genres": [
-        "Adventure",
-        "Indie",
-        "RPG"
       ],
       "free": false
     },
@@ -1407,10 +1483,10 @@
     {
       "gameKey": "steam:1654660",
       "title": "En Garde!",
-      "salePrice": 4.18,
+      "salePrice": 4.14,
       "normalPrice": 19.99,
-      "storeName": "IndieGala",
-      "dealId": "xvFTokK9wDEZE76a8G%2F4MSKhmxNf3u6jJtRYXx6XUJE%3D",
+      "storeName": "GameBillet",
+      "dealId": "Kqj1mQDnF97%2FTbuWYbcjofqhKc9C3xrAtOhOpFUVUCY%3D",
       "dealScore": 86,
       "recommendation": "92% positive · 2.7K reviews · 79% off",
       "genres": [
@@ -1592,6 +1668,23 @@
       "free": false
     },
     {
+      "gameKey": "steam:629820",
+      "title": "Maneater",
+      "salePrice": 5.99,
+      "normalPrice": 39.99,
+      "storeName": "GOG",
+      "dealId": "J3W0zIOlAMpASTYoo0K%2BV2lCuD8TX%2FWAcb8FafRgl2s%3D",
+      "dealScore": 86,
+      "recommendation": "88% positive · 9.2K reviews · 85% off",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie",
+        "RPG"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:2634890",
       "title": "MARVEL vs. CAPCOM Fighting Collection: Arcade Classics",
       "salePrice": 13.95,
@@ -1624,12 +1717,12 @@
     {
       "gameKey": "steam:323850",
       "title": "Move or Die",
-      "salePrice": 3.1,
+      "salePrice": 3,
       "normalPrice": 14.99,
       "storeName": "GameBillet",
       "dealId": "3lbqWoipVxzoGyeLditLlT13shp4321LBT7xsN%2FrKws%3D",
       "dealScore": 86,
-      "recommendation": "84% positive · 3.3K reviews · 79% off",
+      "recommendation": "84% positive · 3.3K reviews · 80% off",
       "genres": [
         "Action",
         "Indie"
@@ -1667,6 +1760,22 @@
         "Action",
         "Adventure",
         "Indie"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1160220",
+      "title": "Paradise Killer",
+      "salePrice": 4.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "kjEOfoT8yr8Wyba3yu9T%2B9ZypJoH6dedo4ViN9MeCeo%3D",
+      "dealScore": 86,
+      "recommendation": "94% positive · 2.6K reviews · 75% off",
+      "genres": [
+        "Adventure",
+        "Indie",
+        "RPG"
       ],
       "free": false
     },
@@ -1780,6 +1889,18 @@
       "free": false
     },
     {
+      "gameKey": "title:the elder scrolls v skyrim anniversary",
+      "title": "The Elder Scrolls V: Skyrim Anniversary Edition",
+      "salePrice": 16.49,
+      "normalPrice": 49.99,
+      "storeName": "GOG",
+      "dealId": "SSDS0C3B8XG8yJfXpefTbmSsZ6at3vNLyzybboPYcQc%3D",
+      "dealScore": 86,
+      "recommendation": "92% positive · 168.6K reviews · 67% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:990630",
       "title": "The Last Campfire",
       "salePrice": 1.35,
@@ -1828,6 +1949,23 @@
       "free": false
     },
     {
+      "gameKey": "steam:1066780",
+      "title": "Transport Fever 2",
+      "salePrice": 7.99,
+      "normalPrice": 39.99,
+      "storeName": "GOG",
+      "dealId": "RkBYgEauf53li%2B5OQ4XYIDo6iLkbo42ED8anTiYWSKs%3D",
+      "dealScore": 86,
+      "recommendation": "89% positive · 10.9K reviews · 80% off",
+      "genres": [
+        "Casual",
+        "Indie",
+        "Simulation",
+        "Strategy"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:690640",
       "title": "Trine 4: The Nightmare Prince",
       "salePrice": 2.99,
@@ -1838,21 +1976,6 @@
       "recommendation": "93% positive · 2.9K reviews · 90% off",
       "genres": [
         "Action",
-        "Adventure",
-        "Indie"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:1382070",
-      "title": "Viewfinder",
-      "salePrice": 7.49,
-      "normalPrice": 24.99,
-      "storeName": "GOG",
-      "dealId": "xPkRHZp2F43j0WMmMZRD5Mxwqm4%2FnBtsSsIG8eze7R0%3D",
-      "dealScore": 86,
-      "recommendation": "92% positive · 6.4K reviews · 70% off",
-      "genres": [
         "Adventure",
         "Indie"
       ],
@@ -1942,17 +2065,17 @@
       "free": false
     },
     {
-      "gameKey": "steam:365360",
-      "title": "Battle Brothers",
-      "salePrice": 8.99,
-      "normalPrice": 29.99,
-      "storeName": "Humble Store",
-      "dealId": "i64%2BAWPAtVs%2FgFjNz%2FNsh1M6Rgj1TyjwzHJcyzaD1CY%3D",
+      "gameKey": "steam:637090",
+      "title": "BattleTech",
+      "salePrice": 10,
+      "normalPrice": 39.99,
+      "storeName": "GamersGate",
+      "dealId": "d4kuRAGP%2FIYfvnH3GPdGr8uNd%2FYMJhiZtSd6bkXCF0w%3D",
       "dealScore": 85,
-      "recommendation": "89% positive · 15.6K reviews · 70% off",
+      "recommendation": "85% positive · 18.3K reviews · 75% off",
       "genres": [
-        "RPG",
-        "Simulation",
+        "Action",
+        "Adventure",
         "Strategy"
       ],
       "free": false
@@ -2161,27 +2284,12 @@
       "free": false
     },
     {
-      "gameKey": "steam:824600",
-      "title": "HROT",
-      "salePrice": 6.79,
-      "normalPrice": 19.99,
-      "storeName": "GOG",
-      "dealId": "Pb2LZq0f%2Fbo7fshGKiW5Upa%2BvFudKecl1jdJDvBJrDs%3D",
-      "dealScore": 85,
-      "recommendation": "96% positive · 3.8K reviews · 66% off",
-      "genres": [
-        "Action",
-        "Indie"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:15320",
       "title": "IL-2 Sturmovik: 1946",
       "salePrice": 1.99,
       "normalPrice": 9.99,
-      "storeName": "Humble Store",
-      "dealId": "ghVx4A0sg6M5ZKrB2C0n46eaYO6Lk9Na1x8HjyVBaPM%3D",
+      "storeName": "GOG",
+      "dealId": "MMS%2BvZBJtrEx3LDeGiXmPiVWe4kr9Kpah6AC9yBe6b8%3D",
       "dealScore": 85,
       "recommendation": "87% positive · 1.7K reviews · 80% off",
       "genres": [
@@ -2394,6 +2502,21 @@
       "free": false
     },
     {
+      "gameKey": "steam:1608640",
+      "title": "OTXO",
+      "salePrice": 4.71,
+      "normalPrice": 14.99,
+      "storeName": "GameBillet",
+      "dealId": "LB4F5biSvdi%2BEuQaMSwFJBn8vMrm7rCSkbqTpVcrmPo%3D",
+      "dealScore": 85,
+      "recommendation": "94% positive · 1.9K reviews · 69% off",
+      "genres": [
+        "Action",
+        "Simulation"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:1458140",
       "title": "Pacific Drive",
       "salePrice": 8.49,
@@ -2452,20 +2575,6 @@
         "Action",
         "Adventure",
         "Indie"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:3830",
-      "title": "Psychonauts",
-      "salePrice": 1.99,
-      "normalPrice": 9.99,
-      "storeName": "Steam",
-      "dealId": "%2FUEehLFF%2FwAwtRg9Acvm0%2F0mq9ayqJdh8Ue6CH30eBU%3D",
-      "dealScore": 85,
-      "recommendation": "95% positive · 9.1K reviews · 80% off",
-      "genres": [
-        "Action"
       ],
       "free": false
     },
@@ -2600,21 +2709,6 @@
       "recommendation": "85% positive · 3.3K reviews · 90% off",
       "genres": [
         "Adventure",
-        "Indie"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:322500",
-      "title": "SUPERHOT",
-      "salePrice": 7.49,
-      "normalPrice": 24.99,
-      "storeName": "GOG",
-      "dealId": "tICxEVY7ZDtFTRoR%2BTaT7x87ul42dMAISWX1UUk0%2BUQ%3D",
-      "dealScore": 85,
-      "recommendation": "90% positive · 16.3K reviews · 70% off",
-      "genres": [
-        "Action",
         "Indie"
       ],
       "free": false
@@ -2769,6 +2863,21 @@
       "free": false
     },
     {
+      "gameKey": "steam:1382070",
+      "title": "Viewfinder",
+      "salePrice": 7.49,
+      "normalPrice": 24.99,
+      "storeName": "Humble Store",
+      "dealId": "YHOFKwE%2F5uxc5%2Bq90BKizOl2vZGw345h1Bt%2BtQswgTQ%3D",
+      "dealScore": 85,
+      "recommendation": "92% positive · 6.4K reviews · 70% off",
+      "genres": [
+        "Adventure",
+        "Indie"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:2005010",
       "title": "Warhammer 40,000: Boltgun",
       "salePrice": 6.59,
@@ -2846,22 +2955,6 @@
         "Action",
         "Adventure",
         "RPG"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:637090",
-      "title": "BattleTech",
-      "salePrice": 9.99,
-      "normalPrice": 39.99,
-      "storeName": "GOG",
-      "dealId": "oreTAr334iJK8b1RcoUrqB%2Fnas9G2c7mrl8ydqEPkq4%3D",
-      "dealScore": 84,
-      "recommendation": "85% positive · 18.3K reviews · 75% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "Strategy"
       ],
       "free": false
     },
@@ -2992,6 +3085,23 @@
       "free": false
     },
     {
+      "gameKey": "steam:682990",
+      "title": "Drug Dealer Simulator",
+      "salePrice": 1.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "3aqFmmkWaTY3JWM3Y93E98jVlRhZIoxrozlkF7THGNw%3D",
+      "dealScore": 84,
+      "recommendation": "84% positive · 9.6K reviews · 90% off",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie",
+        "Simulation"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:398850",
       "title": "Epistory - Typing Chronicles",
       "salePrice": 2.99,
@@ -3004,6 +3114,23 @@
         "Action",
         "Adventure",
         "Indie"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1402110",
+      "title": "Eternights",
+      "salePrice": 6.34,
+      "normalPrice": 29.99,
+      "storeName": "GameBillet",
+      "dealId": "tGXpFm%2FHQYldRxnlbJMp%2Ba0eZ5V77GQyxR8SobZ3zYQ%3D",
+      "dealScore": 84,
+      "recommendation": "89% positive · 1.6K reviews · 79% off",
+      "genres": [
+        "Action",
+        "Casual",
+        "Indie",
+        "RPG"
       ],
       "free": false
     },
@@ -3123,6 +3250,22 @@
       "free": false
     },
     {
+      "gameKey": "steam:404680",
+      "title": "Hob",
+      "salePrice": 3.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "%2BAkLzakS1j6g7r2AKxK%2B%2BUOmWJy%2FhMX29KNUd2SMfvw%3D",
+      "dealScore": 84,
+      "recommendation": "88% positive · 2K reviews · 80% off",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:1373960",
       "title": "INDIKA",
       "salePrice": 6.7,
@@ -3222,6 +3365,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:881100",
+      "title": "Noita",
+      "salePrice": 7.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "2L%2BiuVD5xdno1nqp4TyHrddjU6PTQmoKuynFRuFT9c8%3D",
+      "dealScore": 84,
+      "recommendation": "95% positive · 47.7K reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:491950",
       "title": "Orwell: Keeping an Eye On You",
       "salePrice": 2.49,
@@ -3233,21 +3388,6 @@
       "genres": [
         "Adventure",
         "Indie",
-        "Simulation"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:1608640",
-      "title": "OTXO",
-      "salePrice": 4.76,
-      "normalPrice": 14.99,
-      "storeName": "GameBillet",
-      "dealId": "LB4F5biSvdi%2BEuQaMSwFJBn8vMrm7rCSkbqTpVcrmPo%3D",
-      "dealScore": 84,
-      "recommendation": "94% positive · 1.9K reviews · 68% off",
-      "genres": [
-        "Action",
         "Simulation"
       ],
       "free": false
@@ -3316,6 +3456,20 @@
       "free": false
     },
     {
+      "gameKey": "steam:512790",
+      "title": "Quern - Undying Thoughts",
+      "salePrice": 7.49,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "6LtYaHpfz3r6amMO%2FGsml9j7mVZaCVXXJONMrXPy3dE%3D",
+      "dealScore": 84,
+      "recommendation": "90% positive · 2.6K reviews · 70% off",
+      "genres": [
+        "Adventure"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:617290",
       "title": "Remnant: From the Ashes",
       "salePrice": 6,
@@ -3343,21 +3497,6 @@
       "genres": [
         "Action",
         "Adventure"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:2060130",
-      "title": "Return to Monkey Island",
-      "salePrice": 7.49,
-      "normalPrice": 24.99,
-      "storeName": "Fanatical",
-      "dealId": "KJNE15R0YNVZb9t5f4gBT9ZRd5LOpFhWAwpU1%2BWyzjs%3D",
-      "dealScore": 84,
-      "recommendation": "89% positive · 4.9K reviews · 70% off",
-      "genres": [
-        "Adventure",
-        "Casual"
       ],
       "free": false
     },
@@ -3707,20 +3846,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:350080",
-      "title": "Wolfenstein: The Old Blood",
-      "salePrice": 4.99,
-      "normalPrice": 19.99,
-      "storeName": "GOG",
-      "dealId": "aqaUzQClEH0qcGswpnkFEYCL1lURsv9WskAfRrdKdh8%3D",
-      "dealScore": 84,
-      "recommendation": "89% positive · 9.3K reviews · 75% off",
-      "genres": [
-        "Action"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:729000",
       "title": "Wytchwood",
       "salePrice": 4.99,
@@ -3937,6 +4062,22 @@
       "free": false
     },
     {
+      "gameKey": "steam:954650",
+      "title": "Druidstone: The Secret of the Menhir Forest",
+      "salePrice": 3.75,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "PexZ4ILTTVbWly5JbCmOM8lacCDFNfikwsfaWrz9QXk%3D",
+      "dealScore": 83,
+      "recommendation": "82% positive · 1.3K reviews · 85% off",
+      "genres": [
+        "Adventure",
+        "Indie",
+        "Strategy"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:1062830",
       "title": "Embr",
       "salePrice": 2.96,
@@ -3984,23 +4125,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:1402110",
-      "title": "Eternights",
-      "salePrice": 6.44,
-      "normalPrice": 29.99,
-      "storeName": "GameBillet",
-      "dealId": "tGXpFm%2FHQYldRxnlbJMp%2Ba0eZ5V77GQyxR8SobZ3zYQ%3D",
-      "dealScore": 83,
-      "recommendation": "89% positive · 1.6K reviews · 79% off",
-      "genres": [
-        "Action",
-        "Casual",
-        "Indie",
-        "RPG"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:582270",
       "title": "Everything",
       "salePrice": 1.49,
@@ -4014,6 +4138,20 @@
         "Indie",
         "RPG",
         "Simulation"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:13520",
+      "title": "Far Cry",
+      "salePrice": 2.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "cp8CxpHChDaLEqL368g5JsDtIy1Ba364%2F3nBTekFJ84%3D",
+      "dealScore": 83,
+      "recommendation": "76% positive · 4.9K reviews · 70% off",
+      "genres": [
+        "Action"
       ],
       "free": false
     },
@@ -4043,6 +4181,18 @@
         "Adventure",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1475810",
+      "title": "Ghostwire Tokyo",
+      "salePrice": 14.99,
+      "normalPrice": 59.99,
+      "storeName": "GOG",
+      "dealId": "P643B0ragZrpYC5FAYLNvgybUTYhve0fD7xKDbSOLpQ%3D",
+      "dealScore": 83,
+      "recommendation": "84% positive · 5.3K reviews · 75% off",
+      "genres": [],
       "free": false
     },
     {
@@ -4106,6 +4256,22 @@
         "Adventure",
         "Indie",
         "Simulation"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:3286930",
+      "title": "Heretic and Hexen",
+      "salePrice": 5.99,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "0oG8SaouhvWj%2Bp5Q1tPs%2BQz9Xm7A%2FC0T1SuvBF4uKU0%3D",
+      "dealScore": 83,
+      "recommendation": "95% positive · 1.8K reviews · 60% off",
+      "genres": [
+        "Action",
+        "Adventure",
+        "RPG"
       ],
       "free": false
     },
@@ -4254,20 +4420,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:675010",
-      "title": "MudRunner",
-      "salePrice": 4,
-      "normalPrice": 19.99,
-      "storeName": "GamersGate",
-      "dealId": "ETYGiq3dmep9oO%2FLdU4MtF2I90LZwe4JgtvKnwE42aA%3D",
-      "dealScore": 83,
-      "recommendation": "90% positive · 10.7K reviews · 80% off",
-      "genres": [
-        "Simulation"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:1939970",
       "title": "Nobody Wants to Die",
       "salePrice": 3.75,
@@ -4407,23 +4559,6 @@
         "Action",
         "Adventure",
         "Indie"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:234650",
-      "title": "Shadowrun Returns",
-      "salePrice": 3.75,
-      "normalPrice": 14.99,
-      "storeName": "GOG",
-      "dealId": "b3FVNHOxkXpR%2BNa2c6r77Yx98eO4cyfeNZMk0NI2g%2BU%3D",
-      "dealScore": 83,
-      "recommendation": "88% positive · 6.8K reviews · 75% off",
-      "genres": [
-        "Adventure",
-        "Indie",
-        "RPG",
-        "Strategy"
       ],
       "free": false
     },
@@ -4742,6 +4877,18 @@
       "genres": [
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1709730",
+      "title": "Beyond The Edge Of Owlsgard",
+      "salePrice": 2.49,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "s0jmcsic3BLdETGX7L4pDtlhZAL1ET1b140QodW1Jco%3D",
+      "dealScore": 82,
+      "recommendation": "94% positive · 299 reviews · 90% off",
+      "genres": [],
       "free": false
     },
     {
@@ -5070,10 +5217,10 @@
     {
       "gameKey": "steam:503400",
       "title": "Four Last Things",
-      "salePrice": 3.5,
+      "salePrice": 3.49,
       "normalPrice": 9.99,
-      "storeName": "GreenManGaming",
-      "dealId": "FR%2FhMs0y3n8uBkL62NovPtEol6cy7TJ%2FT%2B6hJl3jc0E%3D",
+      "storeName": "GOG",
+      "dealId": "rVw469LJMJDS5TIxHn89iOwuW3%2FrLGtHWLPhOe7kbSw%3D",
       "dealScore": 82,
       "recommendation": "95% positive · 1.6K reviews · 65% off",
       "genres": [
@@ -5206,6 +5353,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:233860",
+      "title": "Kenshi",
+      "salePrice": 11.99,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "cohphHTOvD7rUuYOh%2FakKNpPF5DI0Hly09o4wQuNle8%3D",
+      "dealScore": 82,
+      "recommendation": "95% positive · 49K reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:3170",
       "title": "King's Bounty: Armored Princess",
       "salePrice": 1.49,
@@ -5245,18 +5404,6 @@
         "Adventure",
         "Indie"
       ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:742300",
-      "title": "Mega Man 11",
-      "salePrice": 8.85,
-      "normalPrice": 29.99,
-      "storeName": "GameBillet",
-      "dealId": "VgiE%2BVhEK82saqhM8W%2BoInGvITByYZ19EoU2IrG6X%2Fk%3D",
-      "dealScore": 82,
-      "recommendation": "87% positive · 2K reviews · 70% off",
-      "genres": [],
       "free": false
     },
     {
@@ -5449,6 +5596,20 @@
       "free": false
     },
     {
+      "gameKey": "steam:9480",
+      "title": "Saints Row 2",
+      "salePrice": 1.49,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "biiuPG77kpSbCBsl2wqEoe04BPv6iERm%2FeDTfgo4fLg%3D",
+      "dealScore": 82,
+      "recommendation": "75% positive · 8.6K reviews · 85% off",
+      "genres": [
+        "Action"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:1191900",
       "title": "Say No! More",
       "salePrice": 2.99,
@@ -5472,7 +5633,12 @@
       "dealId": "LVkQZgI9%2BOsn2CJ1yWJ4QsMiWMsSg%2F%2BhqQx%2B%2FgKuZ1M%3D",
       "dealScore": 82,
       "recommendation": "96% positive · 8.4K reviews · 92% off",
-      "genres": [],
+      "genres": [
+        "Casual",
+        "Indie",
+        "Simulation",
+        "Strategy"
+      ],
       "free": false
     },
     {
@@ -5572,6 +5738,36 @@
       "free": false
     },
     {
+      "gameKey": "steam:1496590",
+      "title": "Tchia",
+      "salePrice": 6.54,
+      "normalPrice": 29.99,
+      "storeName": "GameBillet",
+      "dealId": "7O%2Fq5jzQ3KtnQ%2FDa3r4%2BRx9ll9TV9Dl2huELLrQBZbg%3D",
+      "dealScore": 82,
+      "recommendation": "88% positive · 581 reviews · 78% off",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1601570",
+      "title": "The Alters",
+      "salePrice": 14.2,
+      "normalPrice": 34.99,
+      "storeName": "GameBillet",
+      "dealId": "z69uL5R%2BtEkTI5AmKPDVWjiiX3YhZHXZbIuxn0KZsCE%3D",
+      "dealScore": 82,
+      "recommendation": "88% positive · 6.2K reviews · 59% off",
+      "genres": [
+        "Adventure"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:792300",
       "title": "The Beast Inside",
       "salePrice": 2.49,
@@ -5656,12 +5852,12 @@
     {
       "gameKey": "steam:731040",
       "title": "The Invincible",
-      "salePrice": 8.56,
+      "salePrice": 8.46,
       "normalPrice": 29.99,
       "storeName": "GameBillet",
       "dealId": "bTfoaOoIcG5QUOMZ0QqDF2LzlbxAacRq2Se8LVMqLX8%3D",
       "dealScore": 82,
-      "recommendation": "86% positive · 4.8K reviews · 71% off",
+      "recommendation": "86% positive · 4.8K reviews · 72% off",
       "genres": [
         "Action",
         "Adventure",
@@ -5874,8 +6070,8 @@
       "title": "Turok",
       "salePrice": 2.99,
       "normalPrice": 19.99,
-      "storeName": "GOG",
-      "dealId": "myiaPfUk3XzIIjVLzLpLWDbkutznZLHkplpwa8okrfg%3D",
+      "storeName": "Humble Store",
+      "dealId": "4WBc1vSj6IXYx2mLcjJ0uA1RXkNGndT7mCcfgzV3cBA%3D",
       "dealScore": 82,
       "recommendation": "93% positive · 2.5K reviews · 85% off",
       "genres": [
@@ -5900,18 +6096,17 @@
       "free": false
     },
     {
-      "gameKey": "steam:1203710",
-      "title": "UnMetal",
-      "salePrice": 3.99,
-      "normalPrice": 19.99,
+      "gameKey": "steam:250520",
+      "title": "Underrail",
+      "salePrice": 3.75,
+      "normalPrice": 14.99,
       "storeName": "GOG",
-      "dealId": "WAq6JPpX%2BDFjTFz6LIIsfzCD6SJRxGiDQvcK0h7%2FfUk%3D",
+      "dealId": "WEJarJsjGbBddGoWH%2BbPrfv%2FyxTc76i%2B%2BemUY8UeeeE%3D",
       "dealScore": 82,
-      "recommendation": "91% positive · 871 reviews · 80% off",
+      "recommendation": "86% positive · 5K reviews · 75% off",
       "genres": [
-        "Action",
-        "Adventure",
-        "Indie"
+        "Indie",
+        "RPG"
       ],
       "free": false
     },
@@ -6073,7 +6268,7 @@
     {
       "gameKey": "steam:2721530",
       "title": "Afterplace",
-      "salePrice": 3.18,
+      "salePrice": 3.08,
       "normalPrice": 14.99,
       "storeName": "GameBillet",
       "dealId": "q%2B5JB7rWcSBU1p7GVUv8j1Ueve8uuipu6KiXEjdSofc%3D",
@@ -6140,7 +6335,10 @@
       "dealId": "%2FzZex0HZFRgwWJRf%2ByQvfNI2Fjtqi6s6v0RshCO2p1k%3D",
       "dealScore": 81,
       "recommendation": "80% positive · 766 reviews · 89% off",
-      "genres": [],
+      "genres": [
+        "Action",
+        "Indie"
+      ],
       "free": false
     },
     {
@@ -6157,6 +6355,18 @@
         "Adventure",
         "Indie"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2429190",
+      "title": "Amerzone: The Explorers Legacy",
+      "salePrice": 11.99,
+      "normalPrice": 39.99,
+      "storeName": "GOG",
+      "dealId": "3DRpO%2B7JFSJE1pyfmROnHrXyUEK8dVHf3gxFcn2Sqdw%3D",
+      "dealScore": 81,
+      "recommendation": "90% positive · 538 reviews · 70% off",
+      "genres": [],
       "free": false
     },
     {
@@ -6209,20 +6419,32 @@
       "free": false
     },
     {
-      "gameKey": "steam:1146310",
-      "title": "Beyond a Steel Sky",
-      "salePrice": 6.99,
-      "normalPrice": 34.99,
+      "gameKey": "steam:1388870",
+      "title": "Arcade Paradise",
+      "salePrice": 5.19,
+      "normalPrice": 19.99,
       "storeName": "GOG",
-      "dealId": "yVNTXb9F40eGsybVZB4sS2GCRIWVQWJ7EINKz%2BxAlME%3D",
+      "dealId": "R0p304zMzQwIWlg2GnCbtdklDKhPX%2FQRjmhqSeKzTRg%3D",
       "dealScore": 81,
-      "recommendation": "88% positive · 1.3K reviews · 80% off",
+      "recommendation": "85% positive · 1.2K reviews · 74% off",
       "genres": [
-        "Action",
         "Adventure",
-        "Indie"
+        "Indie",
+        "Simulation"
       ],
       "free": false
+    },
+    {
+      "gameKey": "steam:3094480",
+      "title": "Bad Cheese",
+      "salePrice": 0,
+      "normalPrice": 12.99,
+      "storeName": "Epic Games Store",
+      "dealId": "v%2BopvG029pAZvrtmO8LZkwIKtoJYH%2FRSYQQbeneXFCc%3D",
+      "dealScore": 81,
+      "recommendation": "71% positive · 618 reviews · 100% off",
+      "genres": [],
+      "free": true
     },
     {
       "gameKey": "steam:612470",
@@ -6307,12 +6529,12 @@
     {
       "gameKey": "steam:2059660",
       "title": "Cavern of Dreams",
-      "salePrice": 4.3,
+      "salePrice": 4.39,
       "normalPrice": 12.99,
-      "storeName": "GameBillet",
-      "dealId": "t4ygNf1tNemlrCTYCqK6evWACL692SiBuS25zdMoxhU%3D",
+      "storeName": "IndieGala",
+      "dealId": "VlFjSVyxqKLRmXNb498QqW9Hwn3VVLE8M%2B6l8nAAHSk%3D",
       "dealScore": 81,
-      "recommendation": "94% positive · 1.2K reviews · 67% off",
+      "recommendation": "94% positive · 1.2K reviews · 66% off",
       "genres": [
         "Action",
         "Adventure",
@@ -6324,7 +6546,7 @@
     {
       "gameKey": "steam:319450",
       "title": "Chariot",
-      "salePrice": 1.26,
+      "salePrice": 1.16,
       "normalPrice": 14.99,
       "storeName": "GameBillet",
       "dealId": "nz0r4EmeegR9KMt2u09pid1XjCAycJRTEUm2TKZ3Vw4%3D",
@@ -6548,21 +6770,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:1590910",
-      "title": "Forgive me Father",
-      "salePrice": 4.99,
-      "normalPrice": 19.99,
-      "storeName": "GOG",
-      "dealId": "rDv4u82fTscDynUnymbKECt0nTN5Hv3yosgSsGlgbVE%3D",
-      "dealScore": 81,
-      "recommendation": "84% positive · 2.3K reviews · 75% off",
-      "genres": [
-        "Action",
-        "Indie"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:243800",
       "title": "Gas Guzzlers Extreme",
       "salePrice": 2.49,
@@ -6698,6 +6905,22 @@
       "free": false
     },
     {
+      "gameKey": "steam:446020",
+      "title": "Jalopy",
+      "salePrice": 1.79,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "PeTYysmkiwQWVgn%2B4QWCyiMeepBEiKHuVO1pbA0%2Fm8o%3D",
+      "dealScore": 81,
+      "recommendation": "75% positive · 4.1K reviews · 88% off",
+      "genres": [
+        "Adventure",
+        "Indie",
+        "Simulation"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:1903620",
       "title": "Killer Frequency",
       "salePrice": 4.49,
@@ -6727,6 +6950,21 @@
         "Indie",
         "Simulation",
         "Strategy"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1229020",
+      "title": "Kona II: Brume",
+      "salePrice": 5.99,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "Bbx8hVNykA2NEDlnQVZk%2BHDzU3aZwE1jJky36K4V%2BpU%3D",
+      "dealScore": 81,
+      "recommendation": "80% positive · 444 reviews · 80% off",
+      "genres": [
+        "Adventure",
+        "Indie"
       ],
       "free": false
     },
@@ -6896,21 +7134,6 @@
       "genres": [
         "Adventure",
         "Indie"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:235320",
-      "title": "Original War",
-      "salePrice": 1.99,
-      "normalPrice": 9.99,
-      "storeName": "GOG",
-      "dealId": "RPorlOGc76998OByzhi5Pp9C5Tk0DiLSHFOq%2F%2FPSNno%3D",
-      "dealScore": 81,
-      "recommendation": "94% positive · 1.8K reviews · 80% off",
-      "genres": [
-        "Indie",
-        "Strategy"
       ],
       "free": false
     },
@@ -7263,12 +7486,12 @@
     {
       "gameKey": "steam:1811040",
       "title": "South of the Circle",
-      "salePrice": 3.47,
+      "salePrice": 3.37,
       "normalPrice": 12.99,
       "storeName": "GameBillet",
       "dealId": "PATpJQKfZwsgavuEtytDzJLVYZI6efi29H3%2Ffgbi%2BKM%3D",
       "dealScore": 81,
-      "recommendation": "83% positive · 1.4K reviews · 73% off",
+      "recommendation": "83% positive · 1.4K reviews · 74% off",
       "genres": [
         "Adventure",
         "Indie"
@@ -7284,20 +7507,9 @@
       "dealId": "4AAceXvBoTvcV0DrA6KJqUwKkSI46YYO0Lh8IrfFJK4%3D",
       "dealScore": 81,
       "recommendation": "83% positive · 2.5K reviews · 87% off",
-      "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "steam:115110",
-      "title": "Stacking",
-      "salePrice": 1.99,
-      "normalPrice": 9.99,
-      "storeName": "GOG",
-      "dealId": "lafh1%2FIKeP8UvSdDMIjmnEu8jYJ5SMqXc%2B%2BHDSru5Pc%3D",
-      "dealScore": 81,
-      "recommendation": "90% positive · 977 reviews · 80% off",
       "genres": [
         "Adventure",
+        "Casual",
         "Indie"
       ],
       "free": false
@@ -7330,6 +7542,18 @@
         "Simulation",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1076620",
+      "title": "Svoboda 1945: Liberation",
+      "salePrice": 2.25,
+      "normalPrice": 15.99,
+      "storeName": "GOG",
+      "dealId": "HtyO%2BJBuNUqL9usGIYa0b36J4gwhFv19TGZ9OGuxAQU%3D",
+      "dealScore": 81,
+      "recommendation": "98% positive · 146 reviews · 86% off",
+      "genres": [],
       "free": false
     },
     {
@@ -7367,32 +7591,17 @@
       "free": false
     },
     {
-      "gameKey": "steam:1601570",
-      "title": "The Alters",
-      "salePrice": 14.3,
-      "normalPrice": 34.99,
-      "storeName": "GameBillet",
-      "dealId": "z69uL5R%2BtEkTI5AmKPDVWjiiX3YhZHXZbIuxn0KZsCE%3D",
-      "dealScore": 81,
-      "recommendation": "88% positive · 6.2K reviews · 59% off",
-      "genres": [
-        "Adventure"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:1458300",
-      "title": "The Gap",
-      "salePrice": 4.99,
-      "normalPrice": 19.99,
+      "gameKey": "steam:1577250",
+      "title": "The Chant",
+      "salePrice": 2.49,
+      "normalPrice": 24.99,
       "storeName": "GOG",
-      "dealId": "COIPkO5ZhDvnB6EGrTCRNXBc%2FWJbeOh5%2Bg9TeNILIoA%3D",
+      "dealId": "A%2BtPRESY%2B9iKZalKDJoMimihksiGPuMhYs2726%2F4zWo%3D",
       "dealScore": 81,
-      "recommendation": "94% positive · 156 reviews · 75% off",
+      "recommendation": "75% positive · 886 reviews · 90% off",
       "genres": [
-        "Adventure",
-        "Casual",
-        "Indie"
+        "Action",
+        "Adventure"
       ],
       "free": false
     },
@@ -7504,6 +7713,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1181830",
+      "title": "Urtuk: The Desolation",
+      "salePrice": 3.19,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "RCQIVClXadZ0X4gxN0VwrNEAEmD%2B%2B4a1uObQXCuqyjw%3D",
+      "dealScore": 81,
+      "recommendation": "87% positive · 1.2K reviews · 84% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1158890",
       "title": "White Shadows",
       "salePrice": 2.99,
@@ -7517,24 +7738,6 @@
         "Adventure",
         "Casual",
         "Indie"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:1331210",
-      "title": "Wolfstride",
-      "salePrice": 3.75,
-      "normalPrice": 14.99,
-      "storeName": "GOG",
-      "dealId": "po5Kk1hmth6gVh4Wo2e4Me2x7IS%2FIqiGB0nlFDIAskc%3D",
-      "dealScore": 81,
-      "recommendation": "88% positive · 783 reviews · 75% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "Indie",
-        "RPG",
-        "Strategy"
       ],
       "free": false
     },
@@ -7880,23 +8083,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:682990",
-      "title": "Drug Dealer Simulator",
-      "salePrice": 1.99,
-      "normalPrice": 19.99,
-      "storeName": "IndieGala",
-      "dealId": "rJ7aOOnb6s3%2F7S%2B9zi3fjH1%2Bg8ApLnXFniGTEb0Gp1c%3D",
-      "dealScore": 80,
-      "recommendation": "84% positive · 9.6K reviews · 90% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "Indie",
-        "Simulation"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:39190",
       "title": "Dungeon Siege",
       "salePrice": 0.97,
@@ -8050,6 +8236,21 @@
       "recommendation": "90% positive · 1.4K reviews · 80% off",
       "genres": [
         "Action"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:872750",
+      "title": "Guard Duty",
+      "salePrice": 1.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "BSTB%2FXSZsFlK3sU1kQcTfF87EX9dxjWWcnrsYknVBwE%3D",
+      "dealScore": 80,
+      "recommendation": "90% positive · 210 reviews · 80% off",
+      "genres": [
+        "Adventure",
+        "Indie"
       ],
       "free": false
     },
@@ -8275,23 +8476,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:629820",
-      "title": "Maneater",
-      "salePrice": 13.99,
-      "normalPrice": 39.99,
-      "storeName": "GameBillet",
-      "dealId": "BtrCd2gWbYLiKEIVdLDNpgAQpObkmN0QG%2Fc7gFSOStg%3D",
-      "dealScore": 80,
-      "recommendation": "88% positive · 9.2K reviews · 65% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "Indie",
-        "RPG"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:64000",
       "title": "Men of War: Assault Squad",
       "salePrice": 1,
@@ -8432,7 +8616,7 @@
       "storeName": "IndieGala",
       "dealId": "m2nw76C6IUbWBgpDwqMJLauqu3roo1tOYFq6Q5AtT3A%3D",
       "dealScore": 80,
-      "recommendation": "94% positive · 533 reviews · 90% off",
+      "recommendation": "94% positive · 534 reviews · 90% off",
       "genres": [
         "Adventure",
         "Casual",
@@ -8527,6 +8711,21 @@
       "recommendation": "85% positive · 14K reviews · 69% off",
       "genres": [
         "Action"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:978300",
+      "title": "Saints Row The Third Remastered",
+      "salePrice": 2.99,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "IWCM9gyb0gzi%2FzCTG1U52jkD8eZqL9sIU570qoSsDis%3D",
+      "dealScore": 80,
+      "recommendation": "70% positive · 2.2K reviews · 90% off",
+      "genres": [
+        "Action",
+        "Adventure"
       ],
       "free": false
     },
@@ -8640,18 +8839,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:1429850",
-      "title": "Sumerian Six",
-      "salePrice": 9.89,
-      "normalPrice": 29.99,
-      "storeName": "Epic Games Store",
-      "dealId": "BVOJN2%2FvQ9PRThLjXoZeCw2vMZDTTnD7DQ4VzRAh66U%3D",
-      "dealScore": 80,
-      "recommendation": "94% positive · 1.1K reviews · 67% off",
-      "genres": [],
-      "free": false
-    },
-    {
       "gameKey": "steam:46500",
       "title": "Syberia",
       "salePrice": 2.59,
@@ -8721,6 +8908,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1284190",
+      "title": "The Planet Crafter",
+      "salePrice": 11.99,
+      "normalPrice": 23.99,
+      "storeName": "GOG",
+      "dealId": "QjFFsF%2BEFGEpSBNyN9Fml6U9ibbX04fmJGcHpbipeEc%3D",
+      "dealScore": 80,
+      "recommendation": "95% positive · 38K reviews · 50% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1585440",
       "title": "They Always Run",
       "salePrice": 1.49,
@@ -8738,10 +8937,10 @@
     {
       "gameKey": "steam:2238040",
       "title": "Tiny Terrys Turbo Trip",
-      "salePrice": 7.24,
+      "salePrice": 7.28,
       "normalPrice": 17.99,
-      "storeName": "GameBillet",
-      "dealId": "K87i0NDBKof6hfuKwhCi4pGHrRSSxa9nvhH0mVz6a40%3D",
+      "storeName": "IndieGala",
+      "dealId": "YAOKW5HgOVwq4OSxsjq1elUGRzzC6ta6j1Gnxy9suSY%3D",
       "dealScore": 80,
       "recommendation": "95% positive · 1.5K reviews · 60% off",
       "genres": [
@@ -8797,6 +8996,18 @@
         "Simulation",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:494840",
+      "title": "UBOAT",
+      "salePrice": 8.99,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "3o0ohnSyUANNuYH2q%2Bx3cEZBv%2BZgjvuKsfMXO19Egpk%3D",
+      "dealScore": 80,
+      "recommendation": "84% positive · 11.8K reviews · 70% off",
+      "genres": [],
       "free": false
     },
     {
@@ -8963,6 +9174,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1700",
+      "title": "Arx Fatalis",
+      "salePrice": 1.65,
+      "normalPrice": 4.99,
+      "storeName": "GOG",
+      "dealId": "rnMyLNIlUzUNoCOMDlcZqMizoBE7g6Vlo4a%2BQ%2F4zuXQ%3D",
+      "dealScore": 79,
+      "recommendation": "85% positive · 1.3K reviews · 67% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1731070",
       "title": "Asterigos: Curse of the Stars",
       "salePrice": 7.75,
@@ -9059,21 +9282,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:1092660",
-      "title": "Blair Witch",
-      "salePrice": 5.99,
-      "normalPrice": 29.99,
-      "storeName": "GOG",
-      "dealId": "6so1u4KjHgTKwH%2Bz9eL8IlTpS%2FXFnncWqFWIAzfYSew%3D",
-      "dealScore": 79,
-      "recommendation": "77% positive · 3.1K reviews · 80% off",
-      "genres": [
-        "Adventure",
-        "Indie"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:2445990",
       "title": "Bloomtown: A Different Story",
       "salePrice": 8.2,
@@ -9087,6 +9295,18 @@
         "Indie",
         "RPG"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:541210",
+      "title": "Cold Waters",
+      "salePrice": 9.99,
+      "normalPrice": 39.99,
+      "storeName": "GOG",
+      "dealId": "0Cn97eiv6xM9xgaEjJnrFYwvkTl%2FA%2BhlGT6enQV9p88%3D",
+      "dealScore": 79,
+      "recommendation": "87% positive · 3.5K reviews · 75% off",
+      "genres": [],
       "free": false
     },
     {
@@ -9124,7 +9344,7 @@
     {
       "gameKey": "steam:2304440",
       "title": "Creatures of Ava",
-      "salePrice": 7.03,
+      "salePrice": 6.93,
       "normalPrice": 24.99,
       "storeName": "GameBillet",
       "dealId": "JuWE1m%2Bee3cqK3VOg1Qflpp7IzJAFCo4okBZmAPiBW4%3D",
@@ -9287,6 +9507,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:21780",
+      "title": "Driver Parallel Lines",
+      "salePrice": 2.49,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "fZigXNu3iPied4H4%2F1sgqU4YHO85YKlRAGf1K4kUp94%3D",
+      "dealScore": 79,
+      "recommendation": "89% positive · 1.5K reviews · 75% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1080020",
       "title": "Electrician Simulator",
       "salePrice": 1.07,
@@ -9425,14 +9657,26 @@
       "free": false
     },
     {
+      "gameKey": "steam:341940",
+      "title": "Hatred",
+      "salePrice": 1.25,
+      "normalPrice": 5.99,
+      "storeName": "GOG",
+      "dealId": "JH1fbgFkBC0n3psQ9KF6YZt%2F9XlpyacS6hf3OwZOfSA%3D",
+      "dealScore": 79,
+      "recommendation": "81% positive · 10.1K reviews · 79% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:983970",
       "title": "Haven",
-      "salePrice": 8.2,
+      "salePrice": 7.49,
       "normalPrice": 24.99,
-      "storeName": "GreenManGaming",
-      "dealId": "9OtYLVhfFj2tsezDma78Has4gaUBR0AiXZCUHrOJONs%3D",
+      "storeName": "IndieGala",
+      "dealId": "3WJLLKZujsMdKK6LHQbkVrKOCM0ZJrhsnL54nLXZEZU%3D",
       "dealScore": 79,
-      "recommendation": "88% positive · 2.6K reviews · 67% off",
+      "recommendation": "88% positive · 2.6K reviews · 70% off",
       "genres": [
         "Adventure",
         "Indie",
@@ -9600,6 +9844,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1582290",
+      "title": "LumbearJack",
+      "salePrice": 3.89,
+      "normalPrice": 12.99,
+      "storeName": "GOG",
+      "dealId": "PlC6%2BtE8Zopm7SuaBUROFr7HpcYz4iwga3l%2FcjiQaoI%3D",
+      "dealScore": 79,
+      "recommendation": "95% positive · 274 reviews · 70% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:2161620",
       "title": "Lysfanga: The Time Shift Warrior",
       "salePrice": 1.68,
@@ -9664,6 +9920,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1080750",
+      "title": "Mutazione",
+      "salePrice": 7.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "pMA%2BkcwqiBcRS6zncggiW2FpKWZuD5tctLlhYYhi1RY%3D",
+      "dealScore": 79,
+      "recommendation": "94% positive · 1.1K reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:906100",
       "title": "Observation",
       "salePrice": 6.24,
@@ -9708,22 +9976,6 @@
         "Adventure",
         "Indie",
         "RPG"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:803050",
-      "title": "Per Aspera",
-      "salePrice": 7.49,
-      "normalPrice": 29.99,
-      "storeName": "GOG",
-      "dealId": "kOkE6JLZ4cXZQ6bXPVBmDgzH2IrGA3z6XQQ7hHlpPko%3D",
-      "dealScore": 79,
-      "recommendation": "76% positive · 2.5K reviews · 75% off",
-      "genres": [
-        "Indie",
-        "Simulation",
-        "Strategy"
       ],
       "free": false
     },
@@ -9785,18 +10037,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:667720",
-      "title": "Red Faction: Guerrilla Re-Mars-tered",
-      "salePrice": 3.99,
-      "normalPrice": 19.99,
-      "storeName": "GOG",
-      "dealId": "dWlqx8s5Ad9Bio9vRQiKRpzlC99QN1QlmuGifOG1PF0%3D",
-      "dealScore": 79,
-      "recommendation": "80% positive · 2.1K reviews · 80% off",
-      "genres": [],
-      "free": false
-    },
-    {
       "gameKey": "steam:759740",
       "title": "RIDE 3",
       "salePrice": 4.49,
@@ -9854,6 +10094,20 @@
       "recommendation": "84% positive · 23.5K reviews · 75% off",
       "genres": [
         "Action",
+        "Adventure"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:916350",
+      "title": "Saturnalia",
+      "salePrice": 8.99,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "0Hkrx6IftweIrKR2B7AdrtRu%2FGD9YZ4CIOYjddSWgoQ%3D",
+      "dealScore": 79,
+      "recommendation": "90% positive · 120 reviews · 70% off",
+      "genres": [
         "Adventure"
       ],
       "free": false
@@ -10136,6 +10390,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:22320",
+      "title": "The Elder Scrolls III: Morrowind Game of the Year Edition",
+      "salePrice": 5.99,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "2wpn%2FeIZ2hP6Rem0f0OWbK6JEkdlj5xI2W%2BqWd4Lfwk%3D",
+      "dealScore": 79,
+      "recommendation": "95% positive · 17.9K reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:2131010",
       "title": "The Land Beneath Us",
       "salePrice": 2.24,
@@ -10163,6 +10429,18 @@
         "Action",
         "Adventure"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1679210",
+      "title": "The Spirit and the Mouse",
+      "salePrice": 6.79,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "RZmrsMMLVOWNMfFPeQbDU61A43ge%2FExSzm2s5oaV3dQ%3D",
+      "dealScore": 79,
+      "recommendation": "97% positive · 812 reviews · 66% off",
+      "genres": [],
       "free": false
     },
     {
@@ -10236,6 +10514,23 @@
       "genres": [
         "Action",
         "Adventure"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:395570",
+      "title": "We Are The Dwarves",
+      "salePrice": 1.05,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "2s%2BtCbnoMv2QzlUs2zg3SAERQYYSyHTXv3Iqs20B1Ns%3D",
+      "dealScore": 79,
+      "recommendation": "75% positive · 1.1K reviews · 93% off",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie",
+        "Strategy"
       ],
       "free": false
     },
@@ -10359,6 +10654,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:876650",
+      "title": "Aground",
+      "salePrice": 5.39,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "ekfrPdNxvpO%2BWfIXZYaETr4TldlXMQJpwSvLH51HaSc%3D",
+      "dealScore": 78,
+      "recommendation": "94% positive · 1.8K reviews · 64% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:949200",
       "title": "Ambition: A Minuet in Power",
       "salePrice": 5.24,
@@ -10400,6 +10707,22 @@
       "recommendation": "70% positive · 1.2K reviews · 92% off",
       "genres": [
         "Sports"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:505330",
+      "title": "Apocalipsis",
+      "salePrice": 0.83,
+      "normalPrice": 6.99,
+      "storeName": "Steam",
+      "dealId": "rGSlFdI1kpPOzRSl%2BYSIGw%2BH32Gitx%2FaudYvCl%2BZLGg%3D",
+      "dealScore": 78,
+      "recommendation": "72% positive · 373 reviews · 88% off",
+      "genres": [
+        "Adventure",
+        "Casual",
+        "Indie"
       ],
       "free": false
     },
@@ -10621,7 +10944,11 @@
       "dealId": "j2fSPWuCGaqzbjmf1%2FPbqEq8HiKgDJbBZCXG0arjWXg%3D",
       "dealScore": 78,
       "recommendation": "96% positive · 1.1K reviews · 57% off",
-      "genres": [],
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie"
+      ],
       "free": false
     },
     {
@@ -10835,6 +11162,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1432850",
+      "title": "Farewell North",
+      "salePrice": 9.59,
+      "normalPrice": 23.99,
+      "storeName": "GOG",
+      "dealId": "4fa4F6dDhGT9vGkYSW114lcWl7JP58T4%2BzjAjm%2Fofj4%3D",
+      "dealScore": 78,
+      "recommendation": "94% positive · 578 reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1915380",
       "title": "Garden Life: A Cozy Simulator",
       "salePrice": 6.24,
@@ -10846,6 +11185,21 @@
       "genres": [
         "Casual",
         "Simulation"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:488730",
+      "title": "God's Trigger",
+      "salePrice": 2.66,
+      "normalPrice": 14.99,
+      "storeName": "GameBillet",
+      "dealId": "pZPfa2%2FEWqpC1KlT2%2FsypaQ3UqM3o%2FL30OUGdiM6iWM%3D",
+      "dealScore": 78,
+      "recommendation": "72% positive · 442 reviews · 82% off",
+      "genres": [
+        "Action",
+        "Indie"
       ],
       "free": false
     },
@@ -10897,21 +11251,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:1651960",
-      "title": "Hextech Mayhem: A League of Legends Story",
-      "salePrice": 2.49,
-      "normalPrice": 9.99,
-      "storeName": "GOG",
-      "dealId": "x5ijMItT8xt82NsYtSEdVXNx%2B43P%2FajsLs%2FZ3yehRxM%3D",
-      "dealScore": 78,
-      "recommendation": "80% positive · 662 reviews · 75% off",
-      "genres": [
-        "Action",
-        "Indie"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:1658040",
       "title": "I Am Future: Cozy Apocalypse Survival",
       "salePrice": 6.95,
@@ -10954,22 +11293,6 @@
         "Indie",
         "Simulation",
         "Strategy"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:446020",
-      "title": "Jalopy",
-      "salePrice": 3.74,
-      "normalPrice": 14.99,
-      "storeName": "Steam",
-      "dealId": "ThDPzbWfWofQqg9MhQX1TONhwbvoAmag3GYOi0QzrIo%3D",
-      "dealScore": 78,
-      "recommendation": "75% positive · 4.1K reviews · 75% off",
-      "genres": [
-        "Adventure",
-        "Indie",
-        "Simulation"
       ],
       "free": false
     },
@@ -11017,6 +11340,18 @@
         "Casual",
         "Indie"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:231740",
+      "title": "Knights of Pen and Paper 1 Edition",
+      "salePrice": 2.49,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "6FRvFWjGxvEtlFpI%2FU0DHZ3vsQqrfwZvOCMJcJ8F954%3D",
+      "dealScore": 78,
+      "recommendation": "82% positive · 1.9K reviews · 75% off",
+      "genres": [],
       "free": false
     },
     {
@@ -11085,6 +11420,40 @@
       "free": false
     },
     {
+      "gameKey": "steam:1932680",
+      "title": "LunarLux",
+      "salePrice": 6.15,
+      "normalPrice": 19.99,
+      "storeName": "GameBillet",
+      "dealId": "vHmZrqtxSsFgHQKYPH%2FT1g6VzVeSia%2FFvZXljaBB1E4%3D",
+      "dealScore": 78,
+      "recommendation": "95% positive · 298 reviews · 69% off",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie",
+        "RPG"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:270610",
+      "title": "Mage's Initiation: Reign of the Elements",
+      "salePrice": 2.99,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "eM%2FUm0vheWRyIR9rS7WFVMzWQvwbEBILudKSjpD9scM%3D",
+      "dealScore": 78,
+      "recommendation": "88% positive · 109 reviews · 80% off",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie",
+        "RPG"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:3065800",
       "title": "Marathon",
       "salePrice": 21.55,
@@ -11095,23 +11464,6 @@
       "recommendation": "83% positive · 36.6K reviews · 46% off",
       "genres": [
         "Action"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:1173200",
-      "title": "Metal Unit",
-      "salePrice": 2.99,
-      "normalPrice": 14.99,
-      "storeName": "GOG",
-      "dealId": "r1mxKIQZl22E90kHHuUanTsojO9a77YgoBnisddtF%2Fs%3D",
-      "dealScore": 78,
-      "recommendation": "85% positive · 539 reviews · 80% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "Indie",
-        "RPG"
       ],
       "free": false
     },
@@ -11139,7 +11491,7 @@
       "storeName": "Gamesplanet",
       "dealId": "Y3cqV3DKVh24Fwluf2pcesulYgUI87R%2BQIbB8Y%2Ftajw%3D",
       "dealScore": 78,
-      "recommendation": "72% positive · 465 reviews · 78% off",
+      "recommendation": "72% positive · 466 reviews · 78% off",
       "genres": [
         "Action",
         "Casual",
@@ -11225,14 +11577,14 @@
       "free": false
     },
     {
-      "gameKey": "steam:328460",
-      "title": "Redline",
+      "gameKey": "steam:667720",
+      "title": "Red Faction: Guerrilla Re-Mars-tered",
       "salePrice": 3.99,
-      "normalPrice": 9.99,
-      "storeName": "IndieGala",
-      "dealId": "o7v4S5th2aud6JPNGKa8z%2Bbla9jZqS7MPJ%2B2W3IJYWE%3D",
+      "normalPrice": 19.99,
+      "storeName": "Humble Store",
+      "dealId": "26BICq5SAxFajZebTXHOGzYekt0RX5%2FStfLwYa46RT4%3D",
       "dealScore": 78,
-      "recommendation": "97% positive · 155 reviews · 60% off",
+      "recommendation": "80% positive · 2.1K reviews · 80% off",
       "genres": [],
       "free": false
     },
@@ -11311,20 +11663,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:9480",
-      "title": "Saints Row 2",
-      "salePrice": 2.49,
-      "normalPrice": 9.99,
-      "storeName": "Humble Store",
-      "dealId": "vBgRHoA1lkbXb6Q3ENK%2BuBEmzpbyNTyD%2BVtpzahtyuU%3D",
-      "dealScore": 78,
-      "recommendation": "75% positive · 8.6K reviews · 75% off",
-      "genres": [
-        "Action"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:1120560",
       "title": "Sense - : A Cyberpunk Ghost Story",
       "salePrice": 1.99,
@@ -11389,6 +11727,30 @@
       "free": false
     },
     {
+      "gameKey": "steam:2275150",
+      "title": "SLUDGE LIFE 2",
+      "salePrice": 5.99,
+      "normalPrice": 14.99,
+      "storeName": "Gamesplanet",
+      "dealId": "hDio%2FdnvND7xhFvS4LcfPrO9w3Ugy98gQMEaSd8QUKE%3D",
+      "dealScore": 78,
+      "recommendation": "96% positive · 1.3K reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1740300",
+      "title": "Smushi Come Home",
+      "salePrice": 7.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "Urh%2BybrBW%2FC20vzpuU3vAMfAXlxSG6EUlbJd60hwRuU%3D",
+      "dealScore": 78,
+      "recommendation": "98% positive · 1.8K reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1465360",
       "title": "SnowRunner",
       "salePrice": 11.99,
@@ -11416,6 +11778,18 @@
         "Action",
         "Adventure"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1674920",
+      "title": "Sovereign Syndicate",
+      "salePrice": 5.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "2M4CMIajhczKupk4PZ86C%2FS38ynwL7Up%2B7mDLmngc%2BY%3D",
+      "dealScore": 78,
+      "recommendation": "79% positive · 579 reviews · 70% off",
+      "genres": [],
       "free": false
     },
     {
@@ -11543,6 +11917,18 @@
         "Indie",
         "Racing"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:750130",
+      "title": "The Sinking City Remastered",
+      "salePrice": 5.99,
+      "normalPrice": 39.99,
+      "storeName": "GOG",
+      "dealId": "4UzGtAw0b6MAxxq255oQBBNXHW9lAs1OVxIwMBo0zyE%3D",
+      "dealScore": 78,
+      "recommendation": "73% positive · 2.2K reviews · 85% off",
+      "genres": [],
       "free": false
     },
     {
@@ -11860,6 +12246,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1314000",
+      "title": "Achilles: Legends Untold",
+      "salePrice": 6.25,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "fpuniBPUtbh2gtzrKvDReixgAR9z2uX1XnPIAlX4Axw%3D",
+      "dealScore": 77,
+      "recommendation": "76% positive · 849 reviews · 75% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1323540",
       "title": "Aerial_Knights Never Yield",
       "salePrice": 1.19,
@@ -11928,23 +12326,6 @@
         "Casual",
         "Indie",
         "Simulation"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:837460",
-      "title": "Batbarian: Testament of the Primordials",
-      "salePrice": 4.49,
-      "normalPrice": 14.99,
-      "storeName": "GOG",
-      "dealId": "gHEbIyBZ%2BMJB2MO1um04vZwhqIlCZJWD2DAXfk2%2Fb8o%3D",
-      "dealScore": 77,
-      "recommendation": "80% positive · 212 reviews · 70% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "Indie",
-        "RPG"
       ],
       "free": false
     },
@@ -12072,7 +12453,7 @@
       "storeName": "Steam",
       "dealId": "%2FGI91bsgGn9aba5v0CSTLnN3Cgv5cot8asGq30oD3rc%3D",
       "dealScore": 77,
-      "recommendation": "87% positive · 615 reviews · 85% off",
+      "recommendation": "87% positive · 616 reviews · 85% off",
       "genres": [
         "Simulation",
         "Strategy"
@@ -12189,7 +12570,7 @@
       "storeName": "GameBillet",
       "dealId": "JWUFL6yfWkviq2zJEuZ2KA%2B9cO1G1D4GbUlc1HV4pWw%3D",
       "dealScore": 77,
-      "recommendation": "77% positive · 191 reviews · 60% off",
+      "recommendation": "77% positive · 192 reviews · 60% off",
       "genres": [
         "Adventure",
         "Indie",
@@ -12223,7 +12604,7 @@
       "storeName": "GreenManGaming",
       "dealId": "wvC7Vjr9FC7L4IiQxTfP8KvwKwIR3%2Fy6GjC5BK0qHf0%3D",
       "dealScore": 77,
-      "recommendation": "91% positive · 787 reviews · 70% off",
+      "recommendation": "91% positive · 788 reviews · 70% off",
       "genres": [
         "Indie",
         "Strategy"
@@ -12270,6 +12651,18 @@
       "dealId": "Gae6yAJMZaIqWD96%2FnxcUPwX9vOmY9es6ZHtOMhi1UE%3D",
       "dealScore": 77,
       "recommendation": "72% positive · 616 reviews · 90% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:47810",
+      "title": "Dragon Age: Origins - Ultimate Edition",
+      "salePrice": 7.39,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "w%2Fuo4tUa4PiV7kyPNLqs%2FRNd0flXqDaCmLE7UtjUR%2BI%3D",
+      "dealScore": 77,
+      "recommendation": "85% positive · 21K reviews · 63% off",
       "genres": [],
       "free": false
     },
@@ -12331,6 +12724,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:733460",
+      "title": "First Feudal",
+      "salePrice": 1.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "%2BLTKemFMMA%2FUbFuCntwm96Cmf3R7wXhBVqByls4KJoU%3D",
+      "dealScore": 77,
+      "recommendation": "75% positive · 594 reviews · 90% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "title:first strike classic",
       "title": "First Strike: Classic",
       "salePrice": 2.99,
@@ -12340,6 +12745,21 @@
       "dealScore": 77,
       "recommendation": "84% positive · 1.3K reviews · 75% off",
       "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1590910",
+      "title": "Forgive me Father",
+      "salePrice": 5,
+      "normalPrice": 19.99,
+      "storeName": "GreenManGaming",
+      "dealId": "H0NONo%2FFhakje7bxKpJSd%2Bj7Aei%2BFFqUMfZOdaZ1ipQ%3D",
+      "dealScore": 77,
+      "recommendation": "84% positive · 2.3K reviews · 75% off",
+      "genres": [
+        "Action",
+        "Indie"
+      ],
       "free": false
     },
     {
@@ -12361,7 +12781,7 @@
     {
       "gameKey": "steam:2008510",
       "title": "Go Mecha Ball",
-      "salePrice": 6.4,
+      "salePrice": 6.3,
       "normalPrice": 19.99,
       "storeName": "GameBillet",
       "dealId": "4Rz%2F9kapFvcBxYeKv%2F7q3LpdY37ldD%2FGH82A39rbQdY%3D",
@@ -12383,21 +12803,6 @@
       "recommendation": "86% positive · 3.2K reviews · 91% off",
       "genres": [
         "Action"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:488730",
-      "title": "God's Trigger",
-      "salePrice": 2.7,
-      "normalPrice": 14.99,
-      "storeName": "GreenManGaming",
-      "dealId": "9Th4c41Ypuh%2BIrR0S0JqwWg6diaNhQ%2F%2FHbie4kP9aT4%3D",
-      "dealScore": 77,
-      "recommendation": "72% positive · 442 reviews · 82% off",
-      "genres": [
-        "Action",
-        "Indie"
       ],
       "free": false
     },
@@ -12471,7 +12876,7 @@
       "storeName": "IndieGala",
       "dealId": "1hic%2F1lBchHdOYtVHSApj7lXYgStSAGFOa%2FgljQok3U%3D",
       "dealScore": 77,
-      "recommendation": "81% positive · 708 reviews · 90% off",
+      "recommendation": "81% positive · 709 reviews · 90% off",
       "genres": [
         "Adventure",
         "Indie",
@@ -12499,7 +12904,7 @@
     {
       "gameKey": "steam:589290",
       "title": "Holdfast: Nations At War",
-      "salePrice": 8.65,
+      "salePrice": 8.6,
       "normalPrice": 19.99,
       "storeName": "GameBillet",
       "dealId": "R6ghLoiUByUEV34zqLb00KOjfKsy88PGRDZPTx8hDS4%3D",
@@ -12534,22 +12939,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:1370140",
-      "title": "Kao the Kangaroo",
-      "salePrice": 5.99,
-      "normalPrice": 29.99,
-      "storeName": "GOG",
-      "dealId": "XEVMJjbZb6JJ2tHhdNeuxgMtGs0t6jGMeALI1qIcMpY%3D",
-      "dealScore": 77,
-      "recommendation": "75% positive · 878 reviews · 80% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "Casual"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:2357000",
       "title": "Kill It With Fire 2",
       "salePrice": 6.65,
@@ -12558,7 +12947,13 @@
       "dealId": "8YXNSoD6tmkgJL3XVHLfa7cZntTZ33CA1elu0wAqXAI%3D",
       "dealScore": 77,
       "recommendation": "93% positive · 1.4K reviews · 56% off",
-      "genres": [],
+      "genres": [
+        "Action",
+        "Adventure",
+        "Casual",
+        "Indie",
+        "Simulation"
+      ],
       "free": false
     },
     {
@@ -12633,7 +13028,11 @@
       "dealId": "RVkpcqhH9OPNfLC3xrTAMijI4%2BijcmVxvRf4LLYSOJg%3D",
       "dealScore": 77,
       "recommendation": "90% positive · 382 reviews · 63% off",
-      "genres": [],
+      "genres": [
+        "Adventure",
+        "Casual",
+        "Indie"
+      ],
       "free": false
     },
     {
@@ -12694,21 +13093,6 @@
         "Indie",
         "Simulation",
         "Strategy"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:1049710",
-      "title": "Minute of Islands",
-      "salePrice": 1.99,
-      "normalPrice": 19.99,
-      "storeName": "Steam",
-      "dealId": "sYLNnUp07hHdPfLDYKYdOer0cFuJRJztLOXwsQ6x6%2BU%3D",
-      "dealScore": 77,
-      "recommendation": "78% positive · 725 reviews · 90% off",
-      "genres": [
-        "Adventure",
-        "Indie"
       ],
       "free": false
     },
@@ -12812,7 +13196,14 @@
       "dealId": "n2Bm0AW4UqWobMxSsVmj0rSMS8eMMRNUMm%2Fboxvncz0%3D",
       "dealScore": 77,
       "recommendation": "80% positive · 1.2K reviews · 78% off",
-      "genres": [],
+      "genres": [
+        "Adventure",
+        "Indie",
+        "RPG",
+        "Simulation",
+        "Sports",
+        "Strategy"
+      ],
       "free": false
     },
     {
@@ -12905,21 +13296,6 @@
       "recommendation": "84% positive · 470 reviews · 93% off",
       "genres": [
         "Action"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:978300",
-      "title": "Saints Row The Third Remastered",
-      "salePrice": 4.49,
-      "normalPrice": 29.99,
-      "storeName": "Humble Store",
-      "dealId": "G0eP1AnSrDgWY3OKdcsXfcejU6jw7mJ6GWcQ%2B5ufSyg%3D",
-      "dealScore": 77,
-      "recommendation": "70% positive · 2.2K reviews · 85% off",
-      "genres": [
-        "Action",
-        "Adventure"
       ],
       "free": false
     },
@@ -13063,6 +13439,18 @@
         "Indie",
         "RPG"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1340480",
+      "title": "The Cosmic Wheel Sisterhood",
+      "salePrice": 8.99,
+      "normalPrice": 17.99,
+      "storeName": "GOG",
+      "dealId": "YMqQM%2F0x%2BUS%2Fv2nuilaCTurQPIhOcHISovcZOp7meHo%3D",
+      "dealScore": 77,
+      "recommendation": "94% positive · 2.9K reviews · 50% off",
+      "genres": [],
       "free": false
     },
     {
@@ -13336,6 +13724,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:659540",
+      "title": "Warsim: The Realm of Aslona",
+      "salePrice": 3.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "T%2F7RNO2bb3DdmSx78n4iWP7SHYYYE%2Fgstm7efRQO7%2B4%3D",
+      "dealScore": 77,
+      "recommendation": "96% positive · 1.8K reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1097350",
       "title": "Weird West: Definitive Edition",
       "salePrice": 9.99,
@@ -13432,11 +13832,23 @@
       "storeName": "Fanatical",
       "dealId": "wWXYQ2%2BQyLzT0gqLCVJvrqzeB35YV2kgqIKDenF5WEw%3D",
       "dealScore": 76,
-      "recommendation": "90% positive · 860 reviews · 93% off",
+      "recommendation": "90% positive · 861 reviews · 93% off",
       "genres": [
         "Action",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1493520",
+      "title": "Beat Hazard 3",
+      "salePrice": 5.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "qkP%2BnSE%2FNBTeNO%2FsdQVSKrRVkwdTBfkCxsYhBbG2Rk0%3D",
+      "dealScore": 76,
+      "recommendation": "83% positive · 586 reviews · 70% off",
+      "genres": [],
       "free": false
     },
     {
@@ -13511,18 +13923,15 @@
       "free": false
     },
     {
-      "gameKey": "steam:968870",
-      "title": "Close to the Sun",
-      "salePrice": 3.99,
+      "gameKey": "steam:1621690",
+      "title": "Core Keeper",
+      "salePrice": 11.99,
       "normalPrice": 19.99,
       "storeName": "GOG",
-      "dealId": "cW6uftd0wsLnb5c1vguruArIfO2M6Xm2Wxnb8zj0DOA%3D",
+      "dealId": "gX%2F0uNFFKRhywqogtvsB6WuH3knBYDk4n%2BAPlACnUro%3D",
       "dealScore": 76,
-      "recommendation": "73% positive · 881 reviews · 80% off",
-      "genres": [
-        "Adventure",
-        "Indie"
-      ],
+      "recommendation": "94% positive · 23.8K reviews · 40% off",
+      "genres": [],
       "free": false
     },
     {
@@ -13551,6 +13960,18 @@
       "genres": [
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "title:crysis",
+      "title": "Crysis",
+      "salePrice": 9.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "3FE8zSmtJLO7Nn%2FiCCxxEuoZ%2B5LWrC%2B3pD5Aapwb4dU%3D",
+      "dealScore": 76,
+      "recommendation": "80% positive · 10.7K reviews · 50% off",
+      "genres": [],
       "free": false
     },
     {
@@ -13605,7 +14026,10 @@
       "dealId": "LlDnNRbMJFx2Blg9i5IlCFhvQjsyfziFbV4ooHzpQjE%3D",
       "dealScore": 76,
       "recommendation": "71% positive · 1.5K reviews · 87% off",
-      "genres": [],
+      "genres": [
+        "Simulation",
+        "Strategy"
+      ],
       "free": false
     },
     {
@@ -13636,6 +14060,18 @@
         "RPG",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1585180",
+      "title": "Drova - Forsaken Kin",
+      "salePrice": 12.49,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "ZEBQfX7u6BZ98553Dt9J9yE%2FflVU3QCnaIkGPjLhK3Q%3D",
+      "dealScore": 76,
+      "recommendation": "93% positive · 4.9K reviews · 50% off",
+      "genres": [],
       "free": false
     },
     {
@@ -14038,7 +14474,7 @@
       "storeName": "Humble Store",
       "dealId": "iqM8eDAHHSIZAMp3bynFGt7YU%2F1InQUxdLN6envwJMA%3D",
       "dealScore": 76,
-      "recommendation": "94% positive · 3.9K reviews · 50% off",
+      "recommendation": "94% positive · 4K reviews · 50% off",
       "genres": [
         "Action",
         "Adventure",
@@ -14055,7 +14491,11 @@
       "dealId": "E0Osnj3K5RuYkeTpl5jdpL9W9RQNKbj%2BCJiCC8PTapw%3D",
       "dealScore": 76,
       "recommendation": "90% positive · 144 reviews · 69% off",
-      "genres": [],
+      "genres": [
+        "Adventure",
+        "Casual",
+        "Indie"
+      ],
       "free": false
     },
     {
@@ -14238,7 +14678,10 @@
       "dealId": "jWT4%2Bv8oQesFsPXQRVn1GnonS0EUBdsqCKZQ6teNCW0%3D",
       "dealScore": 76,
       "recommendation": "91% positive · 125 reviews · 70% off",
-      "genres": [],
+      "genres": [
+        "Casual",
+        "Indie"
+      ],
       "free": false
     },
     {
@@ -14270,6 +14713,30 @@
       "free": false
     },
     {
+      "gameKey": "steam:2004640",
+      "title": "Svarogs Dream",
+      "salePrice": 7.35,
+      "normalPrice": 21,
+      "storeName": "GOG",
+      "dealId": "vYU9TFvq1eAwzTFtA8oUWmcynrvVUM%2FpgrDtl1kVwWI%3D",
+      "dealScore": 76,
+      "recommendation": "89% positive · 899 reviews · 65% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:230070",
+      "title": "The Age of Decadence",
+      "salePrice": 5.99,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "pp2GP8mjzcybZEywtB7lFp9adGbVOpyC%2BJSarXcEYBQ%3D",
+      "dealScore": 76,
+      "recommendation": "80% positive · 2.4K reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1870700",
       "title": "The Edge of Allegoria",
       "salePrice": 3.99,
@@ -14279,22 +14746,6 @@
       "dealScore": 76,
       "recommendation": "86% positive · 195 reviews · 80% off",
       "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "steam:1295790",
-      "title": "The Longest Road on Earth",
-      "salePrice": 2.49,
-      "normalPrice": 9.99,
-      "storeName": "GOG",
-      "dealId": "H4zthxf0nUK0HmMLVyL%2BAcyOj9EUh%2FQYKIJWyhxxTp4%3D",
-      "dealScore": 76,
-      "recommendation": "77% positive · 565 reviews · 75% off",
-      "genres": [
-        "Adventure",
-        "Casual",
-        "Indie"
-      ],
       "free": false
     },
     {
@@ -14342,6 +14793,18 @@
         "Casual",
         "Indie"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1301010",
+      "title": "World Racing 2 - Champion Edition",
+      "salePrice": 2.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "Aem5L06lcNaM9OlVjDEtRvqSM72x%2BRamHIxCv%2FDdtQs%3D",
+      "dealScore": 76,
+      "recommendation": "85% positive · 315 reviews · 70% off",
+      "genres": [],
       "free": false
     },
     {
@@ -14422,6 +14885,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1467920",
+      "title": "A Guidebook of Babel",
+      "salePrice": 5.99,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "4zaOYUAOvZAHAhhgJcLetvK5XNbC5rp3mbLvNhOizJI%3D",
+      "dealScore": 75,
+      "recommendation": "92% positive · 883 reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1099410",
       "title": "A Total War Saga: TROY",
       "salePrice": 6.79,
@@ -14452,6 +14927,18 @@
         "RPG",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1589120",
+      "title": "Above Snakes",
+      "salePrice": 6.25,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "QaxzkOg3OTblaW%2FoD6h4sxDcNZ4SDXXALQei7s8IP6E%3D",
+      "dealScore": 75,
+      "recommendation": "73% positive · 1.6K reviews · 75% off",
+      "genres": [],
       "free": false
     },
     {
@@ -14567,6 +15054,18 @@
         "Indie",
         "Simulation"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1193090",
+      "title": "Bus World",
+      "salePrice": 3.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "rn2eKvI5%2Bc52VMrvtqtJrm%2F9XlpJGo%2BWMdmeW%2B8pMUw%3D",
+      "dealScore": 75,
+      "recommendation": "72% positive · 1.9K reviews · 80% off",
+      "genres": [],
       "free": false
     },
     {
@@ -14727,6 +15226,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1621760",
+      "title": "Decision: Red Daze",
+      "salePrice": 3.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "IEZCXgxU42FwF%2BKl08%2Byb9L%2FqbVkOBwAbAe9J5u2psM%3D",
+      "dealScore": 75,
+      "recommendation": "74% positive · 856 reviews · 80% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:470740",
       "title": "Demolish and Build 2017",
       "salePrice": 1.19,
@@ -14832,6 +15343,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:895480",
+      "title": "Fates of Ort",
+      "salePrice": 4.49,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "nsjulEv4%2B8sU2eJod6RdSoOxxtwgd4EOknt7r7J52C8%3D",
+      "dealScore": 75,
+      "recommendation": "88% positive · 143 reviews · 70% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "title:fishing north atlantic",
       "title": "Fishing: North Atlantic",
       "salePrice": 5.24,
@@ -14868,7 +15391,7 @@
       "storeName": "GreenManGaming",
       "dealId": "cGSccgezp2q5xsZgZX8wnHCH3B0k58MgC6qF9SRxLME%3D",
       "dealScore": 75,
-      "recommendation": "82% positive · 359 reviews · 79% off",
+      "recommendation": "81% positive · 360 reviews · 79% off",
       "genres": [
         "Casual",
         "Simulation"
@@ -15060,23 +15583,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:270610",
-      "title": "Mage's Initiation: Reign of the Elements",
-      "salePrice": 2.99,
-      "normalPrice": 14.99,
-      "storeName": "Humble Store",
-      "dealId": "LtR%2FvSXdsvjCq6Rklhv5ZyAd0tnhNmIcE9zqTf0i8jc%3D",
-      "dealScore": 75,
-      "recommendation": "88% positive · 109 reviews · 80% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "Indie",
-        "RPG"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:1817070",
       "title": "Marvels Spider-Man Remastered",
       "salePrice": 33.99,
@@ -15142,6 +15648,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:992730",
+      "title": "Neckbreak",
+      "salePrice": 3.99,
+      "normalPrice": 15.99,
+      "storeName": "GOG",
+      "dealId": "Q1eoZEd4fRY7%2BN8w7rMPq7QAWM1%2FdpFS%2FytYZU50fGc%3D",
+      "dealScore": 75,
+      "recommendation": "80% positive · 420 reviews · 75% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1649950",
       "title": "News Tower",
       "salePrice": 14.34,
@@ -15180,7 +15698,10 @@
       "dealId": "8hVKUhvDsSTG6BCgm%2FQNT%2BK%2FN7RGBbP3y7DFY%2FRdYcU%3D",
       "dealScore": 75,
       "recommendation": "82% positive · 186.9K reviews · 60% off",
-      "genres": [],
+      "genres": [
+        "Action",
+        "Adventure"
+      ],
       "free": false
     },
     {
@@ -15372,19 +15893,19 @@
       "storeName": "Gamesplanet",
       "dealId": "EseWfEufGSck1nqDSJO40qkIv8E0Apor8n7VYV4QD%2FI%3D",
       "dealScore": 75,
-      "recommendation": "96% positive · 662 reviews · 50% off",
+      "recommendation": "96% positive · 663 reviews · 50% off",
       "genres": [],
       "free": false
     },
     {
-      "gameKey": "steam:2275150",
-      "title": "SLUDGE LIFE 2",
-      "salePrice": 5.99,
-      "normalPrice": 14.99,
-      "storeName": "Epic Games Store",
-      "dealId": "1%2BJ9d9Dte0VyWPfGEfcycrwzBRwUhP9kcauHMze1IjE%3D",
+      "gameKey": "steam:2380050",
+      "title": "Star Trucker",
+      "salePrice": 9.99,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "AMIwvH4FNMAFPQdnnGuVR9xRfngtIGipX35b11l0Qus%3D",
       "dealScore": 75,
-      "recommendation": "96% positive · 1.3K reviews · 60% off",
+      "recommendation": "78% positive · 3.3K reviews · 60% off",
       "genres": [],
       "free": false
     },
@@ -15478,6 +15999,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1543430",
+      "title": "Terrain of Magical Expertise",
+      "salePrice": 3.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "EJ93sn1xr9jsWg9juZMpObwbpNemN5BZdGcIzEU0pNs%3D",
+      "dealScore": 75,
+      "recommendation": "83% positive · 107 reviews · 80% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:2337820",
       "title": "The Crush House",
       "salePrice": 4.24,
@@ -15502,6 +16035,22 @@
       "dealScore": 75,
       "recommendation": "74% positive · 1.2K reviews · 80% off",
       "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1458300",
+      "title": "The Gap",
+      "salePrice": 4.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "COIPkO5ZhDvnB6EGrTCRNXBc%2FWJbeOh5%2Bg9TeNILIoA%3D",
+      "dealScore": 75,
+      "recommendation": "73% positive · 129 reviews · 75% off",
+      "genres": [
+        "Adventure",
+        "Casual",
+        "Indie"
+      ],
       "free": false
     },
     {
@@ -15675,6 +16224,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1675830",
+      "title": "1000xRESIST",
+      "salePrice": 11.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "MLW94MetTcwfa8ErnEWRa657ht9tcM3ZRIDK04c5a2o%3D",
+      "dealScore": 74,
+      "recommendation": "96% positive · 4.8K reviews · 40% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:3244220",
       "title": "A Game About Digging A Hole",
       "salePrice": 2.66,
@@ -15709,7 +16270,7 @@
       "storeName": "Fanatical",
       "dealId": "8VWMiONyZ9URzyx4JYxBAwlZyxmFn2tL6oQA4PsaNgI%3D",
       "dealScore": 74,
-      "recommendation": "80% positive · 417 reviews · 84% off",
+      "recommendation": "80% positive · 418 reviews · 84% off",
       "genres": [
         "Indie",
         "Strategy"
@@ -15732,6 +16293,18 @@
         "Indie",
         "RPG"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:424250",
+      "title": "Balrum",
+      "salePrice": 3.75,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "eC%2BozPtI5n1r99tjAWaozBJgelau%2BOsI6mjRhXSsXs4%3D",
+      "dealScore": 74,
+      "recommendation": "78% positive · 731 reviews · 75% off",
+      "genres": [],
       "free": false
     },
     {
@@ -15806,6 +16379,18 @@
         "Adventure",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1715130",
+      "title": "Crysis Remastered",
+      "salePrice": 10.49,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "nsuh6XzWs9PEKWQlilOsWh6If06vWIpZ5Qwiu02qAJg%3D",
+      "dealScore": 74,
+      "recommendation": "71% positive · 3.7K reviews · 65% off",
+      "genres": [],
       "free": false
     },
     {
@@ -15910,6 +16495,18 @@
       "free": false
     },
     {
+      "gameKey": "title:galactic civilizations iv supernova",
+      "title": "Galactic Civilizations IV: Supernova",
+      "salePrice": 11.2,
+      "normalPrice": 39.99,
+      "storeName": "GreenManGaming",
+      "dealId": "TP5MUAgTyBe7TD1nuE9vdG2CsxFE7DYDCC4oFNVD29A%3D",
+      "dealScore": 74,
+      "recommendation": "75% positive · 157 reviews · 72% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1375400",
       "title": "Ghosts n Goblins Resurrection",
       "salePrice": 9.15,
@@ -15976,7 +16573,11 @@
       "dealId": "d8AhWG%2B4WyKttxrAh78uzSHvA3TmfbTrhZMB2o8HCno%3D",
       "dealScore": 74,
       "recommendation": "74% positive · 367 reviews · 63% off",
-      "genres": [],
+      "genres": [
+        "Action",
+        "Adventure",
+        "RPG"
+      ],
       "free": false
     },
     {
@@ -16010,6 +16611,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1677310",
+      "title": "In Stars and Time",
+      "salePrice": 11.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "6TbUnsXgEBhf0xOG3ndZM31b51CXGiXNMKyZChhTcl8%3D",
+      "dealScore": 74,
+      "recommendation": "97% positive · 7.1K reviews · 40% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:2820820",
       "title": "Jotunnslayer: Hordes of Hel",
       "salePrice": 7.62,
@@ -16034,7 +16647,11 @@
       "dealId": "5o7PZe5Nt1kEvTgGFlcQPpZhl0d4RG%2FKHreoBcvD6tY%3D",
       "dealScore": 74,
       "recommendation": "86% positive · 337 reviews · 52% off",
-      "genres": [],
+      "genres": [
+        "Action",
+        "Adventure",
+        "RPG"
+      ],
       "free": false
     },
     {
@@ -16064,23 +16681,6 @@
       "genres": [
         "Casual",
         "Indie"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:1932680",
-      "title": "LunarLux",
-      "salePrice": 7.99,
-      "normalPrice": 19.99,
-      "storeName": "WinGameStore",
-      "dealId": "gwKCmk9TJ1gZyXZTRTJOIt%2F5u6lCJP1LS7BBC%2Bt%2FSM8%3D",
-      "dealScore": 74,
-      "recommendation": "95% positive · 298 reviews · 60% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "Indie",
-        "RPG"
       ],
       "free": false
     },
@@ -16130,6 +16730,33 @@
       "free": false
     },
     {
+      "gameKey": "steam:774511",
+      "title": "Megadimension Neptunia VII R",
+      "salePrice": 5.99,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "GneeFo%2BfkoWEMyQG0ErMngjWwLJXppOi7RpV1%2FImp6U%3D",
+      "dealScore": 74,
+      "recommendation": "74% positive · 795 reviews · 80% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1049710",
+      "title": "Minute of Islands",
+      "salePrice": 1.99,
+      "normalPrice": 19.99,
+      "storeName": "Fanatical",
+      "dealId": "aEi78HpPOnDlFuYrbsjbOk4dSWj2mpVYgZESqeYBdEA%3D",
+      "dealScore": 74,
+      "recommendation": "78% positive · 725 reviews · 90% off",
+      "genres": [
+        "Adventure",
+        "Indie"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:281750",
       "title": "Munin",
       "salePrice": 0.62,
@@ -16163,18 +16790,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:2076580",
-      "title": "Pepper Grinder",
-      "salePrice": 5.99,
-      "normalPrice": 14.99,
-      "storeName": "Epic Games Store",
-      "dealId": "v9blsfCxh6cQMuAEP2jq1IUZYPoDfjkzmZBKRcY0CN8%3D",
-      "dealScore": 74,
-      "recommendation": "85% positive · 1.1K reviews · 60% off",
-      "genres": [],
-      "free": false
-    },
-    {
       "gameKey": "steam:2161700",
       "title": "Persona 3 Reload",
       "salePrice": 34.99,
@@ -16184,6 +16799,21 @@
       "dealScore": 74,
       "recommendation": "96% positive · 24.1K reviews · 42% off",
       "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2841770",
+      "title": "Phantom Squad",
+      "salePrice": 5.54,
+      "normalPrice": 13.99,
+      "storeName": "GameBillet",
+      "dealId": "Uvt3OH2nuRNSY%2B1fGBmq6%2FJDvjcWo6c2pMHZKaYWd4c%3D",
+      "dealScore": 74,
+      "recommendation": "80% positive · 418 reviews · 60% off",
+      "genres": [
+        "Action",
+        "Indie"
+      ],
       "free": false
     },
     {
@@ -16203,6 +16833,30 @@
       "free": false
     },
     {
+      "gameKey": "steam:1342690",
+      "title": "Radiolight",
+      "salePrice": 7.49,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "IXk8bfEkYUwr4hFNtgSoZej513%2FlJ14k%2FE2KfxB%2FH6E%3D",
+      "dealScore": 74,
+      "recommendation": "90% positive · 432 reviews · 50% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:867960",
+      "title": "Remorse: The List",
+      "salePrice": 2.99,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "G9iRa5ztYP6jmkOncqp0bsRXO6NN%2BJYzvzI5h5ipeLU%3D",
+      "dealScore": 74,
+      "recommendation": "76% positive · 299 reviews · 80% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:698700",
       "title": "Rise of the Third Power",
       "salePrice": 7.35,
@@ -16211,7 +16865,10 @@
       "dealId": "hsSoXYv0SqRtFwkgpLroiC7MJHXIz1xVT526stM62XM%3D",
       "dealScore": 74,
       "recommendation": "88% positive · 492 reviews · 63% off",
-      "genres": [],
+      "genres": [
+        "Indie",
+        "RPG"
+      ],
       "free": false
     },
     {
@@ -16223,7 +16880,12 @@
       "dealId": "e0RpVtGT7nVFl0A4P%2BV9sTHIgjg4sSEeWT7THA%2BgYqY%3D",
       "dealScore": 74,
       "recommendation": "75% positive · 264 reviews · 82% off",
-      "genres": [],
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie",
+        "RPG"
+      ],
       "free": false
     },
     {
@@ -16451,6 +17113,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1930",
+      "title": "Two Worlds Epic Edition",
+      "salePrice": 3.75,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "Lup%2FitBPzjpWuvFxXc%2FSQAjokc1o2bqAqtO2zhFE9nE%3D",
+      "dealScore": 74,
+      "recommendation": "76% positive · 1.4K reviews · 75% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:237950",
       "title": "UFO: Afterlight",
       "salePrice": 1.39,
@@ -16558,6 +17232,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1015920",
+      "title": "Ynglet",
+      "salePrice": 3.99,
+      "normalPrice": 7.99,
+      "storeName": "GOG",
+      "dealId": "Zszfd3iVhF0QWEHDym0YJCGhUVlInyTukz2f6AxzZBE%3D",
+      "dealScore": 74,
+      "recommendation": "98% positive · 304 reviews · 50% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:435100",
       "title": "2Dark",
       "salePrice": 2.24,
@@ -16610,7 +17296,7 @@
       "storeName": "IndieGala",
       "dealId": "DZuEDKsbBfJGxnGnjesogIVqlEnI4%2Fp%2B2vYpjNf%2FT1A%3D",
       "dealScore": 73,
-      "recommendation": "72% positive · 494 reviews · 80% off",
+      "recommendation": "72% positive · 495 reviews · 80% off",
       "genres": [
         "Strategy"
       ],
@@ -16686,7 +17372,7 @@
       "storeName": "Fanatical",
       "dealId": "d5acQYofDlUDP8XkQluuphzgE0XacqHXISQz01jb%2B9o%3D",
       "dealScore": 73,
-      "recommendation": "76% positive · 862 reviews · 74% off",
+      "recommendation": "76% positive · 863 reviews · 74% off",
       "genres": [
         "Adventure",
         "Indie"
@@ -16795,6 +17481,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:2096600",
+      "title": "Crysis 2 Remastered",
+      "salePrice": 11.99,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "%2Fko6iEEHgQ%2BDhh7n8F9djd9Wb%2FrVhDTR3kG6CvaKppc%3D",
+      "dealScore": 73,
+      "recommendation": "86% positive · 2.1K reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:2446600",
       "title": "Dark Deity 2",
       "salePrice": 12.57,
@@ -16825,6 +17523,18 @@
         "Adventure",
         "Indie"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1902850",
+      "title": "Dreams in the Witch House",
+      "salePrice": 4.39,
+      "normalPrice": 10.99,
+      "storeName": "GOG",
+      "dealId": "dFRaKSrJva8iK4mwDCBKPDouD%2FVy5MT7WURY%2BjxxYmI%3D",
+      "dealScore": 73,
+      "recommendation": "91% positive · 394 reviews · 60% off",
+      "genres": [],
       "free": false
     },
     {
@@ -16900,7 +17610,7 @@
       "storeName": "GameBillet",
       "dealId": "IwLf8Fxy2P4uy7RVFxFd5oo8TZdZTzDEdfS6q%2FbdfYU%3D",
       "dealScore": 73,
-      "recommendation": "84% positive · 786 reviews · 85% off",
+      "recommendation": "84% positive · 785 reviews · 85% off",
       "genres": [],
       "free": false
     },
@@ -17074,21 +17784,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:2841770",
-      "title": "Phantom Squad",
-      "salePrice": 5.64,
-      "normalPrice": 13.99,
-      "storeName": "GameBillet",
-      "dealId": "Uvt3OH2nuRNSY%2B1fGBmq6%2FJDvjcWo6c2pMHZKaYWd4c%3D",
-      "dealScore": 73,
-      "recommendation": "80% positive · 418 reviews · 60% off",
-      "genres": [
-        "Action",
-        "Indie"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:1215320",
       "title": "Piczle Cross Adventure",
       "salePrice": 0.99,
@@ -17171,10 +17866,10 @@
     {
       "gameKey": "steam:286770",
       "title": "Shadow Ops: Red Mercury",
-      "salePrice": 0.89,
-      "normalPrice": 5.99,
-      "storeName": "GOG",
-      "dealId": "2wC2jesnFv0qqFjtGXGL90zgEqz6lgb7CBZUbnzD24A%3D",
+      "salePrice": 1.04,
+      "normalPrice": 6.99,
+      "storeName": "Steam",
+      "dealId": "bUvXZH8%2B%2BHsdtbcNJUzgJZKkAAOL7%2FFWZrHkLVcBkqY%3D",
       "dealScore": 73,
       "recommendation": "75% positive · 233 reviews · 85% off",
       "genres": [
@@ -17238,7 +17933,7 @@
       "storeName": "GreenManGaming",
       "dealId": "bCJQszFZowyU7%2FPB4fUnD9iV09JZLdt2SHnBRkAqbt0%3D",
       "dealScore": 73,
-      "recommendation": "74% positive · 262 reviews · 85% off",
+      "recommendation": "74% positive · 263 reviews · 85% off",
       "genres": [
         "Action",
         "Adventure",
@@ -17310,12 +18005,12 @@
     {
       "gameKey": "steam:1132980",
       "title": "There Is No Light: Enhanced Edition",
-      "salePrice": 5.14,
+      "salePrice": 5.04,
       "normalPrice": 19.99,
       "storeName": "GameBillet",
       "dealId": "7IleVDXh16CiXabsY6EFf5BaGS5puACp%2BJz%2ByD8veKw%3D",
       "dealScore": 73,
-      "recommendation": "72% positive · 634 reviews · 74% off",
+      "recommendation": "72% positive · 634 reviews · 75% off",
       "genres": [
         "Action",
         "Adventure",
@@ -17448,6 +18143,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1139940",
+      "title": "ATOM RPG: Trudograd",
+      "salePrice": 5.49,
+      "normalPrice": 10.99,
+      "storeName": "GOG",
+      "dealId": "c47Loqa5p%2B1AoAwTMh6GodGqk0mplrkgftBkqpTHXXM%3D",
+      "dealScore": 72,
+      "recommendation": "87% positive · 984 reviews · 50% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1716310",
       "title": "AWAKEN - Astral Blade",
       "salePrice": 7.75,
@@ -17492,6 +18199,18 @@
         "Casual",
         "Indie"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:290100",
+      "title": "Bulwark : Falconeer Chronicles",
+      "salePrice": 9.19,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "2bFS3orttUrzQefsV8kajVeKmiOgNfzir%2BLP0T0IGYI%3D",
+      "dealScore": 72,
+      "recommendation": "85% positive · 1.4K reviews · 54% off",
+      "genres": [],
       "free": false
     },
     {
@@ -17590,6 +18309,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1299620",
+      "title": "Fabled Lands",
+      "salePrice": 6.45,
+      "normalPrice": 18.99,
+      "storeName": "GOG",
+      "dealId": "eXDOFegigcw30sn%2BTUokt%2BUrDUD8ZOv5WsJBL5ouonc%3D",
+      "dealScore": 72,
+      "recommendation": "79% positive · 525 reviews · 66% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:228260",
       "title": "Fallen Enchantress: Legendary Heroes",
       "salePrice": 4,
@@ -17653,7 +18384,10 @@
       "dealId": "ko7e4MLjqybfo%2BjsafOJob7EUY48iKZU8XIbD%2B9Dp3Y%3D",
       "dealScore": 72,
       "recommendation": "72% positive · 230 reviews · 78% off",
-      "genres": [],
+      "genres": [
+        "Adventure",
+        "Indie"
+      ],
       "free": false
     },
     {
@@ -17783,18 +18517,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:743890",
-      "title": "Mega Man X Legacy Collection",
-      "salePrice": 6.95,
-      "normalPrice": 19.99,
-      "storeName": "GameBillet",
-      "dealId": "doAoyVBRxyxilT1NP1N%2FF2wmQNhOtH7xCHXet91D5Y8%3D",
-      "dealScore": 72,
-      "recommendation": "77% positive · 1.7K reviews · 65% off",
-      "genres": [],
-      "free": false
-    },
-    {
       "gameKey": "steam:2005160",
       "title": "Naheulbeuks Dungeon Master",
       "salePrice": 7.18,
@@ -17825,6 +18547,18 @@
         "Simulation",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2076580",
+      "title": "Pepper Grinder",
+      "salePrice": 7.49,
+      "normalPrice": 14.99,
+      "storeName": "Gamesplanet",
+      "dealId": "yOYJ%2FBTMTsljeaCdhhOcVr7tZ4BOQbIFkKeV%2FEUl%2Buk%3D",
+      "dealScore": 72,
+      "recommendation": "85% positive · 1.1K reviews · 50% off",
+      "genres": [],
       "free": false
     },
     {
@@ -17902,6 +18636,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1070860",
+      "title": "Serin Fate",
+      "salePrice": 4.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "5uFsnBpxzq0BjLwwvXQzJ4rX6ku0sXwNTiuc%2B0VHVPQ%3D",
+      "dealScore": 72,
+      "recommendation": "73% positive · 458 reviews · 75% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:283310",
       "title": "Soulbringer",
       "salePrice": 0.74,
@@ -17924,7 +18670,11 @@
       "dealId": "euitFOATOa1qTyESMoINmNN%2FkdnHoQZ3LYP9eyzST6U%3D",
       "dealScore": 72,
       "recommendation": "85% positive · 948 reviews · 56% off",
-      "genres": [],
+      "genres": [
+        "Adventure",
+        "Casual",
+        "Indie"
+      ],
       "free": false
     },
     {
@@ -17973,6 +18723,18 @@
         "RPG",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:555150",
+      "title": "The First Tree",
+      "salePrice": 0.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "EdfWbeGDiwpz%2BmwQhk%2Bz2tCjR%2BscH7SQz5ish4Dedkc%3D",
+      "dealScore": 72,
+      "recommendation": "75% positive · 2.3K reviews · 90% off",
+      "genres": [],
       "free": false
     },
     {
@@ -18060,7 +18822,7 @@
       "storeName": "GreenManGaming",
       "dealId": "t%2BzJG%2FbOgMRRCe5e%2BAsQx2KAk8Y3MDCzUl8%2BFZd%2F5nw%3D",
       "dealScore": 72,
-      "recommendation": "73% positive · 859 reviews · 92% off",
+      "recommendation": "73% positive · 860 reviews · 92% off",
       "genres": [
         "Racing",
         "Simulation",
@@ -18085,12 +18847,12 @@
     {
       "gameKey": "steam:2107550",
       "title": "Valley Peaks",
-      "salePrice": 6.54,
+      "salePrice": 6.49,
       "normalPrice": 14.99,
       "storeName": "GameBillet",
       "dealId": "%2FiNC8Wluttm8636UW1auO5HLWHba0Lcc%2BgR3vTb0JVM%3D",
       "dealScore": 72,
-      "recommendation": "96% positive · 176 reviews · 56% off",
+      "recommendation": "96% positive · 176 reviews · 57% off",
       "genres": [],
       "free": false
     },
@@ -18193,6 +18955,18 @@
       "genres": [
         "Adventure"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:552620",
+      "title": "ATOM RPG: Post-apocalyptic indie game",
+      "salePrice": 7.49,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "ufOtWFEpj9CNMdnLvd2SRFlsiHnsb7rOGQtMjo12UOM%3D",
+      "dealScore": 71,
+      "recommendation": "83% positive · 3.5K reviews · 50% off",
+      "genres": [],
       "free": false
     },
     {
@@ -18335,6 +19109,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:2096610",
+      "title": "Crysis 3 Remastered",
+      "salePrice": 13.49,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "lSlXlIUdacniPTfOHsYW3BhCO2wclC4c6BGsyw%2FnrC4%3D",
+      "dealScore": 71,
+      "recommendation": "88% positive · 1.6K reviews · 55% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:12310",
       "title": "Culpa Innata",
       "salePrice": 2,
@@ -18358,7 +19144,7 @@
       "storeName": "GameBillet",
       "dealId": "91my7hI%2FaXhLB%2BegAgWSnARkp0raYaTxu1XWR7q84%2B0%3D",
       "dealScore": 71,
-      "recommendation": "94% positive · 107.7K reviews · 38% off",
+      "recommendation": "94% positive · 107.8K reviews · 38% off",
       "genres": [],
       "free": false
     },
@@ -18405,6 +19191,18 @@
       "free": false
     },
     {
+      "gameKey": "title:far cry 2 fortune's",
+      "title": "Far Cry 2: Fortune's Edition",
+      "salePrice": 2.49,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "%2BlGomml8GYyz5MHhQfdg6m%2FwOluhpK6nG2kLH6Re7EM%3D",
+      "dealScore": 71,
+      "recommendation": "77% positive · 10.9K reviews · 75% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:447020",
       "title": "Farming Simulator 17",
       "salePrice": 7.5,
@@ -18442,7 +19240,7 @@
       "storeName": "GameBillet",
       "dealId": "qzSSUq%2BRrrY7jQFfKTaQdwWALr9nlMXsAP4mJfbgyV8%3D",
       "dealScore": 71,
-      "recommendation": "72% positive · 843 reviews · 42% off",
+      "recommendation": "72% positive · 847 reviews · 42% off",
       "genres": [
         "RPG",
         "Strategy",
@@ -18540,6 +19338,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:2644360",
+      "title": "Kingsgrave",
+      "salePrice": 1.49,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "o4hLEicaRPR1A%2BTa5V59RI1Ocw8ZVw65ZbQpKOIjjDs%3D",
+      "dealScore": 71,
+      "recommendation": "80% positive · 530 reviews · 85% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:42120",
       "title": "Lead and Gold: Gangs of the Wild West",
       "salePrice": 0.79,
@@ -18587,7 +19397,7 @@
     {
       "gameKey": "steam:2350790",
       "title": "Moonlighter 2 The Endless Vault",
-      "salePrice": 17.74,
+      "salePrice": 17.64,
       "normalPrice": 29.99,
       "storeName": "GameBillet",
       "dealId": "epRj6OteBjvIiB8nO2fQAjFaBjEcIQlFeupTHcXoPh0%3D",
@@ -18616,6 +19426,18 @@
         "Simulation",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:12810",
+      "title": "Overlord II",
+      "salePrice": 4.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "4i%2FOSqAZJ7JOMVWI692Pjrj7Nemq7amO%2BcEb3BT8MJg%3D",
+      "dealScore": 71,
+      "recommendation": "85% positive · 1.9K reviews · 50% off",
+      "genres": [],
       "free": false
     },
     {
@@ -18686,7 +19508,7 @@
       "storeName": "Humble Store",
       "dealId": "xQXd1aatYKPuQIpM8lgNrkIgbWpxjTq07lpzzJAyyns%3D",
       "dealScore": 71,
-      "recommendation": "82% positive · 983 reviews · 55% off",
+      "recommendation": "82% positive · 984 reviews · 55% off",
       "genres": [
         "Adventure",
         "Indie",
@@ -18768,6 +19590,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1164690",
+      "title": "Wigmund",
+      "salePrice": 2.25,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "jx%2B6dU1KaujXU1CIzCFmDBAkQpP8jUt6cR5L8tq777A%3D",
+      "dealScore": 71,
+      "recommendation": "80% positive · 805 reviews · 85% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:428690",
       "title": "Youtubers Life",
       "salePrice": 8.2,
@@ -18783,6 +19617,18 @@
         "Simulation",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1159090",
+      "title": "Zoria Age of Shattering",
+      "salePrice": 9.99,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "p%2BJroQ5YyOIAGu5us5HMWSLFBAXiyGpfkpEyCbFY1i0%3D",
+      "dealScore": 71,
+      "recommendation": "77% positive · 552 reviews · 60% off",
+      "genres": [],
       "free": false
     },
     {
@@ -18828,6 +19674,30 @@
       "free": false
     },
     {
+      "gameKey": "steam:976590",
+      "title": "Bus Simulator 21 Next Stop",
+      "salePrice": 12.25,
+      "normalPrice": 34.99,
+      "storeName": "GOG",
+      "dealId": "7GyCKxYM01JsFB4ERvuj1PC%2BPZQvHodLmP53IbZg23s%3D",
+      "dealScore": 70,
+      "recommendation": "73% positive · 1.2K reviews · 65% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:327930",
+      "title": "Darklands",
+      "salePrice": 1.75,
+      "normalPrice": 6.99,
+      "storeName": "GOG",
+      "dealId": "swYezUQw3DuK27dHj7xqq7C2zpzcDhwBk13otPrE3UE%3D",
+      "dealScore": 70,
+      "recommendation": "90% positive · 217 reviews · 75% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:2524850",
       "title": "Denshattack!",
       "salePrice": 14.99,
@@ -18863,8 +19733,8 @@
       "title": "Echoes of the Plum Grove",
       "salePrice": 9.99,
       "normalPrice": 19.99,
-      "storeName": "IndieGala",
-      "dealId": "Bs4aPjWfH%2F9vY4TlXj0MfUiT7htiZHFIpwM3x4YaSQY%3D",
+      "storeName": "GOG",
+      "dealId": "Hn6szlBW%2FXkHeJrTDloOhynuEGfBKXCKjV7qIeNN3n0%3D",
       "dealScore": 70,
       "recommendation": "89% positive · 2K reviews · 50% off",
       "genres": [],
@@ -18898,6 +19768,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:2470300",
+      "title": "Hookah Haze",
+      "salePrice": 8.99,
+      "normalPrice": 17.99,
+      "storeName": "Steam",
+      "dealId": "agmRXayvxNr22Ty7qol4sypwGX0S5s2ikGF9FomclYk%3D",
+      "dealScore": 70,
+      "recommendation": "92% positive · 1.3K reviews · 50% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:2420110",
       "title": "Horizon Forbidden West Complete Edition",
       "salePrice": 34.99,
@@ -18906,6 +19788,18 @@
       "dealId": "MZ6GkMB1bnTy%2FMGfvDzRxMAyg7%2BNz3XCHMIspJawro0%3D",
       "dealScore": 70,
       "recommendation": "87% positive · 11.3K reviews · 42% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2677660",
+      "title": "Indiana Jones and the Great Circle",
+      "salePrice": 41.99,
+      "normalPrice": 69.99,
+      "storeName": "GOG",
+      "dealId": "mcR2ZpQBxG4wTMDO2Na5PbXOAm3N8y7978F5EtOdoXY%3D",
+      "dealScore": 70,
+      "recommendation": "89% positive · 8K reviews · 40% off",
       "genres": [],
       "free": false
     },
@@ -18941,18 +19835,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:743900",
-      "title": "Mega Man X Legacy Collection 2",
-      "salePrice": 6.95,
-      "normalPrice": 19.99,
-      "storeName": "GameBillet",
-      "dealId": "4UZf4ITOUkBpfdEAZHI9pKIcKsrqw8C9flySwjPQC58%3D",
-      "dealScore": 70,
-      "recommendation": "74% positive · 735 reviews · 65% off",
-      "genres": [],
-      "free": false
-    },
-    {
       "gameKey": "steam:1164250",
       "title": "Model Builder: Complete Edition",
       "salePrice": 4,
@@ -18968,6 +19850,22 @@
       "free": false
     },
     {
+      "gameKey": "steam:1605250",
+      "title": "Moros Protocol",
+      "salePrice": 12.17,
+      "normalPrice": 24.99,
+      "storeName": "GameBillet",
+      "dealId": "F7jvchYv5tuwSLMiXn%2F2uOuoOzt9DEst5Fze3%2BfTr2g%3D",
+      "dealScore": 70,
+      "recommendation": "80% positive · 767 reviews · 51% off",
+      "genres": [
+        "Action",
+        "Indie",
+        "Strategy"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:2680280",
       "title": "PAPERHEAD",
       "salePrice": 12.45,
@@ -18975,7 +19873,7 @@
       "storeName": "GameBillet",
       "dealId": "dQroVbaZYjlfgdLWvvTQSITkRWKRQjs7rcKj3cCXzgc%3D",
       "dealScore": 70,
-      "recommendation": "94% positive · 405 reviews · 38% off",
+      "recommendation": "94% positive · 414 reviews · 38% off",
       "genres": [
         "Action",
         "Indie"
@@ -19059,7 +19957,7 @@
       "storeName": "IndieGala",
       "dealId": "VewGEfUhjGsy1AXZNXprZ58VdTndUbxypB8CE4%2BYOxk%3D",
       "dealScore": 70,
-      "recommendation": "78% positive · 273 reviews · 65% off",
+      "recommendation": "78% positive · 274 reviews · 65% off",
       "genres": [
         "Adventure",
         "Casual",
@@ -19154,6 +20052,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:843260",
+      "title": "The Bard's Tale Trilogy",
+      "salePrice": 7.49,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "nMqcnhUDojzmex%2BQi6uEUbwAU6WM23qWMpFjOQAjAMU%3D",
+      "dealScore": 70,
+      "recommendation": "95% positive · 1.2K reviews · 50% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "title:the fall of the dungeon guardians",
       "title": "The Fall of the Dungeon Guardians",
       "salePrice": 7.99,
@@ -19182,6 +20092,18 @@
         "RPG",
         "Simulation"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2245180",
+      "title": "VORON: Ravens Story",
+      "salePrice": 4.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "PGVb94X5eArRmWaqQKDrcTo7QLFelaGbuezcwCWDYSU%3D",
+      "dealScore": 70,
+      "recommendation": "90% positive · 206 reviews · 50% off",
+      "genres": [],
       "free": false
     },
     {
@@ -19312,14 +20234,26 @@
       "free": false
     },
     {
+      "gameKey": "steam:2164310",
+      "title": "Escape From Lavender Island",
+      "salePrice": 4.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "5uOJBSJ4b4Z0VCuyl%2FVVGDIW%2FATuTjv2cwlXXIbl2Rw%3D",
+      "dealScore": 69,
+      "recommendation": "97% positive · 201 reviews · 50% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1270850",
       "title": "Karma City Police",
-      "salePrice": 1.31,
+      "salePrice": 1.21,
       "normalPrice": 11.99,
       "storeName": "GameBillet",
       "dealId": "S10%2FjeF92E%2FAsrjIWz00cVZVFyS9nwEO2t4u3UEJaWs%3D",
       "dealScore": 69,
-      "recommendation": "81% positive · 104 reviews · 89% off",
+      "recommendation": "81% positive · 104 reviews · 90% off",
       "genres": [
         "Adventure",
         "RPG",
@@ -19352,34 +20286,35 @@
       "dealId": "yX3FFmuInqExAFmwHFwB3QczNTSAgRTDqMmcEu8mOnQ%3D",
       "dealScore": 69,
       "recommendation": "84% positive · 130 reviews · 52% off",
-      "genres": [],
+      "genres": [
+        "Action",
+        "Adventure",
+        "Casual",
+        "Indie"
+      ],
       "free": false
     },
     {
-      "gameKey": "steam:1605250",
-      "title": "Moros Protocol",
-      "salePrice": 12.56,
-      "normalPrice": 24.99,
-      "storeName": "Gamesplanet",
-      "dealId": "FEH294bLfVPShkps8qbceE9OPVZOWZ%2BefIeLNb3FiuU%3D",
+      "gameKey": "steam:1628610",
+      "title": "Paquerette Down the Bunburrows",
+      "salePrice": 6.59,
+      "normalPrice": 11.99,
+      "storeName": "GOG",
+      "dealId": "nxg%2FLS0lZTxejW31urXmf0leoUzZYajC8mGZHD9Sggg%3D",
       "dealScore": 69,
-      "recommendation": "80% positive · 767 reviews · 50% off",
-      "genres": [
-        "Action",
-        "Indie",
-        "Strategy"
-      ],
+      "recommendation": "96% positive · 1.1K reviews · 45% off",
+      "genres": [],
       "free": false
     },
     {
       "gameKey": "steam:3199650",
       "title": "Pathologic 3",
-      "salePrice": 21.26,
+      "salePrice": 21.16,
       "normalPrice": 34.99,
       "storeName": "GameBillet",
       "dealId": "sXpTkFTijc5472weME5E%2BDeF2JANfrbN4iOu89amNRw%3D",
       "dealScore": 69,
-      "recommendation": "85% positive · 1.1K reviews · 39% off",
+      "recommendation": "85% positive · 1.1K reviews · 40% off",
       "genres": [
         "Adventure",
         "Indie",
@@ -19450,6 +20385,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1031460",
+      "title": "Sail Forth",
+      "salePrice": 9.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "Sd3Y8trQVvN278mm%2BOIyjotiJ%2BpiJol8AIGmhE8AZoQ%3D",
+      "dealScore": 69,
+      "recommendation": "92% positive · 602 reviews · 50% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1358530",
       "title": "Saint Kotar",
       "salePrice": 2.18,
@@ -19465,6 +20412,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:2289750",
+      "title": "Super Fantasy Kingdom",
+      "salePrice": 9.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "qo5pftWu8oVMzf%2F7L3sEyMUYrhB5KJvXv7px9SKEspA%3D",
+      "dealScore": 69,
+      "recommendation": "87% positive · 3.1K reviews · 50% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:3109280",
       "title": "Super Loco World - Cozy Train Automation",
       "salePrice": 3.85,
@@ -19473,7 +20432,11 @@
       "dealId": "L0put9yUR8%2FXc6Pt8b%2BbgK740OukropguKwiTHhQVvg%3D",
       "dealScore": 69,
       "recommendation": "75% positive · 336 reviews · 61% off",
-      "genres": [],
+      "genres": [
+        "Indie",
+        "Simulation",
+        "Strategy"
+      ],
       "free": false
     },
     {
@@ -19511,6 +20474,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1361010",
+      "title": "Vampires Dawn 3 - The Crimson Realm",
+      "salePrice": 1.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "2sZA04nU9OqoEcJTilkkUTHaKOf0bW8n7tjifDp7Zrw%3D",
+      "dealScore": 69,
+      "recommendation": "80% positive · 309 reviews · 80% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:244890",
       "title": "Velocity Ultra",
       "salePrice": 0.86,
@@ -19519,6 +20494,30 @@
       "dealId": "pl0WjmmjA8hvtzi8%2BawghWzvmlstWCa3IV%2Bq6G7n8KY%3D",
       "dealScore": 69,
       "recommendation": "80% positive · 142 reviews · 91% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2489330",
+      "title": "Whiskerwood",
+      "salePrice": 14.99,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "Ni6IQRHYcyZnf52IiPQeeTBsOAobCjofmfOGNpJM290%3D",
+      "dealScore": 69,
+      "recommendation": "93% positive · 1.8K reviews · 50% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2572040",
+      "title": "Woodo",
+      "salePrice": 11.89,
+      "normalPrice": 16.99,
+      "storeName": "Epic Games Store",
+      "dealId": "6Ey%2FrgBAMiSrpuXoSxudSRwnVxfXDHUZmEMHxJzzDOM%3D",
+      "dealScore": 69,
+      "recommendation": "98% positive · 1.2K reviews · 30% off",
       "genres": [],
       "free": false
     },
@@ -19548,6 +20547,30 @@
       "genres": [
         "Simulation"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2560240",
+      "title": "Biped 2",
+      "salePrice": 6.75,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "9UZl21UAzr7cN5kZtzF3OqgEU1SX8DZ5WHiXK7MiB6g%3D",
+      "dealScore": 68,
+      "recommendation": "72% positive · 848 reviews · 55% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:787740",
+      "title": "Construction Simulator 2 US - Pocket Edition",
+      "salePrice": 3.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "2um%2FrOV3EBXhdgXqbQaXVb5lVDGNB2NYHD4an%2FScpxY%3D",
+      "dealScore": 68,
+      "recommendation": "75% positive · 588 reviews · 60% off",
+      "genres": [],
       "free": false
     },
     {
@@ -19778,6 +20801,53 @@
       "free": false
     },
     {
+      "gameKey": "steam:1623880",
+      "title": "Noob - The Factionless",
+      "salePrice": 11.99,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "yUoWRtKF1HTtIgRGaHffH9N%2FStTbAYVyxedOvo3jNDc%3D",
+      "dealScore": 68,
+      "recommendation": "79% positive · 356 reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2929250",
+      "title": "over the hill",
+      "salePrice": 15.74,
+      "normalPrice": 24.99,
+      "storeName": "Fanatical",
+      "dealId": "oS1DEGS%2FgoG76hCxarz4Y8YGb8nfRRM7vqwEupYSre4%3D",
+      "dealScore": 68,
+      "recommendation": "92% positive · 731 reviews · 37% off",
+      "genres": [
+        "Adventure",
+        "Casual",
+        "Indie",
+        "Racing",
+        "Simulation",
+        "Sports"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2601940",
+      "title": "Pinball Spire",
+      "salePrice": 6.93,
+      "normalPrice": 14.99,
+      "storeName": "GameBillet",
+      "dealId": "pPeGXtO2xzcDeI2cDGynbIIhil9igfEuFop3%2F83TGow%3D",
+      "dealScore": 68,
+      "recommendation": "85% positive · 415 reviews · 54% off",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Simulation"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:1895880",
       "title": "Ratchet and Clank: Rift Apart",
       "salePrice": 34.99,
@@ -19850,6 +20920,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1159680",
+      "title": "Silent Sector",
+      "salePrice": 5.99,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "JTXwlVhvzfUWwWT5h4l8iNpeuKMl%2FOBM9PreIKnKsBw%3D",
+      "dealScore": 68,
+      "recommendation": "82% positive · 109 reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:34870",
       "title": "Sniper Ghost Warrior 2",
       "salePrice": 0.82,
@@ -19860,6 +20942,46 @@
       "recommendation": "70% positive · 4K reviews · 92% off",
       "genres": [
         "Action"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1602540",
+      "title": "Sophia the Traveler",
+      "salePrice": 3.59,
+      "normalPrice": 8.99,
+      "storeName": "GOG",
+      "dealId": "KG7zWRcjKXBQurnY5P9MksVoU4QIpzpvgnN8TuEp6Xg%3D",
+      "dealScore": 68,
+      "recommendation": "76% positive · 314 reviews · 60% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:233350",
+      "title": "Sudeki",
+      "salePrice": 2.99,
+      "normalPrice": 5.99,
+      "storeName": "GOG",
+      "dealId": "tEC8Gdsbq%2BSe5AcieBrr1SVVRuxqLSeqqINiNin0QkE%3D",
+      "dealScore": 68,
+      "recommendation": "91% positive · 929 reviews · 50% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1849820",
+      "title": "Telepath Tactics Liberated",
+      "salePrice": 8.3,
+      "normalPrice": 19.99,
+      "storeName": "GameBillet",
+      "dealId": "VACsmjzBXxDdaPwhlbeAy0KxGmNQtW82HDmLhI5uT0k%3D",
+      "dealScore": 68,
+      "recommendation": "84% positive · 121 reviews · 58% off",
+      "genres": [
+        "Indie",
+        "RPG",
+        "Strategy"
       ],
       "free": false
     },
@@ -19926,7 +21048,7 @@
       "storeName": "GamersGate",
       "dealId": "F1qK9yURohHVGhU43JQw0OEnUh%2FefNkRyAB3MWIYhn4%3D",
       "dealScore": 68,
-      "recommendation": "96% positive · 534 reviews · 25% off",
+      "recommendation": "96% positive · 536 reviews · 25% off",
       "genres": [
         "Adventure",
         "Indie",
@@ -19966,14 +21088,32 @@
       "free": false
     },
     {
+      "gameKey": "steam:1597310",
+      "title": "Airship: Kingdoms Adrift",
+      "salePrice": 12.85,
+      "normalPrice": 29.99,
+      "storeName": "GameBillet",
+      "dealId": "aQ23%2FmjpcM8mmXIk4onLEJzfC7hm5g%2BxEnYbQxqLXus%3D",
+      "dealScore": 67,
+      "recommendation": "75% positive · 904 reviews · 57% off",
+      "genres": [
+        "Action",
+        "Adventure",
+        "RPG",
+        "Simulation",
+        "Strategy"
+      ],
+      "free": false
+    },
+    {
       "gameKey": "steam:1864000",
       "title": "Artis Impact",
-      "salePrice": 11.54,
+      "salePrice": 11.44,
       "normalPrice": 18.99,
       "storeName": "GameBillet",
       "dealId": "QBH2tr0HIZfvRjrG24SgWrgW%2FQWuIPqlbw4lsDlrwzc%3D",
       "dealScore": 67,
-      "recommendation": "92% positive · 438 reviews · 39% off",
+      "recommendation": "92% positive · 438 reviews · 40% off",
       "genres": [
         "Adventure",
         "Casual",
@@ -20013,22 +21153,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:2026820",
-      "title": "Die in the Dungeon",
-      "salePrice": 8.95,
-      "normalPrice": 14.99,
-      "storeName": "GameBillet",
-      "dealId": "kH5fQdnkx2w5Hvo%2F7wv3U9aB41yZN8gYse9OkSNFtgs%3D",
-      "dealScore": 67,
-      "recommendation": "93% positive · 2K reviews · 40% off",
-      "genres": [
-        "Indie",
-        "RPG",
-        "Strategy"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:217790",
       "title": "Dogfight 1942",
       "salePrice": 1.49,
@@ -20039,21 +21163,6 @@
       "recommendation": "80% positive · 709 reviews · 85% off",
       "genres": [
         "Simulation"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:1215940",
-      "title": "Forever Ago",
-      "salePrice": 14.19,
-      "normalPrice": 19.99,
-      "storeName": "GameBillet",
-      "dealId": "3bqIZQKw79d6lqrsY%2BGFyAbKLYlA%2FC81DTp3V5gugUU%3D",
-      "dealScore": 67,
-      "recommendation": "96% positive · 210 reviews · 29% off",
-      "genres": [
-        "Adventure",
-        "Indie"
       ],
       "free": false
     },
@@ -20077,6 +21186,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1876590",
+      "title": "I Am Your Beast",
+      "salePrice": 13.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "k7EbmmzuL6erBiBfznaC2kKzlYi6Gz7FqQ5WnLLftrM%3D",
+      "dealScore": 67,
+      "recommendation": "98% positive · 4.6K reviews · 30% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:2231190",
       "title": "Magical Delicacy",
       "salePrice": 12.29,
@@ -20089,6 +21210,18 @@
         "Adventure",
         "Indie"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1763030",
+      "title": "Master Key",
+      "salePrice": 5.99,
+      "normalPrice": 11.99,
+      "storeName": "GOG",
+      "dealId": "qzESSi8jPkR1D4Nj4wLgquZwhwJvM6lR0WQdD03xs%2BA%3D",
+      "dealScore": 67,
+      "recommendation": "89% positive · 248 reviews · 50% off",
+      "genres": [],
       "free": false
     },
     {
@@ -20121,25 +21254,6 @@
         "Action",
         "Adventure",
         "RPG"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:2929250",
-      "title": "over the hill",
-      "salePrice": 15.74,
-      "normalPrice": 24.99,
-      "storeName": "Fanatical",
-      "dealId": "oS1DEGS%2FgoG76hCxarz4Y8YGb8nfRRM7vqwEupYSre4%3D",
-      "dealScore": 67,
-      "recommendation": "92% positive · 598 reviews · 37% off",
-      "genres": [
-        "Adventure",
-        "Casual",
-        "Indie",
-        "Racing",
-        "Simulation",
-        "Sports"
       ],
       "free": false
     },
@@ -20212,30 +21326,14 @@
       "free": false
     },
     {
-      "gameKey": "steam:1849820",
-      "title": "Telepath Tactics Liberated",
-      "salePrice": 8.4,
-      "normalPrice": 19.99,
-      "storeName": "GameBillet",
-      "dealId": "VACsmjzBXxDdaPwhlbeAy0KxGmNQtW82HDmLhI5uT0k%3D",
+      "gameKey": "steam:352720",
+      "title": "The Universim",
+      "salePrice": 14.99,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "uyl3I7z6KSfIVHQzTc8NR1Rl2TV8VLK7h3sVvLXsOG0%3D",
       "dealScore": 67,
-      "recommendation": "84% positive · 121 reviews · 58% off",
-      "genres": [
-        "Indie",
-        "RPG",
-        "Strategy"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:2531310",
-      "title": "The Last of Us Part II Remastered",
-      "salePrice": 33.99,
-      "normalPrice": 49.99,
-      "storeName": "GameBillet",
-      "dealId": "olF3xxyAuYQRZnRQm45DCE%2F3IoheBH3FiSWUhtD7eBA%3D",
-      "dealScore": 67,
-      "recommendation": "90% positive · 15K reviews · 32% off",
+      "recommendation": "79% positive · 5.2K reviews · 50% off",
       "genres": [],
       "free": false
     },
@@ -20317,18 +21415,15 @@
       "free": false
     },
     {
-      "gameKey": "steam:351340",
-      "title": "Belladonna",
-      "salePrice": 0.7,
-      "normalPrice": 6.99,
-      "storeName": "GreenManGaming",
-      "dealId": "jnWrtohDi%2FmrM5WlAaSSFjB4m8BmmvnRFFZL8EU4lc8%3D",
+      "gameKey": "steam:1173220",
+      "title": "Bleak Faith: Forsaken",
+      "salePrice": 14.99,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "6sVSZC9tIWn%2Bvw9qKe9x%2FxKZw8GhNY5rqADFXT1dL2M%3D",
       "dealScore": 66,
-      "recommendation": "70% positive · 477 reviews · 90% off",
-      "genres": [
-        "Adventure",
-        "Indie"
-      ],
+      "recommendation": "75% positive · 2K reviews · 50% off",
+      "genres": [],
       "free": false
     },
     {
@@ -20348,15 +21443,43 @@
       "free": false
     },
     {
-      "gameKey": "steam:335300",
-      "title": "DARK SOULS II: Scholar of the First Sin",
-      "salePrice": 24.99,
-      "normalPrice": 39.99,
-      "storeName": "GameBillet",
-      "dealId": "IksM1Y%2FkvDF5Pb%2FR%2B8ZMF3Blm3vLo7hk%2BfAfd1Pj2A8%3D",
+      "gameKey": "steam:1631470",
+      "title": "Critter Cove",
+      "salePrice": 16.25,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "88I0VY6NpMbR0odgMStVVmzlIZQnCBsUoz7ek3wwcWk%3D",
       "dealScore": 66,
-      "recommendation": "83% positive · 35.2K reviews · 38% off",
+      "recommendation": "94% positive · 1.7K reviews · 35% off",
       "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1885110",
+      "title": "Cryptmaster",
+      "salePrice": 16.25,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "U8TUlEJLqbhRIUF%2FdiFWbmJvhFYcr3%2FPutBHdH2gMC4%3D",
+      "dealScore": 66,
+      "recommendation": "94% positive · 1.7K reviews · 35% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2026820",
+      "title": "Die in the Dungeon",
+      "salePrice": 8.99,
+      "normalPrice": 14.99,
+      "storeName": "WinGameStore",
+      "dealId": "p%2BMoTzpiKXxNOIotjP4OGucZQofeCc6WsLoDRDCoifo%3D",
+      "dealScore": 66,
+      "recommendation": "93% positive · 2K reviews · 40% off",
+      "genres": [
+        "Indie",
+        "RPG",
+        "Strategy"
+      ],
       "free": false
     },
     {
@@ -20375,14 +21498,46 @@
       "free": false
     },
     {
-      "gameKey": "steam:2416450",
-      "title": "MOUSE: P.I. For Hire",
-      "salePrice": 22.49,
-      "normalPrice": 29.99,
-      "storeName": "Fanatical",
-      "dealId": "tm7ou7g%2Fyc7ID9ZGzwYGAUW6BzVjI9zTb88B0MER7kc%3D",
+      "gameKey": "steam:1215940",
+      "title": "Forever Ago",
+      "salePrice": 14.19,
+      "normalPrice": 19.99,
+      "storeName": "GameBillet",
+      "dealId": "3bqIZQKw79d6lqrsY%2BGFyAbKLYlA%2FC81DTp3V5gugUU%3D",
       "dealScore": 66,
-      "recommendation": "93% positive · 9.3K reviews · 25% off",
+      "recommendation": "95% positive · 217 reviews · 29% off",
+      "genres": [
+        "Adventure",
+        "Indie"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2168260",
+      "title": "Forgotten Seas",
+      "salePrice": 9.7,
+      "normalPrice": 24.99,
+      "storeName": "GameBillet",
+      "dealId": "7ViDk%2FiR7Qxdj%2F9vUXApY%2BrRPV8kdgcqCjgFf1Yu31c%3D",
+      "dealScore": 66,
+      "recommendation": "75% positive · 480 reviews · 61% off",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Indie",
+        "Simulation"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:329970",
+      "title": "KeeperRL",
+      "salePrice": 9.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "4bfnOkTQlv9V7lcPhvcdqRQOIU7zpbltO9%2FRseLtoak%3D",
+      "dealScore": 66,
+      "recommendation": "83% positive · 1.7K reviews · 50% off",
       "genres": [],
       "free": false
     },
@@ -20415,6 +21570,30 @@
         "Indie",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:816430",
+      "title": "Radical Relocation",
+      "salePrice": 1.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "S7wllkoZrPslDYdzGrasoB0BBKOlbpZpYNe5v93yxPI%3D",
+      "dealScore": 66,
+      "recommendation": "74% positive · 258 reviews · 80% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2764460",
+      "title": "Sandustry",
+      "salePrice": 9.75,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "N6YNrRJ7Bu6kCWOW8DIQQ8LIsVkFnTqF2NA5YUQfAkM%3D",
+      "dealScore": 66,
+      "recommendation": "97% positive · 3.3K reviews · 35% off",
+      "genres": [],
       "free": false
     },
     {
@@ -20476,14 +21655,14 @@
       "free": false
     },
     {
-      "gameKey": "steam:1952540",
-      "title": "Voltaire - The Vegan Vampire",
-      "salePrice": 7.99,
+      "gameKey": "title:the falconeer",
+      "title": "The Falconeer",
+      "salePrice": 9.99,
       "normalPrice": 19.99,
-      "storeName": "IndieGala",
-      "dealId": "FZqpybEukzL7WfX41MyvZ8Dti889CQkjTdmXr6%2Bi%2BkQ%3D",
+      "storeName": "GOG",
+      "dealId": "IkKSepjia%2FeHsE%2FIbFz8PyRC24mnMk6ioWSIVEUNCMg%3D",
       "dealScore": 66,
-      "recommendation": "76% positive · 113 reviews · 60% off",
+      "recommendation": "80% positive · 353 reviews · 50% off",
       "genres": [],
       "free": false
     },
@@ -20532,30 +21711,15 @@
       "free": false
     },
     {
-      "gameKey": "steam:1610889",
-      "title": "Mega Man Cyber Wave Pack",
-      "salePrice": 41.95,
-      "normalPrice": 79.99,
-      "storeName": "GameBillet",
-      "dealId": "MebjNmDrRnVNDVKpsk5lGMUMFrqYhxLSrut6hy7sQwA%3D",
+      "gameKey": "steam:1363080",
+      "title": "Manor Lords",
+      "salePrice": 25.99,
+      "normalPrice": 39.99,
+      "storeName": "GOG",
+      "dealId": "nizgC7KZpfzhJqYa4SYtQqiD31kj7%2FHbsAlZEDJpkTE%3D",
       "dealScore": 65,
-      "recommendation": "90% positive · 2.5K reviews · 48% off",
+      "recommendation": "86% positive · 40.9K reviews · 35% off",
       "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "steam:2582320",
-      "title": "Mixtape",
-      "salePrice": 15.61,
-      "normalPrice": 19.99,
-      "storeName": "Fanatical",
-      "dealId": "Q83lXPkTODuRDL3f3U7p3n%2FbmP1p%2BmnzvnjuAmIrbBc%3D",
-      "dealScore": 65,
-      "recommendation": "85% positive · 3.8K reviews · 22% off",
-      "genres": [
-        "Adventure",
-        "Indie"
-      ],
       "free": false
     },
     {
@@ -20597,6 +21761,18 @@
         "RPG",
         "Simulation"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:4174310",
+      "title": "Retail Hell",
+      "salePrice": 5.35,
+      "normalPrice": 7.99,
+      "storeName": "Fanatical",
+      "dealId": "BCiod5kWhMddtv65IA%2Bqq1yczkUTDKnO5awWEwlnAbc%3D",
+      "dealScore": 65,
+      "recommendation": "95% positive · 582 reviews · 33% off",
+      "genres": [],
       "free": false
     },
     {
@@ -20693,6 +21869,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1583520",
+      "title": "Under The Island",
+      "salePrice": 14.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "AP9n%2BChxyZ1znY5fxH3JhqIGkU%2BP%2F81iDvKRmC0JkYs%3D",
+      "dealScore": 65,
+      "recommendation": "92% positive · 461 reviews · 25% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:2463980",
       "title": "Werewolf: The Apocalypse - Purgatory",
       "salePrice": 6.15,
@@ -20717,6 +21905,18 @@
       "dealId": "YPuMrldr2r74FBcrwDNpz0NDdz9UlwgsMjiIStTDC98%3D",
       "dealScore": 65,
       "recommendation": "92% positive · 4.9K reviews · 37% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2393920",
+      "title": "Angeline Era",
+      "salePrice": 19.99,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "Bx35JDvzMwOx9K4m3jmlyPjL1g6mOuUlZs0v29eZtPQ%3D",
+      "dealScore": 64,
+      "recommendation": "95% positive · 659 reviews · 20% off",
       "genres": [],
       "free": false
     },
@@ -20750,10 +21950,10 @@
     {
       "gameKey": "steam:2088770",
       "title": "Deck of Souls",
-      "salePrice": 5.99,
+      "salePrice": 6.05,
       "normalPrice": 11.99,
-      "storeName": "IndieGala",
-      "dealId": "qrPZ0xo9H3z%2B125Ke9ol3bY%2BnTQQ80zgCXnWYTwqIuA%3D",
+      "storeName": "GameBillet",
+      "dealId": "FLw84D1jGdECBRUwC5sqKqI51frI5kffV2S9ihfz%2FXI%3D",
       "dealScore": 64,
       "recommendation": "84% positive · 153 reviews · 50% off",
       "genres": [],
@@ -20768,6 +21968,18 @@
       "dealId": "kFRaSCCPCXB%2BknvtQDvWAxMBp9K7pW2UyN2AHWza4ec%3D",
       "dealScore": 64,
       "recommendation": "84% positive · 1.2K reviews · 42% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1747890",
+      "title": "Demon Turf: Neon Splash",
+      "salePrice": 2.99,
+      "normalPrice": 4.99,
+      "storeName": "GOG",
+      "dealId": "V02TeNsW4cJgzr6785zrEGvaF0PAAWIiI7kz6PPjx6Q%3D",
+      "dealScore": 64,
+      "recommendation": "96% positive · 177 reviews · 40% off",
       "genres": [],
       "free": false
     },
@@ -20800,6 +22012,30 @@
       "free": false
     },
     {
+      "gameKey": "steam:220200",
+      "title": "Kerbal Space Program",
+      "salePrice": 33.14,
+      "normalPrice": 39.99,
+      "storeName": "GameBillet",
+      "dealId": "WZ1vEtGYFEoftOBrFLl4JnVzQP7hBrt9akphR0i2S%2Fw%3D",
+      "dealScore": 64,
+      "recommendation": "96% positive · 84.7K reviews · 17% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1685870",
+      "title": "Near-Mage",
+      "salePrice": 11.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "jUvZXNJVrU8%2BegfjRN4v%2FCvS%2BTVlmW8C0mfMWivLIr8%3D",
+      "dealScore": 64,
+      "recommendation": "89% positive · 183 reviews · 40% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:3590560",
       "title": "NUTMEG! A Nostalgic Deckbuilding Football Manager",
       "salePrice": 14.99,
@@ -20818,7 +22054,7 @@
     {
       "gameKey": "steam:2226730",
       "title": "OVIS LOOP",
-      "salePrice": 9.84,
+      "salePrice": 9.79,
       "normalPrice": 16.99,
       "storeName": "GameBillet",
       "dealId": "r26k8sKHbE6Eup9KhSc4iGs2vPR72LWAu06%2B8wWt578%3D",
@@ -20843,6 +22079,18 @@
         "Simulation",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1144770",
+      "title": "Sludge Life",
+      "salePrice": 2.99,
+      "normalPrice": 14.99,
+      "storeName": "GOG",
+      "dealId": "XL4up40CSSqeCDEa3v67AAAzYoSCgwGDJQ%2FVCsDKnEg%3D",
+      "dealScore": 64,
+      "recommendation": "95% positive · 1.9K reviews · 80% off",
+      "genres": [],
       "free": false
     },
     {
@@ -20879,6 +22127,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:2479770",
+      "title": "Troublemaker 2: Beyond Dream",
+      "salePrice": 15.5,
+      "normalPrice": 24.99,
+      "storeName": "GameBillet",
+      "dealId": "hq2vJ7Mpwv26yzOegrA7M74Pt9Nazo9%2FApIWYlpY%2BVk%3D",
+      "dealScore": 64,
+      "recommendation": "95% positive · 143 reviews · 38% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:957660",
       "title": "Catizens",
       "salePrice": 9.04,
@@ -20907,6 +22167,30 @@
       "free": false
     },
     {
+      "gameKey": "steam:2052160",
+      "title": "Dont Die, Collect Loot",
+      "salePrice": 5.74,
+      "normalPrice": 9.99,
+      "storeName": "GameBillet",
+      "dealId": "FZAdwuOZLRqxKw6YAQUKyrxFNRvTHDNWIJAJQrfASwo%3D",
+      "dealScore": 63,
+      "recommendation": "91% positive · 160 reviews · 43% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1372000",
+      "title": "Flowstone Saga",
+      "salePrice": 8.99,
+      "normalPrice": 17.99,
+      "storeName": "GOG",
+      "dealId": "p9w4HrN14NuOwWk1j5FzyNXxKSQ4NxuZLZ%2FmQnSUbFE%3D",
+      "dealScore": 63,
+      "recommendation": "81% positive · 172 reviews · 50% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:3357960",
       "title": "KuloNiku: Bowl Up!",
       "salePrice": 9.9,
@@ -20923,19 +22207,30 @@
       "free": false
     },
     {
-      "gameKey": "steam:1574580",
-      "title": "Strange Horticulture",
-      "salePrice": 13.19,
-      "normalPrice": 15.99,
+      "gameKey": "steam:2582320",
+      "title": "Mixtape",
+      "salePrice": 16.54,
+      "normalPrice": 19.99,
       "storeName": "GameBillet",
-      "dealId": "Dy0hefHF%2FLz035loXusv6d3gZi6FAj%2BD7n3K2GxfYY0%3D",
+      "dealId": "Ci8ROdhtGj33qNReh%2FE2uSy8SvZil%2Bm5RdBMotvPMuI%3D",
       "dealScore": 63,
-      "recommendation": "95% positive · 10.1K reviews · 18% off",
+      "recommendation": "85% positive · 3.8K reviews · 17% off",
       "genres": [
         "Adventure",
-        "Indie",
-        "Simulation"
+        "Indie"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1058130",
+      "title": "Queen's Wish: The Conqueror",
+      "salePrice": 9.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "e%2B54fWGTop6EMz7NKrAWFkUf80kF04HucqQDPxSLbKw%3D",
+      "dealScore": 63,
+      "recommendation": "80% positive · 277 reviews · 50% off",
+      "genres": [],
       "free": false
     },
     {
@@ -20953,18 +22248,6 @@
         "Sports",
         "Strategy"
       ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:2287560",
-      "title": "Vengeance of Mr. Peppermint",
-      "salePrice": 7.99,
-      "normalPrice": 19.99,
-      "storeName": "IndieGala",
-      "dealId": "CY2l1RGgbn7Yo84k4IQqOfmLHZu0CKFfkScNkWQ8FKk%3D",
-      "dealScore": 63,
-      "recommendation": "70% positive · 101 reviews · 60% off",
-      "genres": [],
       "free": false
     },
     {
@@ -20998,14 +22281,14 @@
       "free": false
     },
     {
-      "gameKey": "steam:2281820",
-      "title": "Evolings",
-      "salePrice": 1.94,
+      "gameKey": "steam:2929540",
+      "title": "Dragon Ruins",
+      "salePrice": 2.49,
       "normalPrice": 4.99,
-      "storeName": "GameBillet",
-      "dealId": "DB8jeB1hN1nh3K3ghgZYRVFRwUgN0nYrShbxG56HDiI%3D",
+      "storeName": "GOG",
+      "dealId": "MTlIlcOCDCVL9Y1jK0rLEJ%2FH4a%2BBTKzPzjFkGQujAN0%3D",
       "dealScore": 62,
-      "recommendation": "77% positive · 379 reviews · 61% off",
+      "recommendation": "90% positive · 373 reviews · 50% off",
       "genres": [],
       "free": false
     },
@@ -21042,26 +22325,14 @@
       "free": false
     },
     {
-      "gameKey": "steam:1811330",
-      "title": "Lord Ambermaze",
-      "salePrice": 9.38,
-      "normalPrice": 14.99,
-      "storeName": "IndieGala",
-      "dealId": "wMHAZL5XmG444BzP0kHEGFCxl5hb2NYeWwCgeDrJQps%3D",
+      "gameKey": "steam:2426530",
+      "title": "Nova Roma",
+      "salePrice": 22.49,
+      "normalPrice": 29.99,
+      "storeName": "GOG",
+      "dealId": "g7XHU5QATPYbXNaER8xBlNfGRI0beWUH%2BGdREw%2F3RzA%3D",
       "dealScore": 62,
-      "recommendation": "91% positive · 131 reviews · 37% off",
-      "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "steam:2742830",
-      "title": "Monster Train 2",
-      "salePrice": 20.69,
-      "normalPrice": 24.99,
-      "storeName": "GameBillet",
-      "dealId": "vXiHbT9rvu7rA5FGu8RzLaPAglfrvFNr3Lsd8KPde2E%3D",
-      "dealScore": 62,
-      "recommendation": "95% positive · 5.1K reviews · 17% off",
+      "recommendation": "94% positive · 1.5K reviews · 25% off",
       "genres": [],
       "free": false
     },
@@ -21092,6 +22363,22 @@
         "Racing",
         "Simulation",
         "Sports"
+      ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1574580",
+      "title": "Strange Horticulture",
+      "salePrice": 12.59,
+      "normalPrice": 14.99,
+      "storeName": "GameBillet",
+      "dealId": "Dy0hefHF%2FLz035loXusv6d3gZi6FAj%2BD7n3K2GxfYY0%3D",
+      "dealScore": 62,
+      "recommendation": "95% positive · 10.1K reviews · 16% off",
+      "genres": [
+        "Adventure",
+        "Indie",
+        "Simulation"
       ],
       "free": false
     },
@@ -21139,14 +22426,14 @@
       "free": false
     },
     {
-      "gameKey": "steam:743640",
-      "title": "Achievement Clicker",
-      "salePrice": 0.49,
-      "normalPrice": 0.99,
-      "storeName": "Steam",
-      "dealId": "DSAdxcda0UrT7pHFKEjJh78eIW756oRDqwB4inoIry8%3D",
-      "dealScore": 61,
-      "recommendation": "81% positive · 1.5K reviews · 51% off",
+      "gameKey": "title:zero parades for dead spies",
+      "title": "ZERO PARADES: For Dead Spies",
+      "salePrice": 31.99,
+      "normalPrice": 39.99,
+      "storeName": "GOG",
+      "dealId": "fDWKZ5RJHcaVRWGOJV4lMDxvTuan0X7hBxafhf4r0Sc%3D",
+      "dealScore": 62,
+      "recommendation": "86% positive · 1.7K reviews · 20% off",
       "genres": [],
       "free": false
     },
@@ -21167,6 +22454,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:3293490",
+      "title": "Dragon Ruins II",
+      "salePrice": 5.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "QnEEB4aXCG60lesP2pyHk%2BmomGLORSXRcvAb0Amj8%2Fw%3D",
+      "dealScore": 61,
+      "recommendation": "86% positive · 212 reviews · 40% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:2300320",
       "title": "Farming Simulator 25",
       "salePrice": 22.49,
@@ -21176,39 +22475,6 @@
       "dealScore": 61,
       "recommendation": "86% positive · 16.1K reviews · 25% off",
       "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "steam:2168260",
-      "title": "Forgotten Seas",
-      "salePrice": 12.49,
-      "normalPrice": 24.99,
-      "storeName": "WinGameStore",
-      "dealId": "225AyU1OP2kgvs04XDZyxm9b0iZ8xdeBPbOxnPIIXjc%3D",
-      "dealScore": 61,
-      "recommendation": "75% positive · 480 reviews · 50% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "Indie",
-        "Simulation"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:557600",
-      "title": "Gorogoa",
-      "salePrice": 11.89,
-      "normalPrice": 14.99,
-      "storeName": "Fanatical",
-      "dealId": "SD70nWqSNznnZqn1WcpHO%2FGrSN7QFbAGuecPzPKa6f4%3D",
-      "dealScore": 61,
-      "recommendation": "95% positive · 5.6K reviews · 21% off",
-      "genres": [
-        "Adventure",
-        "Casual",
-        "Indie"
-      ],
       "free": false
     },
     {
@@ -21233,22 +22499,6 @@
       "dealScore": 61,
       "recommendation": "93% positive · 139 reviews · 50% off",
       "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "steam:2601940",
-      "title": "Pinball Spire",
-      "salePrice": 8.99,
-      "normalPrice": 14.99,
-      "storeName": "WinGameStore",
-      "dealId": "N%2FYLtkNa1vDduFpPP57DzjRdgfY0Sy9WcX26%2FE7I8qs%3D",
-      "dealScore": 61,
-      "recommendation": "85% positive · 415 reviews · 40% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "Simulation"
-      ],
       "free": false
     },
     {
@@ -21285,6 +22535,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:3501540",
+      "title": "Spiritstead",
+      "salePrice": 6.49,
+      "normalPrice": 9.99,
+      "storeName": "Fanatical",
+      "dealId": "y7u7fyM7V4QpITnHxzlbKkEzMp%2Fbjr76mcBQENdk83E%3D",
+      "dealScore": 61,
+      "recommendation": "84% positive · 163 reviews · 35% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1573100",
       "title": "Subterrain: Mines of Titan",
       "salePrice": 10.99,
@@ -21300,21 +22562,15 @@
       "free": false
     },
     {
-      "gameKey": "steam:1597310",
-      "title": "Airship: Kingdoms Adrift",
-      "salePrice": 16.49,
-      "normalPrice": 29.99,
-      "storeName": "WinGameStore",
-      "dealId": "e4pMmDkWIB%2BNZ5h1Mo9rCdqFCsl2wj9T4E2BNqAUwlY%3D",
-      "dealScore": 60,
-      "recommendation": "75% positive · 904 reviews · 45% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "RPG",
-        "Simulation",
-        "Strategy"
-      ],
+      "gameKey": "steam:1315320",
+      "title": "The Necromancers Tale",
+      "salePrice": 18.75,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "oOn3ZSnDpy3YNoWNyuMljuppxURsZwlu6RGO6XkAhtE%3D",
+      "dealScore": 61,
+      "recommendation": "91% positive · 966 reviews · 25% off",
+      "genres": [],
       "free": false
     },
     {
@@ -21326,6 +22582,18 @@
       "dealId": "GD%2BaQrje2pSOBytiWdFwmAdiOSSv8Y9ME771pElEccA%3D",
       "dealScore": 60,
       "recommendation": "70% positive · 1.5K reviews · 45% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2000760",
+      "title": "Boiling Point: Road to Hell",
+      "salePrice": 4.99,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "perIy4jveBiMwWYcZZkHHdRCvnzryrhPauu3YHFKX68%3D",
+      "dealScore": 60,
+      "recommendation": "72% positive · 130 reviews · 50% off",
       "genres": [],
       "free": false
     },
@@ -21359,21 +22627,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:1497440",
-      "title": "COCOON",
-      "salePrice": 20.69,
-      "normalPrice": 24.99,
-      "storeName": "GameBillet",
-      "dealId": "1Sk3yvC9wqFkq%2FYLsLp33UlLYicGoU%2BZx7uZ5FXzrKw%3D",
-      "dealScore": 60,
-      "recommendation": "93% positive · 3.9K reviews · 17% off",
-      "genres": [
-        "Adventure",
-        "Indie"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:3484940",
       "title": "Curse of Pirates",
       "salePrice": 7.04,
@@ -21382,7 +22635,11 @@
       "dealId": "HOfel93Sq9Aiwa7nVNWZG96rzyja67mwDFzDMsWGrN4%3D",
       "dealScore": 60,
       "recommendation": "82% positive · 135 reviews · 30% off",
-      "genres": [],
+      "genres": [
+        "Action",
+        "Indie",
+        "RPG"
+      ],
       "free": false
     },
     {
@@ -21400,6 +22657,18 @@
         "Simulation",
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2484130",
+      "title": "Fruitbus",
+      "salePrice": 16.25,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "rNPmeLBojvQved8%2BAxse54K4O%2BY5mK0Hdi7gZH%2FnSX4%3D",
+      "dealScore": 60,
+      "recommendation": "86% positive · 973 reviews · 35% off",
+      "genres": [],
       "free": false
     },
     {
@@ -21448,6 +22717,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:1845670",
+      "title": "Islands of the Caliph",
+      "salePrice": 6.49,
+      "normalPrice": 9.99,
+      "storeName": "GOG",
+      "dealId": "fPxU94g4hLRuEatc8d9RlqJR8WMI0rv%2BCCivKVnX1f4%3D",
+      "dealScore": 60,
+      "recommendation": "88% positive · 276 reviews · 35% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:1714510",
       "title": "Kusan: City of Wolves",
       "salePrice": 12.39,
@@ -21479,6 +22760,18 @@
       "free": false
     },
     {
+      "gameKey": "steam:465490",
+      "title": "Stellar Tactics",
+      "salePrice": 17.49,
+      "normalPrice": 24.99,
+      "storeName": "GOG",
+      "dealId": "rj9OXTzLCij1EVRWifBZVxc5IYNTmtCnVLeti5Bq5Z0%3D",
+      "dealScore": 60,
+      "recommendation": "77% positive · 1.7K reviews · 30% off",
+      "genres": [],
+      "free": false
+    },
+    {
       "gameKey": "steam:3333700",
       "title": "The Royal Writ",
       "salePrice": 9.74,
@@ -21490,6 +22783,30 @@
       "genres": [
         "Strategy"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:3325500",
+      "title": "Worldwide Rush",
+      "salePrice": 11.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "RfJlENyzFdL3oMxUWl8OxledrOcI2%2BEIFEHZ%2Fgjl2ms%3D",
+      "dealScore": 60,
+      "recommendation": "77% positive · 568 reviews · 40% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:1416960",
+      "title": "Everafter Falls",
+      "salePrice": 12.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "am4Q2jYgUvLlHRXCrmBtbbd3v2trDzXhaKNigMK55xI%3D",
+      "dealScore": 59,
+      "recommendation": "86% positive · 439 reviews · 35% off",
+      "genres": [],
       "free": false
     },
     {
@@ -21552,26 +22869,14 @@
       "free": false
     },
     {
-      "gameKey": "steam:3057670",
-      "title": "Pluto",
-      "salePrice": 14.39,
-      "normalPrice": 17.99,
-      "storeName": "IndieGala",
-      "dealId": "iaxj2RzVb3IG6%2BQVsq%2FGTDDtlCvZCBp4%2FpmE0HfqL2U%3D",
+      "gameKey": "steam:1111930",
+      "title": "Underspace",
+      "salePrice": 11.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "2zIaO7nnUn4%2B%2F1Dx4fS0RQnXDtcaAAhXfEoy9DBWJ6s%3D",
       "dealScore": 59,
-      "recommendation": "93% positive · 518 reviews · 20% off",
-      "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "steam:3501540",
-      "title": "Spiritstead",
-      "salePrice": 7.49,
-      "normalPrice": 9.99,
-      "storeName": "Gamesplanet",
-      "dealId": "uPyMU2SlM30Gzo%2FvAy0xpOdPL6nBwJUZf1uf3Ldwdro%3D",
-      "dealScore": 59,
-      "recommendation": "84% positive · 163 reviews · 25% off",
+      "recommendation": "81% positive · 435 reviews · 40% off",
       "genres": [],
       "free": false
     },
@@ -21584,18 +22889,6 @@
       "dealId": "%2FDx6f5FTsYVChDwpWm9m2gmwJwTdKX1NJK%2F%2Fy%2FC%2By8g%3D",
       "dealScore": 59,
       "recommendation": "80% positive · 273 reviews · 41% off",
-      "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "title:zero parades for dead spies",
-      "title": "ZERO PARADES: For Dead Spies",
-      "salePrice": 33.14,
-      "normalPrice": 39.99,
-      "storeName": "GameBillet",
-      "dealId": "7BHCTj%2F0LWcOAMYJ3LHYNmpBvlvjGNZKkaZ2JrEH9h8%3D",
-      "dealScore": 59,
-      "recommendation": "86% positive · 1.7K reviews · 17% off",
       "genres": [],
       "free": false
     },
@@ -21624,23 +22917,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:1749860",
-      "title": "Lushfoil Photography Sim",
-      "salePrice": 11.89,
-      "normalPrice": 14.99,
-      "storeName": "Fanatical",
-      "dealId": "lepP7kI17t29dtWBdhninujk%2Fk9SKtI3CmjCFQPxHV8%3D",
-      "dealScore": 58,
-      "recommendation": "91% positive · 1.8K reviews · 21% off",
-      "genres": [
-        "Adventure",
-        "Casual",
-        "Indie",
-        "Simulation"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:2209900",
       "title": "Moonlight Peaks",
       "salePrice": 28.99,
@@ -21655,12 +22931,12 @@
     {
       "gameKey": "steam:1626170",
       "title": "People of Note",
-      "salePrice": 19.88,
+      "salePrice": 20.69,
       "normalPrice": 24.99,
-      "storeName": "Fanatical",
-      "dealId": "me9Wcycas1%2FNeCqAUugMuevjQfx3MKqgf%2BJfA9EYpmU%3D",
+      "storeName": "GameBillet",
+      "dealId": "zd8mRZTHKbZGPeZnEvOIIPHiFFHopHvy7vJSUTUl%2Bc4%3D",
       "dealScore": 58,
-      "recommendation": "89% positive · 397 reviews · 20% off",
+      "recommendation": "89% positive · 397 reviews · 17% off",
       "genres": [],
       "free": false
     },
@@ -21673,18 +22949,6 @@
       "dealId": "L8F3H6GDQFQqrapyyn7KZlbby2jHgyScjqPAcL4%2B3ws%3D",
       "dealScore": 58,
       "recommendation": "83% positive · 4.4K reviews · 29% off",
-      "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "steam:301280",
-      "title": "Skin Deep",
-      "salePrice": 15.89,
-      "normalPrice": 19.99,
-      "storeName": "Fanatical",
-      "dealId": "LVpVbvxA9XQmW%2FCPRf21YDfL0XYraZkOlJP3TJxkDrM%3D",
-      "dealScore": 58,
-      "recommendation": "94% positive · 1.7K reviews · 21% off",
       "genres": [],
       "free": false
     },
@@ -21724,7 +22988,7 @@
       "storeName": "GameBillet",
       "dealId": "ft9Xakm1rPAFcj5%2FVYkbCR2MD%2FHKXWqt8qThTq%2FmsMc%3D",
       "dealScore": 57,
-      "recommendation": "74% positive · 203 reviews · 27% off",
+      "recommendation": "75% positive · 223 reviews · 27% off",
       "genres": [
         "Action",
         "Strategy"
@@ -21763,18 +23027,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:2052160",
-      "title": "Dont Die, Collect Loot",
-      "salePrice": 6.99,
-      "normalPrice": 9.99,
-      "storeName": "IndieGala",
-      "dealId": "TUZ%2BeaNMU3uRJERfdUr5NmvyMJYXY7FxkDlxNjQHbaA%3D",
-      "dealScore": 57,
-      "recommendation": "91% positive · 160 reviews · 30% off",
-      "genres": [],
-      "free": false
-    },
-    {
       "gameKey": "steam:2312520",
       "title": "Everholm",
       "salePrice": 11.99,
@@ -21809,18 +23061,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:1102130",
-      "title": "Florence",
-      "salePrice": 4.69,
-      "normalPrice": 5.99,
-      "storeName": "Fanatical",
-      "dealId": "4Q4ryqiPFUoTZSBWbLxNNo7XqiGUtVRxDPs0BRCOepU%3D",
-      "dealScore": 57,
-      "recommendation": "93% positive · 4.4K reviews · 22% off",
-      "genres": [],
-      "free": false
-    },
-    {
       "gameKey": "steam:1184480",
       "title": "Inertial Drift",
       "salePrice": 16.54,
@@ -21851,18 +23091,15 @@
       "free": false
     },
     {
-      "gameKey": "steam:3219030",
-      "title": "Planet Zoo 2",
-      "salePrice": 42.73,
-      "normalPrice": 49.99,
-      "storeName": "GameBillet",
-      "dealId": "c2ase%2BEV%2BboIMRE9RGxFGXQCG0wY5F1kTpDK%2FlQmH6s%3D",
+      "gameKey": "steam:1309820",
+      "title": "Remains",
+      "salePrice": 4.19,
+      "normalPrice": 6.99,
+      "storeName": "GOG",
+      "dealId": "HaytiYhxFIt83B5cSy17iy5OLHnkWfQbvn%2FFbY1Aseg%3D",
       "dealScore": 57,
-      "recommendation": "71% positive · 1.9K reviews · 15% off",
-      "genres": [
-        "Simulation",
-        "Strategy"
-      ],
+      "recommendation": "73% positive · 294 reviews · 40% off",
+      "genres": [],
       "free": false
     },
     {
@@ -21885,12 +23122,24 @@
       "storeName": "WinGameStore",
       "dealId": "eyAvzEdZWoqqD4gxndXH4I9uOWY%2BPRsVpMhMQPyhAKA%3D",
       "dealScore": 57,
-      "recommendation": "71% positive · 486 reviews · 35% off",
+      "recommendation": "71% positive · 487 reviews · 35% off",
       "genres": [
         "Adventure",
         "Indie",
         "Simulation"
       ],
+      "free": false
+    },
+    {
+      "gameKey": "steam:502720",
+      "title": "Star Explorers",
+      "salePrice": 3.25,
+      "normalPrice": 4.99,
+      "storeName": "GOG",
+      "dealId": "2R%2BIVf28Q5up%2BdxOZOmW1H%2FpOSjb1IeO4DPOjD9b8ro%3D",
+      "dealScore": 57,
+      "recommendation": "82% positive · 244 reviews · 35% off",
+      "genres": [],
       "free": false
     },
     {
@@ -21910,49 +23159,6 @@
       "free": false
     },
     {
-      "gameKey": "steam:1122680",
-      "title": "The Artful Escape",
-      "salePrice": 15.89,
-      "normalPrice": 19.99,
-      "storeName": "Fanatical",
-      "dealId": "Q%2BFVwIN2s8CzyJJS5BbgwOQvDGtUoOseSDLv5wtND0E%3D",
-      "dealScore": 57,
-      "recommendation": "91% positive · 1.8K reviews · 21% off",
-      "genres": [
-        "Action",
-        "Adventure",
-        "Indie"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:3531630",
-      "title": "Tomb of the Bloodletter",
-      "salePrice": 5.99,
-      "normalPrice": 7.99,
-      "storeName": "IndieGala",
-      "dealId": "qHvYk602FnqbL%2Bvq%2BHRMBDCZJyqTa1rbglVEpR%2ByrYA%3D",
-      "dealScore": 57,
-      "recommendation": "88% positive · 102 reviews · 25% off",
-      "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "steam:2464280",
-      "title": "Tormented Souls 2",
-      "salePrice": 24.84,
-      "normalPrice": 29.99,
-      "storeName": "GameBillet",
-      "dealId": "%2B3KuuItFdYFnHYYprsiRp9XfYYzVJTT3fqtl5v9qkW0%3D",
-      "dealScore": 57,
-      "recommendation": "88% positive · 1.7K reviews · 17% off",
-      "genres": [
-        "Action",
-        "Adventure"
-      ],
-      "free": false
-    },
-    {
       "gameKey": "steam:3025590",
       "title": "TRON: Catalyst",
       "salePrice": 15.44,
@@ -21968,19 +23174,27 @@
       "free": false
     },
     {
-      "gameKey": "steam:1299460",
-      "title": "Wanderstop",
-      "salePrice": 19.88,
-      "normalPrice": 24.99,
-      "storeName": "Fanatical",
-      "dealId": "dFstXbazlNqXDtBO9kKYDALe%2FMHEFhhCmcZ5zZ5hLGw%3D",
-      "dealScore": 57,
-      "recommendation": "92% positive · 2.4K reviews · 20% off",
-      "genres": [
-        "Adventure",
-        "Indie",
-        "Simulation"
-      ],
+      "gameKey": "steam:941460",
+      "title": "Death Trash",
+      "salePrice": 15.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "4NSXiEVgOT5N6%2FQ%2BiydT1vV90fZGa6HRQYSLtyLSUdc%3D",
+      "dealScore": 56,
+      "recommendation": "92% positive · 2.7K reviews · 20% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:2880010",
+      "title": "Dins Champion",
+      "salePrice": 15.99,
+      "normalPrice": 19.99,
+      "storeName": "GOG",
+      "dealId": "Rx92%2BlPVT3Q5Pv%2Fm%2Bqfvu48rVFY37%2BwtDYWWipONrQw%3D",
+      "dealScore": 56,
+      "recommendation": "85% positive · 163 reviews · 20% off",
+      "genres": [],
       "free": false
     },
     {
@@ -22041,14 +23255,26 @@
       "free": false
     },
     {
-      "gameKey": "steam:1122720",
-      "title": "Sayonara Wild Hearts",
-      "salePrice": 10.28,
-      "normalPrice": 12.99,
-      "storeName": "Fanatical",
-      "dealId": "e4Hb%2B8Bc1L%2BfnKFyjcIzmHA4TppVJBExDP7XpbSxtiA%3D",
+      "gameKey": "steam:2018640",
+      "title": "My Cat Girl Lover",
+      "salePrice": 1.79,
+      "normalPrice": 2.99,
+      "storeName": "GOG",
+      "dealId": "XDdoXqO3EMJdp7%2B75jyBoBugpxAc2GDcSHPithSCULY%3D",
       "dealScore": 56,
-      "recommendation": "95% positive · 3.7K reviews · 21% off",
+      "recommendation": "89% positive · 282 reviews · 40% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:986130",
+      "title": "Shadows of Doubt",
+      "salePrice": 16.54,
+      "normalPrice": 19.99,
+      "storeName": "GameBillet",
+      "dealId": "7YAIUSPLwNsJogicOv1GIqAlXkfMRLUeHdYGPVNifJc%3D",
+      "dealScore": 56,
+      "recommendation": "81% positive · 10.9K reviews · 17% off",
       "genres": [],
       "free": false
     },
@@ -22070,15 +23296,43 @@
       "free": false
     },
     {
-      "gameKey": "steam:2538880",
-      "title": "Spirit X Strike",
-      "salePrice": 8.79,
-      "normalPrice": 12.99,
+      "gameKey": "steam:2828710",
+      "title": "Valor Mortis",
+      "salePrice": 33.95,
+      "normalPrice": 39.99,
       "storeName": "GameBillet",
-      "dealId": "s0MJKtUQQDzbCeQc53z40dGtJj2VXSf%2Fwci6nX3XnGI%3D",
+      "dealId": "e3Gw5PgZUWujSRcJ8aoGhWDqq%2BQ6d2kmrKIVIUoU18M%3D",
       "dealScore": 56,
-      "recommendation": "82% positive · 407 reviews · 32% off",
+      "recommendation": "76% positive · 670 reviews · 15% off",
       "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:3576870",
+      "title": "Blossom: The Seed of Life",
+      "salePrice": 14.45,
+      "normalPrice": 16.99,
+      "storeName": "GOG",
+      "dealId": "tQD4X%2BU%2BN4%2BVYJN%2BM9bbDohBHvJYOdnYRkx3IFhVpZ0%3D",
+      "dealScore": 55,
+      "recommendation": "87% positive · 1K reviews · 15% off",
+      "genres": [],
+      "free": false
+    },
+    {
+      "gameKey": "steam:3440120",
+      "title": "Knights of the Crusades",
+      "salePrice": 10.85,
+      "normalPrice": 19.99,
+      "storeName": "GameBillet",
+      "dealId": "%2BnDcHltoFd1Rbx1mFYl5ncGKmROD%2FK1ceCNu%2FIAAlHU%3D",
+      "dealScore": 55,
+      "recommendation": "70% positive · 167 reviews · 46% off",
+      "genres": [
+        "Indie",
+        "Simulation",
+        "Strategy"
+      ],
       "free": false
     },
     {
@@ -22147,58 +23401,6 @@
       "genres": [
         "Action",
         "Indie"
-      ],
-      "free": false
-    },
-    {
-      "gameKey": "steam:1492680",
-      "title": "The Pathless",
-      "salePrice": 31.88,
-      "normalPrice": 39.99,
-      "storeName": "Fanatical",
-      "dealId": "yPSqHmQ992nVG2jT7jpwleO1Wq%2BpGxN2foqcxxs%2BtOU%3D",
-      "dealScore": 55,
-      "recommendation": "90% positive · 2K reviews · 20% off",
-      "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "steam:2479770",
-      "title": "Troublemaker 2: Beyond Dream",
-      "salePrice": 18.71,
-      "normalPrice": 24.99,
-      "storeName": "Fanatical",
-      "dealId": "zi0yRWShhhST92A%2BYO%2BhgE8z4MmZ035XH7RzHYJf6lQ%3D",
-      "dealScore": 55,
-      "recommendation": "95% positive · 143 reviews · 25% off",
-      "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "steam:2828710",
-      "title": "Valor Mortis",
-      "salePrice": 33.95,
-      "normalPrice": 39.99,
-      "storeName": "GameBillet",
-      "dealId": "e3Gw5PgZUWujSRcJ8aoGhWDqq%2BQ6d2kmrKIVIUoU18M%3D",
-      "dealScore": 55,
-      "recommendation": "76% positive · 593 reviews · 15% off",
-      "genres": [],
-      "free": false
-    },
-    {
-      "gameKey": "steam:1497460",
-      "title": "Wheel World",
-      "salePrice": 15.89,
-      "normalPrice": 19.99,
-      "storeName": "Fanatical",
-      "dealId": "h2167mcC%2By3WdY1sEHmyiydYViUSN0mpRF58DW9y%2F7c%3D",
-      "dealScore": 55,
-      "recommendation": "89% positive · 748 reviews · 21% off",
-      "genres": [
-        "Adventure",
-        "Racing",
-        "Sports"
       ],
       "free": false
     }
